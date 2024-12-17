@@ -31,7 +31,7 @@
 
 #align(center)[
   #v(5em)
-  #text(13pt)[#strong()[#upper[Progettazione e implementazione \ di una base di dati per la gestione di una banca]]]
+  #text(15pt)[#strong()[#upper[Progettazione e implementazione \ di una base di dati per la gestione di una banca]]]
   #v(2em)
 ]
 #pagebreak()
@@ -75,33 +75,35 @@ Al fine di proseguire con la progettazione concettuale, sono state effettuate le
 
 === Glossario
 Per chiarire il significato e le relazioni dei termini chiave definite nei requisiti viene fornito un glossario esplicativo: 
+
 #show table.cell.where(x: 0).or(table.cell.where(y: 0)): strong
 
 #figure(
   table(
-    columns: 2, 
+    columns: 4, 
     stroke: 0.5pt,
     fill: (x, y) => if y == 0 { rgb("#ddd") },
     align: (x, y) =>
       if y == 0 { center } else {
-        if x < 2 { center + horizon} else { left }
+        if x < 1 { center + horizon } else { left }
       },
-  table.header([Termine], [Descrizione]),
-
-  [Filiale] , [Unità operativa della banca situata in  una determinata città. È gestita da un unico capo. ],
-  //[Attivi] , [Ammontare totale della liquidità di una filiale.], [],
-  [Cliente] , [Persona fisica con almeno un conto aperto nella banca],
-  [Conto] , [Servizio di gestione del denaro che permette diverse operazioni. Può essere esclusivamente corrente o di risparmio], 
-  [Conto Corrente] , [Tipo di conto caratterizzao da uno scoperto ],
-  [Conto di risparmio] , [Tipo di conto caratterizzato da un tasso di interessse],
-  // [Rata] , [], [],
-  // [Dipendente] , [], [],
-  [Gestore] , [Dipendente che prende in carico le pratiche di uno o più clienti],
-  [Capo] , [Unico responsabile della filiale presso cui lavora],
-  [Persona a carico] , [Cliente con il privilegio di essere seguita da un gestore],
-  [Possessore (di conto)] , [Altro modo di definire cliente],
+  table.header([Termine], [Descrizione], [Sinonimi], [Collegamenti]),
+  [Filiale] , [Unità operativa della banca situata in  una determinata città. È gestita da un unico capo. ], [Sede], [],
+  //[Attivi] , [Ammontare totale della liquidità di una filiale.], [], [],
+  [Cliente] , [Persona fisica con almeno un conto aperto nella banca], [Possessore di conto], [],
+  [Conto] , [Servizio di gestione del denaro che permette diverse operazioni. Può essere esclusivamente corrente o di risparmio], [], [], 
+  [Conto Corrente] , [Tipo di conto caratterizzao da uno scoperto ], [], [],
+  [Conto di risparmio] , [Tipo di conto caratterizzato da un tasso di interessse], [], [],
+  // [Rata] , [], [], [],
+  // [Dipendente] , [], [], [],
+  [Gestore] , [Dipendente che prende in carico le pratiche di uno o più clienti], [], [],
+  [Capo] , [Unico responsabile della filiale presso cui lavora], [], [],
+  [Persona a carico] , [Cliente con il privilegio di essere seguita da un gestore], [], [],
+  [Possessore (di conto)] , [Altro modo di definire cliente], [], [],
+  // [] , [], [], [],
+  // [] , [], [], [],
   ),
-caption: [Glossario]
+  caption: [Glossario dei termini chiave]
 )
 
 = Progettazione Concettuale
