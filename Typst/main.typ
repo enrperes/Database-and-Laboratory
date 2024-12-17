@@ -39,6 +39,16 @@
 /* ------------------------- */
 
 #outline(indent: auto, title: "Indice")
+
+/* 
+1. Analisi dei requisiti 
+2. Progettazione concettuale
+3. Progettazione logica
+4. Progettazione fisica
+5. Implementazione
+6. Analisi dei dati 
+*/ 
+
 #pagebreak()
 
 /* ------------------------- */
@@ -80,26 +90,26 @@ Per chiarire il significato e le relazioni dei termini chiave definite nei requi
 
 #figure(
   table(
-    columns: 4, 
+    columns: 3, 
     stroke: 0.5pt,
     fill: (x, y) => if y == 0 { rgb("#ddd") },
     align: (x, y) =>
       if y == 0 { center } else {
         if x < 1 { center + horizon } else { left }
       },
-  table.header([Termine], [Descrizione], [Sinonimi], [Collegamenti]),
-  [Filiale] , [Unità operativa della banca situata in  una determinata città. È gestita da un unico capo. ], [Sede], [],
+  table.header([Termine], [Descrizione], [Collegamenti]),
+  [Filiale] , [Unità operativa della banca situata in  una determinata città. È gestita da un unico capo. ], [Conto, Dipendente, Capo],
   //[Attivi] , [Ammontare totale della liquidità di una filiale.], [], [],
-  [Cliente] , [Persona fisica con almeno un conto aperto nella banca], [Possessore di conto], [],
-  [Conto] , [Servizio di gestione del denaro che permette diverse operazioni. Può essere esclusivamente corrente o di risparmio], [], [], 
-  [Conto Corrente] , [Tipo di conto caratterizzao da uno scoperto ], [], [],
-  [Conto di risparmio] , [Tipo di conto caratterizzato da un tasso di interessse], [], [],
+  [Cliente] , [Persona fisica con almeno un conto aperto nella banca], [Conto, Gestore],
+  [Conto] , [Servizio di gestione del denaro che permette diverse operazioni. Può essere esclusivamente corrente o di risparmio], [Cliente, Filiale], 
+  [Conto Corrente] , [Tipo di conto caratterizzao da uno scoperto ], [Conto],
+  [Conto di risparmio] , [Tipo di conto caratterizzato da un tasso di interessse], [Conto],
   // [Rata] , [], [], [],
   // [Dipendente] , [], [], [],
-  [Gestore] , [Dipendente che prende in carico le pratiche di uno o più clienti], [], [],
-  [Capo] , [Unico responsabile della filiale presso cui lavora], [], [],
-  [Persona a carico] , [Cliente con il privilegio di essere seguita da un gestore], [], [],
-  [Possessore (di conto)] , [Altro modo di definire cliente], [], [],
+  [Gestore] , [Dipendente che prende in carico le pratiche di uno o più clienti], [ ],
+  [Capo] , [Unico responsabile della filiale presso cui lavora], [Dipendente],
+  // [Persona a carico] , [Cliente con il privilegio di essere seguita da un gestore], [],
+  //[Possessore (di conto)] , [Altro modo di definire cliente], [], [],
   // [] , [], [], [],
   // [] , [], [], [],
   ),
