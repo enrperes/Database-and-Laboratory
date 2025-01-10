@@ -9,7 +9,12 @@
 #set quote(block: true)
 #set par(justify: true)
 #show heading.where(level: 1): set text(20pt)
-#show figure.caption: (emph)
+#show figure.caption: it => [
+ #text(9pt)[ 
+ #it.supplement
+ #context it.counter.display(it.numbering)]:
+ #emph[#it.body]
+]
 
 /* ------------ Variables ------------- */
 #let title = text(25pt)[Relazione progetto di Laboratorio]
@@ -22,6 +27,9 @@
   figure(..args)
 }
 
+
+
+/* ------------ Document Starts Here ------------- */
 
 #align(center, text(25pt)[
   #v(15%)
@@ -135,11 +143,11 @@ Per chiarire il significato e le relazioni dei termini chiave definite nei requi
 == Costruzione dello schema Entità Relazione
 L'analisi dei requisiti ha portato alla definizione di un insieme di entità e relazioni che costituiscono il modello concettuale della base di dati.
 
-#v(2em)
+#v(1em)
 
 
 /* 
-// Tentativo di allineamento con oasis-align
+// Allineamento con oasis-align
 #oasis-align(
   //tolerance: 0.4cm,
   max-iterations: 1,
@@ -150,6 +158,21 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )]
 )
 */
+
+- L'enittà #erb[filiale] rappresenta una unità operativa della banca situata in una determinata città. La chiave primaria è il _Nome_, mentre gli altri attributi sono _Città_ e _Indirizzo_.  Inoltre, per ogni filiale è presente l'attributo derivato _Attivi_, che rappresenta l'ammontare totale della liquidità della filiale e viene calcolato sulla base dei conti, prestiti e rate ad esso associati.
+#figure(
+  image("media/filiale.svg", width: 22%),
+  caption: [Entità FILIALE]
+)
+#v(2.5em)
+
+- L'entità #erb[Cliente] rappresenta una persona fisica che ha aperto nella banca almeno un conto. Essa è caratterizzata da un _codice univoco_ assegnato dalla banca ad ogni cliente e dal _codice fiscale_, entrambi questi attributi fungono da chiavi primarie in quanto sono univoche per ogni cliente. Gli altri attributi servono per tenere traccia dell’anagrafica del cliente, quali _Nome_, _Cognome_, _numero di Telefono_, _Data di nascita_ e _residenza_.
+#v(-1em)
+#figure(
+  image("media/cliente.svg", width: 30%),
+  caption: [Entità CLIENTE]
+)
+#v(2.5em)
 
 - L'entità #erb[dipendente] è caratterizzata da un codice univoco _ID_ che funge da chiave primaria. _Nome_, _Cognome_, _Numero di telefono_, _Data di assunzione_ sono gli altri attributi che la descrivono. è stato scelto di tenere traccia dell'anzianità aziendale sulla base della data di assunzione. \ Il capo viene descritto da una specializzazione parziale di #er[dipendente], chiamata  #er[capo]. 
 #figure(
@@ -165,13 +188,29 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2.5em)
 
-- L'enittà #erb[filiale] rappresenta una unità operativa della banca situata in una determinata città. La chiave primaria è il _Nome_, mentre gli altri attributi sono _Città_ e _Indirizzo_.  Inoltre, per ogni filiale è presente l'attributo derivato _Attivi_, che rappresenta l'ammontare totale della liquidità della filiale e viene calcolato sulla base dei conti, prestiti e rate ad esso associati.
+- L’entità #erb[Conto] serve per identificare un servizio della banca messo a disposizione per il cliente. Ogni entità viene identificata univocamente da un attributo _IBAN_ e un attributo _Saldo_ tiene traccia dell’ammontare in denaro presente su tale conto. La banca inoltre mette a disposizione due tipi di conto, quindi l’entità Conto è stata specializzata in due sottoentità: #er[Conto Corrente] e #er[Conto di Risparmio]. La specializzazione è totale e disgiunta: l’insieme dei conti correnti e dei conti di risparmio è disgiunto e la loro unione è esattamente l’insieme di tutti i conti all’interno della filiale.
 #figure(
-  image("media/filiale.svg", width: 22%),
-  caption: [Entità FILIALE]
+  image("media/conto.svg", width: 25%),
+  caption: [Entità CONTO]
 )
+- L’entità #erb[Conto Corrente] è una specializzazione dell’entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell’entità #er[Conto]. L' attributo che caratterizza #er[Conto Corrente] è _Scoperto_ che indica il valore, concordato tra cliente e banca, di quanto la banca può concedere di debito nei confronti del cliente.
+
+
+- L’entità #erb[Conto di Risparmio] è una specializzazione dell’entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell’entità di Conto. L'attributo che lo caratterizza è Tasso di interesse che indica il valore, concordato tra cliente e banca, di quanto rende mensilmente il deposito su quel conto.
 #v(2.5em)
 
+- L'entità #erb[Prestito] costituisce il servizio creditizio della banca. Essa è caratterizzata innanzitutto da un codice univoco che funge da chiave primaria, garantendo l’identificazione sicura di ogni singolo prestito all’interno del sistema. L’attributo _ammontare_ fornisce invece l'informazione relativa alla somma di denaro effettivamente erogata, mentre l’attributo  _inizio_ registra la data in cui il prestito ha avuto origine. Un aspetto interessante di questa entità è la presenza di un attributo derivato, _somma rate_ calcolato sulla base dell’insieme delle rate associate a quel prestito. Questo calcolo deriva appunto dalla relazione con l’entità #er[Rata], che verrà descritta successivamente. 
+#figure(
+  image("media/prestito.svg", width: 30%),
+  caption: [Entità PRESTITO]
+)
+
+- L’entità #erb[rata] è una entità debole ed ha il compito di rappresentare in modo dettagliato ogni singolo pagamento periodico associato a un determinato prestito. L’identificazione univoca di ciascuna rata è garantita da una chiave primaria composta, costituita dal suo numero (indicante la “posizione” della rata nella sequenza dei pagamenti) e dalla chiave esterna che fa riferimento all’entità Prestito.  Tra gli attributi figurano inoltre la _data scadenza_, ossia il giorno entro cui la rata deve essere corrisposta, e la _data pagamento_, che riporta il momento in cui il versamento è stato effettivamente effettuato. Infine, l’attributo _ammontare_ specifica l’importo dovuto per quella singola rata.
+#figure(
+  image("media/rata.svg", width: 25%),
+  caption: [Entità RATA]
+)
+#v(2.5em)
 
 - La relazione #erb[è capo] collega l'entità #er[capo] con l'entità #er[filiale], definendo il legame tra il capo di una filiale e la filiale stessa. La cardinalità di (1,1) tra la relazione e l'entità Filiale indica che ogni #er[filiale] ha un solo capo, mentre la cardinalità di (0,1) tra la relazione e l'entità #er[Capo] indica che un dipendente può essere al più capo di una sola filiale.
 #figure(
@@ -187,6 +226,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2.5em)
 
+
 - La relazione #erb[di] lega l'entità #er[dipendente] con l'entità #er[capo]. La cardinalità di (1,N) tra la relazione e l'entità #er[capo] indica che un capo dirige uno o più dipendenti, mentre la cardinalità di (1,1) tra la relazione e l'entità #er[dipendente] indica che un dipendente ha uno e un solo capo. 
 #figure(
   image("media/di.svg", width: 80%),
@@ -194,20 +234,6 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2.5em)
 
-
-- L'entità #erb[Prestito] costituisce il servizio creditizio della banca. Essa è caratterizzata innanzitutto da un codice univoco che funge da chiave primaria, garantendo l’identificazione sicura di ogni singolo prestito all’interno del sistema. L’attributo _ammontare_ fornisce invece l'informazione relativa alla somma di denaro effettivamente erogata, mentre l’attributo  _inizio_ registra la data in cui il prestito ha avuto origine. Un aspetto interessante di questa entità è la presenza di un attributo derivato, _somma rate_ calcolato sulla base dell’insieme delle rate associate a quel prestito. Questo calcolo deriva appunto dalla relazione con l’entità #er[Rata], che verrà descritta successivamente. 
-#figure(
-  image("media/prestito.svg", width: 30%),
-  caption: [Entità PRESTITO]
-)
-
-
-- L’entità #erb[rata] è una entità debole ed ha il compito di rappresentare in modo dettagliato ogni singolo pagamento periodico associato a un determinato prestito. L’identificazione univoca di ciascuna rata è garantita da una chiave primaria composta, costituita dal suo numero (indicante la “posizione” della rata nella sequenza dei pagamenti) e dalla chiave esterna che fa riferimento all’entità Prestito.  Tra gli attributi figurano inoltre la _data scadenza_, ossia il giorno entro cui la rata deve essere corrisposta, e la _data pagamento_, che riporta il momento in cui il versamento è stato effettivamente effettuato. Infine, l’attributo _ammontare_ specifica l’importo dovuto per quella singola rata.
-#figure(
-  image("media/rata.svg", width: 25%),
-  caption: [Entità RATA]
-)
-#v(2.5em)
 
 - La relazione #erb[é composto] collega l’entità #er[prestito] con l’entità #er[Rata], dando forma al legame logico tra un finanziamento e i singoli pagamenti previsti per il suo rimborso. Dal lato di #er[Rata], la cardinalità è di (1,1), poiché ogni rata è necessariamente associata ad uno e un solo prestito specifico data la natura di #er[Rata] come entità debole. Dal lato di Prestito, invece, la cardinalità è di (1,N), poiché un singolo prestito può essere suddiviso in una o più rate. In sintesi, questa relazione rispecchia un legame di composizione, dove ogni prestito è scomponibile in un insieme di rate, ma ogni rata non può prescindere dal proprio prestito di appartenenza.
 #v(-1.5em)
@@ -223,26 +249,6 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
   caption: [Relazione È ASSOCIATO]
 )
 #v(2.5em)
-
-- L'entità #erb[Cliente] rappresenta una persona fisica che ha aperto nella banca almeno un conto. Essa è caratterizzata da un _codice univoco_ assegnato dalla banca ad ogni cliente e dal _codice fiscale_, entrambi questi attributi fungono da chiavi primarie in quanto sono univoche per ogni cliente. Gli altri attributi servono per tenere traccia dell’anagrafica del cliente, quali _Nome_, _Cognome_, _numero di Telefono_, _Data di nascita_ e _residenza_.
-#figure(
-  image("media/cliente.svg", width: 30%),
-  caption: [Entità CLIENTE]
-)
-#v(2.5em)
-
-- L’entità #erb[Conto] serve per identificare un servizio della banca messo a disposizione per il cliente. Ogni entità viene identificata univocamente da un attributo _IBAN_ e un attributo _Saldo_ tiene traccia dell’ammontare in denaro presente su tale conto. La banca inoltre mette a disposizione due tipi di conto, quindi l’entità Conto è stata specializzata in due sottoentità: #er[Conto Corrente] e #er[Conto di Risparmio]. La specializzazione è totale e disgiunta: l’insieme dei conti correnti e dei conti di risparmio è disgiunto e la loro unione è esattamente l’insieme di tutti i conti all’interno della filiale.
-#figure(
-  image("media/conto.svg", width: 25%),
-  caption: [Entità CONTO]
-)
-#v(2.5em)
-
-
-- L’entità #erb[Conto Corrente] è una specializzazione dell’entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell’entità #er[Conto]. L' attributo che caratterizza #er[Conto Corrente] è _Scoperto_ che indica il valore, concordato tra cliente e banca, di quanto la banca può concedere di debito nei confronti del cliente.
-
-
-- L’entità #erb[Conto di Risparmio] è una specializzazione dell’entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell’entità di Conto. L'attributo che lo caratterizza è Tasso di interesse che indica il valore, concordato tra cliente e banca, di quanto rende mensilmente il deposito su quel conto.
 
 - La relazione #erb[Possiede] collega le entità #er[Cliente] e #er[Conto]. Un cliente deve possedere almeno un conto e più clienti possono possedere lo stesso conto (caso di conto cointestato), da cui deriva la cardinalità (1, N) della relazione sul lato di #er[Cliente]. D’altro canto un #er[conto] deve essere posseduto da almeno un cliente e più conti possono fare riferimento allo stesso cliente (caso in cui uno stesso cliente ha aperto più conti con la banca), da cui deriva la cardinalità (1, N) della relazione sul lato di #er[conto]. Gli attributi _Operazione_ e _Data_ sulla relazione indicano l’ultima operazione svolta e la data in cui è stata effettuata. Nel caso di operazione congiunta di più clienti possessori dello stesso conto gli attributi _Operazione/Data_ vengono aggiornati per entrambi.
 #figure(
