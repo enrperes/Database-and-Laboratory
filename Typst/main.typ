@@ -145,19 +145,14 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 
 #v(1em)
 
-#set image(width: 100%)
- 
-// Allineamento con oasis-align
-#oasis-align(
-  //tolerance: 0.1cm,
-  // max-iterations: 1,
-  //int-frac: 0.75,
-  [- L'entità #er[dipendente] è caratterizzata da un codice univoco _ID_ che funge da chiave primaria. _Nome_, _Cognome_, _Numero di telefono_, _Data di assunzione_ sono gli altri attributi che la descrivono. è stato scelto di tenere traccia dell'anzianità aziendale sulla base della data di assunzione. \ Il capo viene descritto da una specializzazione parziale di #er[dipendente], chiamata  #er[capo]. ], [#figure(
-  image("media/dipendente.svg"),
-  caption: [Entità DIPENDENTE]
-)]
-)
-
+// Allineamento orizzontale 
+// #grid(
+//   columns: (1fr, 0.5fr), 
+//   [- L'enittà #erb[filiale] rappresenta una unità operativa della banca situata in una determinata città. La chiave primaria è il _Nome_, mentre gli altri attributi sono _Città_ e _Indirizzo_.  Inoltre, per ogni filiale è presente l'attributo derivato _Attivi_, che rappresenta l'ammontare totale della liquidità della filiale e viene calcolato sulla base dei conti, prestiti e rate ad esso associati.],[#figure(
+//   image("media/filiale.svg", width: 72%),
+//   caption: [Entità FILIALE]
+// )]
+// )
 
 - L'enittà #erb[filiale] rappresenta una unità operativa della banca situata in una determinata città. La chiave primaria è il _Nome_, mentre gli altri attributi sono _Città_ e _Indirizzo_.  Inoltre, per ogni filiale è presente l'attributo derivato _Attivi_, che rappresenta l'ammontare totale della liquidità della filiale e viene calcolato sulla base dei conti, prestiti e rate ad esso associati.
 #figure(
