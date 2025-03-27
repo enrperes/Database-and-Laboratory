@@ -1,6 +1,5 @@
 /* ------------ Libraries ------------- */
 // #import "@preview/wrap-it:0.1.0": wrap-content
-#import "@preview/oasis-align:0.2.0": *
 
 /* ------------ Document Setup ------------- */
 #set heading(numbering: "1.")
@@ -305,8 +304,8 @@ dei dati, che sono stati ipotizzati secondo i volumi di una banca reale di rifer
   [Gestisce] , [Relazione], [10.000.000],
   [Lavora] , [Relazione], [100.000],
   [#upper[è] capo] , [Relazione], [3.000],
-  [Possiede] , [Relazione], [7.000.000],
-  [Di] , [Relazione], [3.000],
+  [#upper[è] composto] , [Relazione], [7.000.000],
+  [Di] , [Relazione], [100.000],
   [Possiede] , [Relazione], [19.000.000],
   [Contiene] , [Relazione], [12.000.000],
   [#upper[è] associato] , [Relazione], [7.000.000],
