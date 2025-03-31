@@ -23,11 +23,6 @@ with open('./dati/data_nascita.txt', mode='w', encoding='utf-8') as file:
         data = fake.date_between(start_date='-95y', end_date='-18y').isoformat()
         file.write(data + '\n')
 
-with open('./dati/data_apertura.txt', mode='w', encoding='utf-8') as file:
-    for _ in range(NUM_CONTI):
-        data = fake.date_between(start_date='-15y', end_date='today').isoformat()
-        file.write(data + '\n')
-
 with open('./dati/telefono.txt', mode='w', encoding='utf-8') as file:
     telefoni_generati = set()
 
