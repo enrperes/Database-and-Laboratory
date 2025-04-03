@@ -1,96 +1,118 @@
 -- Il numero medio di rate dei prestiti associati a conti delle filiali di UD.
-SELECT AVG(Prestito.mensilità)
-FROM Prestito, Conto, Filiale
-WHERE Prestito.conto_associato=Conto.iban AND Conto.filiale=Filiale.nome AND Filiale.città=Udine
+SELECT AVG(mensilità) AS media_rate
+  FROM prestito, conto, filiale
+  WHERE prestito.conto = conto.iban
+    AND conto.filiale = filiale.nome
+    AND filiale.città = 'Udine';
 
 -- Tutti i clienti che hanno solo conti risparmio in filiali con almeno 10 e al massimo 20 dipendenti.
-CREATE VIEW AS Filiali_1020
-    SELECT filiale, COUNT* AS N_dip
-    FROM Dipendente
-    GROUP BY Dipendente.filiale
-    HAVING N_dip between 10 AND 20
+CREATE OR REPLACE VIEW filiali_3032 AS
+  SELECT filiale, COUNT(*) AS n_dip
+  FROM dipendente
+  GROUP BY filiale
+  HAVING COUNT(*) BETWEEN 30 AND 32;
 
-SELECT Cliente.id
-FROM Cliente, Filiali_1020, Conto, Possiede
-WHERE Cliente.id=Possiede.cliente AND Possiede.conto=Conto.iban AND Conto.filiale=Filiale_1020.filiale
+SELECT cliente.id
+  FROM cliente, possiede, conto, filiali_3032
+  WHERE cliente.id = possiede.cliente
+    AND possiede.conto = conto.iban
+    AND conto.filiale = filiali_3032.filiale
     AND NOT EXISTS (
-        SELECT *
-        FROM ContoCorrente
-        WHERE ContoCorrente.iban=Conto.iban
-    )
+      SELECT 1
+      FROM contocorrente
+      WHERE contocorrente.iban = conto.iban
+    );
 
 -- Tutti i capi dei dipendenti che gestiscono almeno 3 clienti e che ciascun cliente abbia almeno 100k euro 
 -- in conti (inteso come somma di tutti i conti che ha)
-CREATE VIEW AS Clienti_ricchi
-    SELECT Cliente.id, COUNT* AS soldi
-    FROM Cliente, Possiede, Conto
-    WHERE Cliente.id=Possiede.cliente AND Conto.iban=Possiede.conto
-    GROUP BY Cliente.id
-    HAVING soldi > 100000
+CREATE OR REPLACE VIEW clienti_ricchi AS
+  SELECT cliente.id, SUM(conto.saldo) AS soldi, cliente.gestore
+  FROM cliente, possiede, conto
+  WHERE cliente.id = possiede.cliente
+    AND conto.iban = possiede.conto
+  GROUP BY cliente.id, cliente.gestore
+  HAVING SUM(conto.saldo) > 100000;
 
 SELECT DISTINCT capo
-FROM Dipendente
-WHERE EXISTS (
+  FROM dipendente
+  WHERE EXISTS (
     SELECT *
-    FROM Clienti_ricchi AS C1, Clienti_ricchi AS C2, Clienti_ricchi AS C3
-    WHERE C1.gestore=C2.gestore AND C1.gestore=C3.gestore AND C1.id < C2.id AND C2.id < C3.id
+    FROM clienti_ricchi c1, clienti_ricchi c2, clienti_ricchi c3
+    WHERE c1.gestore = dipendente.id
+      AND c2.gestore = dipendente.id
+      AND c3.gestore = dipendente.id
+      AND c1.id < c2.id AND c2.id < c3.id
+  );
 )
 
 --Tutti i dipendenti non capo che gestiscono esattamente 2 clienti di cui uno ha solo conti di risparmio e uno ha solo conti correnti.
-CREATE VIEW AS Clienti_correnti
-    SELECT Possiede.cliente, gestore
-    FROM Possiede, Cliente
-    WHERE Possiede.cliente=Cliente.ide AND NOT EXISTS (
-        SELECT *
-        FROM ContoRisparmio
-        WHERE ContoRisparmio.iban=Possiede.conto
-    )
+CREATE OR REPLACE VIEW clienti_correnti AS
+  SELECT possiede.cliente, cliente.gestore
+  FROM possiede, cliente
+  WHERE possiede.cliente = cliente.id
+    AND NOT EXISTS (
+      SELECT 1
+      FROM contorisparmio
+      WHERE contorisparmio.iban = possiede.conto
+    );
 
-CREATE VIEW AS Clienti_risparmio
-    SELECT Possiede.cliente, gestore
-    FROM Possiede, Cliente
-    WHERE Possiede.cliente=Cliente.ide AND NOT EXISTS (
-        SELECT *
-        FROM ContoCorrente
-        WHERE ContoCorrente.iban=Possiede.conto
-    )
+  CREATE OR REPLACE VIEW clienti_risparmio AS
+  SELECT possiede.cliente, cliente.gestore
+  FROM possiede, cliente
+  WHERE possiede.cliente = cliente.id
+    AND NOT EXISTS (
+      SELECT 1
+      FROM contocorrente
+      WHERE contocorrente.iban = possiede.conto
+    );
 
-SELECT id
-FROM Dipendente
-WHERE capo<>id AND EXISTS(
-    SELECT *
-    FROM Clienti_correnti AS CC1
-    WHERE gestore=id AND NOT EXISTS (
-        SELECT *
-        FROM Clienti_correnti AS CC2
-        WHERE gestore=id AND CC1.cliente <> CC2.cliente
+ SELECT id
+  FROM dipendente
+  WHERE capo <> id
+    AND EXISTS (
+      SELECT *
+      FROM clienti_correnti cc1
+      WHERE cc1.gestore = dipendente.id
+        AND NOT EXISTS (
+          SELECT *
+          FROM clienti_correnti cc2
+          WHERE cc2.gestore = dipendente.id
+            AND cc1.cliente <> cc2.cliente
+        )
     )
-)
-AND EXISTS(
-    SELECT *
-    FROM Clienti_risparmio AS CR1
-    WHERE gestore=id AND NOT EXISTS (
-        SELECT *
-        FROM Clienti_risparmio AS CR2
-        WHERE gestore=id AND CR1.cliente <> CR2.cliente
-    )
-)
+    AND EXISTS (
+      SELECT *
+      FROM clienti_risparmio cr1
+      WHERE cr1.gestore = dipendente.id
+        AND NOT EXISTS (
+          SELECT *
+          FROM clienti_risparmio cr2
+          WHERE cr2.gestore = dipendente.id
+            AND cr1.cliente <> cr2.cliente
+        )
+    );
 
 --Il cliente con il prestito più alto nella filiale di Roma che non è gestito da un dipendente con meno di 3 anni di esperienza.
-CREATE VIEW AS ClientiGestiti3
-    SELECT Cliente.id
-    FROM Cliente, Dipendente
-    WHERE gestore=Dipendente.id AND Dipendente.data_assunzione < "DATAOGGI - 3 ANNI"
+ CREATE OR REPLACE VIEW clienti_gestiti_3 AS
+  SELECT cliente.id
+  FROM cliente, dipendente
+  WHERE cliente.gestore = dipendente.id
+    AND dipendente.data_assunzione < DATE '", data_limite, "';
 
-CREATE VIEW AS Candidati
-    SELECT Cliente.id, Prestito.ammontare
-    FROM ClientiGestiti3, Filiale, Prestito, Possiede
-    WHERE Filiale.città=Roma AND Possiede.cliente = Cliente.id AND Possiede.conto = Prestito.conto_associato
+ CREATE OR REPLACE VIEW candidati AS
+  SELECT cliente.id, prestito.ammontare
+  FROM cliente, clienti_gestiti_3, possiede, prestito, conto, filiale
+  WHERE cliente.id = clienti_gestiti_3.id
+    AND cliente.id = possiede.cliente
+    AND possiede.conto = prestito.conto
+    AND prestito.conto = conto.iban
+    AND conto.filiale = filiale.nome
+    AND filiale.città = 'Roma';
 
-SELECT id
-FROM Candidati as C1
-WHERE NOT EXISTS (
-    SELECT *
-    FROM Candidati as C2
-    WHERE C2.ammontare > C1.ammontare
-)
+  SELECT id, ammontare
+  FROM candidati c1
+  WHERE NOT EXISTS (
+    SELECT 1
+    FROM candidati c2
+    WHERE c2.ammontare > c1.ammontare
+  );
