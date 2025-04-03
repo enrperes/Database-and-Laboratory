@@ -1,6 +1,6 @@
-# ==================================================
-# SETUP INIZIALE
-# ==================================================
+
+# SETUP INIZIALE ----
+
 
 
 library(DBI)
@@ -8,15 +8,22 @@ library(RPostgres)
 library(here)
 
 
-# ==================================================
-# CREAZIONE DATABASE
-# ==================================================
+
+# PATH SETUP ----
+
+
+getwd()
+
+
+
+# CREAZIONE DATABASE ----
+
 con <- dbConnect(
   RPostgres::Postgres(),
   dbname   = "postgres",
   host     = "localhost",
   port     =  5432,
-  user     = "postgres",
+  user     = "enrperes",
   password = "9999"
 )
 dbExecute(con, "CREATE DATABASE db_banca;")
@@ -27,15 +34,15 @@ dbDisconnect(con)
 
 
 
-# ==================================================
-# CONNESSIONE A db_banca
-# ==================================================
+
+# CONNESSIONE A db_banca ----
+
 con <- dbConnect(
   RPostgres::Postgres(),
   dbname   = "db_banca",
   host     = "localhost",
   port     =  5432,
-  user     = "postgres",
+  user     = "enrperes",
   password = "9999"
 )
 
