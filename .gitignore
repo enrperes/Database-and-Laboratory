@@ -4,11 +4,12 @@
 # R files
 .Rhistory
 .RData
+.here
 
 # Typst build files
 output/
 target/
 
-# other common ignores
+# other 
 *.log
 *.tmp

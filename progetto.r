@@ -1,20 +1,11 @@
-
 # SETUP INIZIALE ----
 
-
-
+# setwd("") - impostare la directory di lavoro contenente il file R, la cartella dati e codice. 
 library(DBI)
 library(RPostgres)
 library(here)
 
-
-
-# PATH SETUP ----
-
-
-getwd()
-
-
+set.seed(42)
 
 # CREAZIONE DATABASE ----
 
@@ -30,12 +21,7 @@ dbExecute(con, "CREATE DATABASE db_banca;")
 dbDisconnect(con)
 
 
-
-
-
-
-
-# CONNESSIONE A db_banca ----
+## CONNESSIONE A db_banca ----
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -47,11 +33,8 @@ con <- dbConnect(
 )
 
 
+## CARICAMENTO FILE DI TESTO ----
 
-
-# ==================================================
-# CARICAMENTO FILE DI TESTO
-# ==================================================
 v_nomi                <- readLines("./dati/nomi.txt")
 v_cognomi             <- readLines("./dati/cognomi.txt")
 v_ammontare_prestito  <- readLines("./dati/ammontare_prestito.txt")
@@ -71,12 +54,8 @@ v_telefono            <- readLines("./dati/telefono.txt")
 v_città               <- readLines("./dati/città.txt")
 
 
+## CONFIGURAZIONE DEI VOLUMI DEI DATI ----
 
-
-
-# ==================================================
-# CONFIGURAZIONE DEI VOLUMI DEI DATI
-# ==================================================
 num_clienti    <- 30000    # Numero totale di clienti
 num_filiali    <- 6        # Numero totale di filiali
 num_dipendenti <- 200      # Numero totale di dipendenti
@@ -86,13 +65,8 @@ num_risparmi   <- 4000     # Numero di conti risparmio
 num_prestiti   <- 14000    # Numero totale di prestiti
 
 
+## CREAZIONE SCHEMA (TABLES) ----
 
-
-
-
-# ==================================================
-# CREAZIONE SCHEMA (TABLES)
-# ==================================================
 query   <- paste(readLines("./codice/sql/tables.sql"), collapse = "\n")
 queries <- unlist(strsplit(query, ";"))
 queries <- trimws(queries)
@@ -107,13 +81,8 @@ for (q in queries) {
 }
 
 
+# CARICAMENTO TRIGGER E FUNZIONI ----
 
-
-
-
-# ==================================================
-# CARICAMENTO TRIGGER E FUNZIONI
-# ==================================================
 base_path <- "./Codice/sql"
 
 
@@ -152,9 +121,9 @@ pcf_files <- c(
 )
 
 
-## Esecuzione dei file con here
+# Esecuzione dei file ----
 for (file in c(df_files, fcpr_files, pcf_files)) {
-  query <- paste(readLines(here(base_path, file)), collapse = "\n")
+  query <- paste(readLines(file.path(base_path, file)), collapse = "\n")
   tryCatch({
     dbExecute(con, query)
     message("Eseguito: ", file)
@@ -164,16 +133,14 @@ for (file in c(df_files, fcpr_files, pcf_files)) {
 }
 
 
+# POPOLAMENTO FILIALI E DIPENDENTI ----
 
-# ==================================================
-# POPOLAMENTO FILIALI E DIPENDENTI
-# ==================================================
 # Disabilita i trigger per inserimento 
 dbExecute(con, "ALTER TABLE dipendente DISABLE TRIGGER ALL;")
 dbExecute(con, "ALTER TABLE filiale DISABLE TRIGGER ALL;")
 
 
-# ==== Inserimento filiali ====
+## ==== Inserimento filiali ====
 filiali <- data.frame(
   nome      = c("1", "2", "3", "4", "5", "6"),
   città     = v_città,
@@ -184,7 +151,7 @@ filiali <- data.frame(
 dbWriteTable(con, name = "filiale", value = filiali, append = TRUE, row.names = FALSE)
 
 
-# ==== Inserimento dipendenti ====
+## ==== Inserimento dipendenti ====
 dipendenti <- data.frame(
   nome            = sample(v_nomi, num_dipendenti, replace = TRUE),
   cognome         = sample(v_cognomi, num_dipendenti),
@@ -197,13 +164,8 @@ dipendenti <- data.frame(
 dbWriteTable(con, name = "dipendente", value = dipendenti, append = TRUE, row.names = FALSE)
 
 
-
-
-
-
-# ==================================================
 # RIABILITAZIONE TRIGGER E AGGIORNAMENTO FORZATO
-# ==================================================
+
 dbExecute(con, "ALTER TABLE dipendente ENABLE TRIGGER ALL;")
 dbExecute(con, "ALTER TABLE filiale ENABLE TRIGGER ALL;")
 # Forza i trigger con update fittizi
@@ -211,16 +173,9 @@ dbExecute(con, "UPDATE dipendente SET filiale = filiale;")
 dbExecute(con, "UPDATE filiale SET manager = manager;")
 
 
+## POPOLAMENTO CLIENTI ----
 
-
-
-
-# ==================================================
-# POPOLAMENTO CLIENTI
-# ==================================================
 gestori_possibili <- dbGetQuery(con, "SELECT id FROM dipendente")$id
-
-set.seed(42)  # per riproducibilità
 
 clienti <- data.frame(
   cf           = v_cf,
@@ -229,18 +184,13 @@ clienti <- data.frame(
   data_nascita = v_data_nascita,
   residenza    = v_residenza,
   telefono     = v_telefono[(num_dipendenti + 1):(num_dipendenti + num_clienti)],
-  gestore      = sample(c(gestori_possibili, rep(NA, floor(num_clienti * 0.15))), num_clienti, replace = TRUE)
+  gestore      = sample(c(gestori_possibili, rep(NA, floor(num_clienti * 0.67))), num_clienti, replace = TRUE)
 )
 dbWriteTable(con, name = "cliente", value = clienti, append = TRUE, row.names = FALSE)
 
 
+## POPOLAMENTO CONTO ----
 
-
-
-
-# =========================================
-# POPOLAMENTO CONTO
-# =========================================
 conti <- data.frame(
   iban    = v_iban,
   saldo   = v_saldo,
@@ -249,13 +199,8 @@ conti <- data.frame(
 dbWriteTable(con, name = "conto", value = conti, append=TRUE, row.names=FALSE)
 
 
+## POPOLAMENTO CONTO CORRENTE ----
 
-
-
-
-# =========================================
-# POPOLAMENTO CONTO CORRENTE
-# =========================================
 correnti <- data.frame(
   iban     = v_iban[1:num_correnti],
   scoperto = v_scoperto 
@@ -263,28 +208,19 @@ correnti <- data.frame(
 dbWriteTable(con, "contocorrente", correnti, append=TRUE, row.names=FALSE)
 
 
+## POPOLAMENTO CONTO DI RISPARMIO ----
 
-
-
-
-# =========================================
-# POPOLAMENTO CONTO DI RISPARMIO
-# =========================================
 risparmi <- data.frame(
   iban            = v_iban[(num_correnti+1):num_conti],
   tasso_interesse = v_interesse
 )
-# Inserimento nel database
+
+# Inserimento nel database ----
 dbWriteTable(con, "contorisparmio", risparmi, append=TRUE, row.names=FALSE)
 
 
+# POPOLAMENTO POSSIEDE ----
 
-
-
-
-# =========================================
-# POPOLAMENTO POSSIEDE
-# =========================================
 # assegnazione 1 a 1 per i primi 24.000 clienti
 possiede <- data.frame(
   cliente         = 1:num_conti,
@@ -304,12 +240,8 @@ dbWriteTable(con, "possiede", possiede_df, append = TRUE, row.names = FALSE)
 
 
 
+# POPOLAMENTO PRESTITI (trigger genereranno le rate) ----
 
-
-
-# ==================================================
-# POPOLAMENTO PRESTITI (trigger genereranno le rate)
-# ==================================================
 prestiti <- data.frame(
   conto           = sample(v_iban, num_prestiti),
   ammontare       = v_ammontare_prestito,
@@ -320,12 +252,8 @@ dbWriteTable(con, name = "prestito", value = prestiti, append = TRUE, row.names 
 
 
 
+# PAGAMENTO MASSIVO RATE E AGGIORNAMENTO ATTIVI ----
 
-
-
-# ==================================================
-# PAGAMENTO MASSIVO RATE E AGGIORNAMENTO ATTIVI
-# ==================================================
 
 # 1. Disabilita trigger per evitare rallentamenti
 dbExecute(con, "ALTER TABLE rata DISABLE TRIGGER trigger_paga_rata;")
@@ -363,15 +291,15 @@ dbExecute(con, "ALTER TABLE rata ENABLE TRIGGER trigger_paga_rata;")
 
 
 
-# ==================================================
-# TEST 
-# ==================================================
-# ==================================================
-# TEST DIPENDENTE E FILIALE
-# ==================================================
-# ==================================================
-# TEST 1: Aggiornamento filiale di un dipendente (id = 1)
-# ==================================================
+
+# TEST ----
+
+
+## TEST DIPENDENTE E FILIALE ----
+
+
+### TEST 1: Aggiornamento filiale di un dipendente (id = 1) ----
+
 cat("\n=== Test 1: Aggiornamento filiale di dipendente (id = 1) ===\n")
 # Questo update dovrebbe fallire perché il dipendente è manager in un'altra filiale.
 tryCatch({
@@ -382,10 +310,8 @@ tryCatch({
 print(dbGetQuery(con, "SELECT id, filiale, capo FROM dipendente WHERE id = 1;"))
 
 
+### TEST 2: Aggiornamento manager della filiale '3' ----
 
-# ==================================================
-# TEST 2: Aggiornamento manager della filiale '3'
-# ==================================================
 cat("\n=== Test 2: Aggiornamento manager della filiale '3' ===\n")
 # Questo update dovrebbe fallire perché il dipendente 2 non lavora in filiale 3.
 tryCatch({
@@ -396,10 +322,8 @@ tryCatch({
 print(dbGetQuery(con, "SELECT nome, manager FROM filiale WHERE nome = '3';"))
 
 
+### TEST 3: Inserimento di un nuovo dipendente ----
 
-# ==================================================
-# TEST 3: Inserimento di un nuovo dipendente
-# ==================================================
 cat("\n=== Test 3: Inserimento nuovo dipendente ===\n")
 # Verifica: all'inserimento, il trigger assegna correttamente il campo "capo" in base alla filiale.
 nuovo_dipendente <- data.frame(
@@ -413,9 +337,9 @@ dbWriteTable(con, "dipendente", nuovo_dipendente, append = TRUE, row.names = FAL
 print(dbGetQuery(con, "SELECT * FROM dipendente WHERE nome = 'Alessandro' AND cognome = 'Neri';"))
 
 
-# ==================================================
-# TEST 4: Aggiornamento manager filiale con dipendente valido
-# ==================================================
+
+### TEST 4: Aggiornamento manager filiale con dipendente valido ----
+
 cat("\n=== Test 4: Aggiornamento manager filiale con dipendente valido ===\n")
 # Inserimento di un nuovo dipendente in filiale "5" (inizialmente non manager),
 # recupera il suo id e assegnalo come manager della filiale "5"
@@ -429,15 +353,14 @@ nuovo_dip <- data.frame(
 )
 dbWriteTable(con, "dipendente", nuovo_dip, append = TRUE, row.names = FALSE)
 id_nuovo <- dbGetQuery(con, "SELECT id FROM dipendente WHERE nome = 'Giulia' 
-                       AND cognome = 'Rossi' LIMIT 1;")$id[1]
+                       AND cognome = 'Rossi';")$id[1]
 cat("Nuovo dipendente id: ", id_nuovo, "\n")
 dbExecute(con, paste0("UPDATE filiale SET manager = ", id_nuovo, " WHERE nome = '5';"))
 print(dbGetQuery(con, "SELECT nome, manager FROM filiale WHERE nome = '5';"))
 
 
-# ==================================================
-# TEST 5: Cancellazione di un dipendente non manager
-# ==================================================
+### TEST 5: Cancellazione di un dipendente non manager ----
+
 cat("\n=== Test 5: Cancellazione di un dipendente non manager (id = 7) ===\n")
 # Controlla il dipendente con id = 7 e procedi con la cancellazione, verificando che l'operazione avvenga correttamente.
 print(dbGetQuery(con, "SELECT id, nome, cognome, filiale, capo FROM dipendente WHERE id = 7;"))
@@ -448,16 +371,11 @@ print(dbGetQuery(con, "SELECT id FROM dipendente WHERE id = 7;"))
 
 
 
+## TEST PRESTITO, RATA ----
 
 
+### TEST A: Inserimento nuovo prestito e generazione rate ----
 
-
-# ==================================================
-# TEST PRESTITO, RATA
-# ==================================================
-# ==================================================
-# TEST A: Inserimento nuovo prestito e generazione rate
-# ==================================================
 cat("\n=== Test A: Inserimento nuovo prestito e generazione rate ===\n")
 
 # Inseriamo un nuovo prestito per un conto esistente (ad es. il decimo IBAN)
@@ -479,17 +397,16 @@ rate_generata <- dbGetQuery(con, paste0("SELECT * FROM rata WHERE prestito = ", 
 print(rate_generata)
 cat("Numero di rate generate: ", nrow(rate_generata), "\n\n")
 
-# ==================================================
-# TEST B: Pagamento di una rata
-# ==================================================
+
+### TEST B: Pagamento di una rata ----
+
 cat("\n=== Test B: Pagamento di una rata ===\n")
 
 filiale_attivi_old <- dbGetQuery(con, paste0("
   SELECT f.nome, f.attivi
   FROM filiale f
   JOIN conto c ON c.filiale = f.nome
-  WHERE c.iban = (SELECT conto FROM prestito WHERE codice = ", codice_prestito, ")
-  LIMIT 1;
+  WHERE c.iban = (SELECT conto FROM prestito WHERE codice = ", codice_prestito, ");
 "))
 
 # Seleziona una rata non pagata per il prestito appena inserito
@@ -511,8 +428,7 @@ filiale_attivi_new <- dbGetQuery(con, paste0("
   SELECT f.nome, f.attivi
   FROM filiale f
   JOIN conto c ON c.filiale = f.nome
-  WHERE c.iban = (SELECT conto FROM prestito WHERE codice = ", codice_prestito, ")
-  LIMIT 1;
+  WHERE c.iban = (SELECT conto FROM prestito WHERE codice = ", codice_prestito, ");
 "))
 print(filiale_attivi_new[2] - filiale_attivi_old[2])
 
@@ -520,26 +436,19 @@ cat("\n=== Fine Test Prestito - Rata ===\n")
 
 
 
+## TEST CONTO, POSSIEDE, FILIALE ----
 
 
 
+### TEST 1: Inserimento operazione (versamento e prelievo) ----
 
-
-# ==================================================
-# TEST CONTO, POSSIEDE, FILIALE
-# ==================================================
-
-# ==================================================
-# TEST 1: Inserimento operazione (versamento e prelievo)
-# ==================================================
 cat("\n=== Test X1: Inserimento operazione (versamento e prelievo) su possiede ===\n")
 
-riga_possiede <- dbGetQuery(con, "
+riga_possiede <- dbGetQuery(con, paste0( "
   SELECT * 
   FROM possiede
-  WHERE tipo_operazione = 'apertura'
-  LIMIT 1;
-")
+  WHERE conto = '", v_iban[1], "';
+"))
 print(riga_possiede)
 
 if(nrow(riga_possiede) == 0) {
@@ -578,17 +487,16 @@ if(nrow(riga_possiede) == 0) {
 }
 
 
-# ==================================================
-# TEST 2: Verifica_saldo – forzo saldo negativo
-# ==================================================
+
+### TEST 2: Verifica_saldo – forzo saldo negativo ----
+
 cat("\n=== Test X2: Verifica_saldo – forzo saldo negativo ===\n")
 
-riga_possiede2 <- dbGetQuery(con, "
+riga_possiede2 <- dbGetQuery(con, paste0("
   SELECT * 
   FROM possiede
-  WHERE tipo_operazione = 'apertura'
-  LIMIT 1;
-")
+  WHERE conto = '", v_iban[1], "';
+"))
 
 if(nrow(riga_possiede2) == 0) {
   cat("Nessun record in possiede da aggiornare.\n")
@@ -610,12 +518,12 @@ if(nrow(riga_possiede2) == 0) {
 }
 
 
-# ==================================================
-# TEST 3: Aggiorna attivi filiale
-# ==================================================
+
+### TEST 3: Aggiorna attivi filiale ----
+
 cat("\n=== Test X3: Aggiorna attivi filiale ===\n")
 
-conto_test <- dbGetQuery(con, "SELECT iban, filiale, saldo FROM conto LIMIT 1;")
+conto_test <- dbGetQuery(con, paste0("SELECT iban, filiale, saldo FROM conto WHERE iban = '", v_iban[2], "';"))
 print(conto_test)
 
 if(nrow(conto_test) > 0) {
@@ -659,9 +567,9 @@ if(nrow(conto_test) > 0) {
 }
 
 
-# ==================================================
-# TEST 4: IBAN duplicato tra contocorrente e contorisparmio
-# ==================================================
+
+### TEST 4: IBAN duplicato tra contocorrente e contorisparmio ----
+
 cat("\n=== Test X4: IBAN duplicato tra contocorrente e contorisparmio ===\n")
 
 tryCatch({
@@ -694,11 +602,7 @@ tryCatch({
 
 
 
-
-# ==================================================
-# TEST 5: INSERIMENTO DI UN CONTO
-# ==================================================
-
+### TEST 5: INSERIMENTO DI UN CONTO ----
 
 cat("\n=== Test Inserimento nuovo conto risparmio con transazione ===\n")
 
@@ -757,28 +661,9 @@ print(possiede_inserito)
 
 
 
+# ---- ESECUZIONE DELLE QUERY ----
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ==================================================
-# ESECUZIONE DELLE QUERY 
-# ==================================================
-
-# 1. Numero medio di rate dei prestiti associati a conti nelle filiali di Udine
+## 1. Numero medio di rate dei prestiti associati a conti nelle filiali di Udine ----
 media_rate_udine <- dbGetQuery(con, "
   SELECT AVG(mensilità) AS media_rate
   FROM prestito, conto, filiale
@@ -788,8 +673,8 @@ media_rate_udine <- dbGetQuery(con, "
 ")
 print(media_rate_udine)
 
-# 2. Clienti con solo conti risparmio in filiali con 30–32 dipendenti
-dbExecute(con, "
+## 2. Clienti con solo conti risparmio in filiali con 30–32 dipendenti ----
+ dbExecute(con, "
   CREATE OR REPLACE VIEW filiali_3032 AS
   SELECT filiale, COUNT(*) AS n_dip
   FROM dipendente
@@ -811,7 +696,7 @@ clienti_risparmio <- dbGetQuery(con, "
 ")
 print(head(clienti_risparmio, 10))  # Stampa solo le prime 10 righe
 
-# 3. Capi che gestiscono almeno 3 clienti ricchi (con oltre 100k euro nei conti)
+## 3. Capi che gestiscono almeno 3 clienti ricchi (con oltre 100k euro nei conti) ----
 dbExecute(con, "
   CREATE OR REPLACE VIEW clienti_ricchi AS
   SELECT cliente.id, SUM(conto.saldo) AS soldi, cliente.gestore
@@ -836,8 +721,7 @@ capi <- dbGetQuery(con, "
 ")
 print(capi)
 
-# 4. Dipendenti (non capi) che gestiscono due clienti:
-#    uno con solo conti correnti, uno con solo conti risparmio
+## 4. Dipendenti (non capi) che gestiscono due clienti: uno con solo conti correnti, uno con solo conti risparmio ----
 dbExecute(con, "
   CREATE OR REPLACE VIEW clienti_correnti AS
   SELECT possiede.cliente, cliente.gestore
@@ -891,8 +775,7 @@ dipendenti <- dbGetQuery(con, "
 ")
 print(dipendenti)
 
-# 5. Cliente con il prestito più alto nella filiale di Roma
-#    non gestito da un dipendente con meno di 3 anni di esperienza
+## 5. Cliente con il prestito più alto nella filiale di Roma non gestito da un dipendente con meno di 3 anni di esperienza ----
 data_limite <- Sys.Date() - (365 * 3)
 
 dbExecute(con, paste0("
@@ -925,4 +808,71 @@ cliente_top <- dbGetQuery(con, "
   );
 ")
 print(cliente_top)
+
+
+
+# ---- GRAFICI ----
+
+
+## 1. Distribuzione mensilità per i prestiti di conti con > 100.000 che sono gestiti da un gestore. ----
+
+
+dbExecute(con, paste0("
+  CREATE OR REPLACE VIEW clienti_gestiti AS
+  SELECT cliente.id, cliente.gestore
+  FROM cliente, dipendente
+  WHERE cliente.gestore = dipendente.id;
+"))
+
+table <- dbGetQuery(con, paste0("
+  SELECT mensilità, COUNT(*)
+  FROM clienti_gestiti, possiede, conto, prestito
+  WHERE clienti_gestiti.id = possiede.cliente
+  AND possiede.conto = conto.iban
+  AND conto.saldo > 50.000
+  AND possiede.conto = prestito.conto
+  GROUP BY mensilità
+"))
+
+hist(table$mensilità, breaks = seq(0, 250, by = 10),
+     main = "Distribuzione mensilità per prestiti afferenti conti con saldo > 50.000 €",
+     xlab = "Mensilità", ylab = "Frequenza", col = "skyblue", border = "white")
+
+
+## 2. soldi gestiti dai gestori in funzione dell'anzianità ----
+
+dbExecute(con, paste0("
+  CREATE OR REPLACE VIEW dipendenti_gestori AS
+  SELECT dipendente.data_assunzione, dipendente.id
+  FROM cliente, dipendente
+  WHERE cliente.gestore = dipendente.id;
+"))
+
+table <- dbGetQuery(con, paste0("
+  SELECT SUM(conto.saldo) as skey, dipendenti_gestori.data_assunzione 
+  FROM clienti_gestiti, possiede, conto, dipendenti_gestori
+  WHERE clienti_gestiti.id = possiede.cliente
+  AND possiede.conto = conto.iban
+  AND dipendenti_gestori.id = clienti_gestiti.gestore 
+  GROUP BY dipendenti_gestori.data_assunzione
+  ;
+"))
+
+print(table)
+plot(table[,2], table[,1], main="titolo")
+
+# 3. Per filiale, il numero di conti cointestatari con un prestito afferente ----
+
+
+# NOTA TRIGGER PER CONTROLLARE LOGICA DIPENDENTE, CLIENTE, con controllo
+# di conto cointestato, gestore ecc.
+
+
+
+
+
+
+
+
+
 
