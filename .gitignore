@@ -1,0 +1,14 @@
+# MacOS files
+.DS_Store
+
+# R files
+.Rhistory
+.RData
+
+# Typst build files
+output/
+target/
+
+# other common ignores
+*.log
+*.tmp
