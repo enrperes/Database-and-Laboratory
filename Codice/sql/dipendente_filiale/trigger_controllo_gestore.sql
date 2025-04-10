@@ -12,7 +12,7 @@ BEGIN
         WHERE p1.cliente = NEW.id AND EXISTS (
             SELECT *
             FROM possiede as p2, cliente
-            WHERE p1.conto = p2.conto AND p2.cliente = cliente.id AND cliente.gestore != NEW.gestore
+            WHERE p1.conto = p2.conto AND p2.cliente != cliente.id AND cliente.gestore != NEW.gestore
             AND cliente.gestore IS NOT NULL AND NEW.gestore IS NOT NULL
         )
     ) THEN
