@@ -374,9 +374,9 @@ print(dbGetQuery(con, "SELECT id FROM dipendente WHERE id = 7;"))
 ## TEST PRESTITO, RATA ----
 
 
-### TEST A: Inserimento nuovo prestito e generazione rate ----
+### TEST 1: Inserimento nuovo prestito e generazione rate ----
 
-cat("\n=== Test A: Inserimento nuovo prestito e generazione rate ===\n")
+cat("\n=== Test 1: Inserimento nuovo prestito e generazione rate ===\n")
 
 # Inseriamo un nuovo prestito per un conto esistente (ad es. il decimo IBAN)
 nuovo_prestito <- data.frame(
@@ -398,9 +398,9 @@ print(rate_generata)
 cat("Numero di rate generate: ", nrow(rate_generata), "\n\n")
 
 
-### TEST B: Pagamento di una rata ----
+### TEST 2: Pagamento di una rata ----
 
-cat("\n=== Test B: Pagamento di una rata ===\n")
+cat("\n=== Test 2: Pagamento di una rata ===\n")
 
 filiale_attivi_old <- dbGetQuery(con, paste0("
   SELECT f.nome, f.attivi
