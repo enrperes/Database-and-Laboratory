@@ -160,7 +160,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2.5em)
 
-- L'entità #erb[Cliente] rappresenta una persona fisica che ha aperto nella banca almeno un conto. Essa è caratterizzata da un _codice univoco_ assegnato dalla banca ad ogni cliente e dal _codice fiscale_, entrambi questi attributi fungono da chiavi primarie in quanto sono univoche per ogni cliente. Gli altri attributi servono per tenere traccia dell’anagrafica del cliente, quali _Nome_, _Cognome_, _numero di Telefono_, _Data di nascita_ e _residenza_.
+- L'entità #erb[Cliente] rappresenta una persona fisica che ha aperto nella banca almeno un conto. Essa è caratterizzata da un _codice univoco_ assegnato dalla banca ad ogni cliente e dal _codice fiscale_, entrambi questi attributi fungono da chiavi primarie in quanto sono univoche per ogni cliente. Gli altri attributi servono per tenere traccia dell'anagrafica del cliente, quali _Nome_, _Cognome_, _numero di Telefono_, _Data di nascita_ e _residenza_.
 #v(-1em)
 #figure(
   image("media/cliente.svg", width: 30%),
@@ -182,24 +182,24 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2.5em)
 
-- L’entità #erb[Conto] serve per identificare un servizio della banca messo a disposizione per il cliente. Ogni entità viene identificata univocamente da un attributo _IBAN_ e un attributo _Saldo_ tiene traccia dell’ammontare in denaro presente su tale conto. La banca inoltre mette a disposizione due tipi di conto, quindi l’entità Conto è stata specializzata in due sottoentità: #er[Conto Corrente] e #er[Conto di Risparmio]. La specializzazione è totale e disgiunta: l’insieme dei conti correnti e dei conti di risparmio è disgiunto e la loro unione è esattamente l’insieme di tutti i conti all’interno della filiale.
+- L'entità #erb[Conto] serve per identificare un servizio della banca messo a disposizione per il cliente. Ogni entità viene identificata univocamente da un attributo _IBAN_ e un attributo _Saldo_ tiene traccia dell'ammontare in denaro presente su tale conto. La banca inoltre mette a disposizione due tipi di conto, quindi l'entità Conto è stata specializzata in due sottoentità: #er[Conto Corrente] e #er[Conto di Risparmio]. La specializzazione è totale e disgiunta: l'insieme dei conti correnti e dei conti di risparmio è disgiunto e la loro unione è esattamente l'insieme di tutti i conti all'interno della filiale.
 #figure(
   image("media/conto.svg", width: 25%),
   caption: [Entità CONTO]
 )
-- L’entità #erb[Conto Corrente] è una specializzazione dell’entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell’entità #er[Conto]. L' attributo che caratterizza #er[Conto Corrente] è _Scoperto_ che indica il valore, concordato tra cliente e banca, di quanto la banca può concedere di debito nei confronti del cliente.
+- L'entità #erb[Conto Corrente] è una specializzazione dell'entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell'entità #er[Conto]. L' attributo che caratterizza #er[Conto Corrente] è _Scoperto_ che indica il valore, concordato tra cliente e banca, di quanto la banca può concedere di debito nei confronti del cliente.
 
 
-- L’entità #erb[Conto di Risparmio] è una specializzazione dell’entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell’entità di Conto. L'attributo che lo caratterizza è Tasso di interesse che indica il valore, concordato tra cliente e banca, di quanto rende mensilmente il deposito su quel conto.
+- L'entità #erb[Conto di Risparmio] è una specializzazione dell'entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell'entità di Conto. L'attributo che lo caratterizza è Tasso di interesse che indica il valore, concordato tra cliente e banca, di quanto rende mensilmente il deposito su quel conto.
 #v(2.5em)
 
-- L'entità #erb[Prestito] costituisce il servizio creditizio della banca. Essa è caratterizzata innanzitutto da un codice univoco che funge da chiave primaria, garantendo l’identificazione sicura di ogni singolo prestito all’interno del sistema. L’attributo _ammontare_ fornisce invece l'informazione relativa alla somma di denaro effettivamente erogata, mentre l’attributo  _inizio_ registra la data in cui il prestito ha avuto origine. Un aspetto interessante di questa entità è la presenza di un attributo derivato, _somma rate_ calcolato sulla base dell’insieme delle rate associate a quel prestito. Questo calcolo deriva appunto dalla relazione con l’entità #er[Rata], che verrà descritta successivamente. 
+- L'entità #erb[Prestito] costituisce il servizio creditizio della banca. Essa è caratterizzata innanzitutto da un codice univoco che funge da chiave primaria, garantendo l'identificazione sicura di ogni singolo prestito all'interno del sistema. L'attributo _ammontare_ fornisce invece l'informazione relativa alla somma di denaro effettivamente erogata, mentre l'attributo  _inizio_ registra la data in cui il prestito ha avuto origine. Un aspetto interessante di questa entità è la presenza di un attributo derivato, _somma rate_ calcolato sulla base dell'insieme delle rate associate a quel prestito. Questo calcolo deriva appunto dalla relazione con l'entità #er[Rata], che verrà descritta successivamente. 
 #figure(
   image("media/prestito.svg", width: 30%),
   caption: [Entità PRESTITO]
 )
 
-- L’entità #erb[rata] è una entità debole ed ha il compito di rappresentare in modo dettagliato ogni singolo pagamento periodico associato a un determinato prestito. L’identificazione univoca di ciascuna rata è garantita da una chiave primaria composta, costituita dal suo numero (indicante la “posizione” della rata nella sequenza dei pagamenti) e dalla chiave esterna che fa riferimento all’entità Prestito.  Tra gli attributi figurano inoltre la _data scadenza_, ossia il giorno entro cui la rata deve essere corrisposta, e la _data pagamento_, che riporta il momento in cui il versamento è stato effettivamente effettuato. Infine, l’attributo _ammontare_ specifica l’importo dovuto per quella singola rata.
+- L'entità #erb[rata] è una entità debole ed ha il compito di rappresentare in modo dettagliato ogni singolo pagamento periodico associato a un determinato prestito. L'identificazione univoca di ciascuna rata è garantita da una chiave primaria composta, costituita dal suo numero (indicante la “posizione” della rata nella sequenza dei pagamenti) e dalla chiave esterna che fa riferimento all'entità Prestito.  Tra gli attributi figurano inoltre la _data scadenza_, ossia il giorno entro cui la rata deve essere corrisposta, e la _data pagamento_, che riporta il momento in cui il versamento è stato effettivamente effettuato. Infine, l'attributo _ammontare_ specifica l'importo dovuto per quella singola rata.
 #figure(
   image("media/rata.svg", width: 25%),
   caption: [Entità RATA]
@@ -229,7 +229,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 #v(2.5em)
 
 
-- La relazione #erb[é composto] collega l’entità #er[prestito] con l’entità #er[Rata], dando forma al legame logico tra un finanziamento e i singoli pagamenti previsti per il suo rimborso. Dal lato di #er[Rata], la cardinalità è di (1,1), poiché ogni rata è necessariamente associata ad uno e un solo prestito specifico data la natura di #er[Rata] come entità debole. Dal lato di Prestito, invece, la cardinalità è di (1,N), poiché un singolo prestito può essere suddiviso in una o più rate. In sintesi, questa relazione rispecchia un legame di composizione, dove ogni prestito è scomponibile in un insieme di rate, ma ogni rata non può prescindere dal proprio prestito di appartenenza.
+- La relazione #erb[é composto] collega l'entità #er[prestito] con l'entità #er[Rata], dando forma al legame logico tra un finanziamento e i singoli pagamenti previsti per il suo rimborso. Dal lato di #er[Rata], la cardinalità è di (1,1), poiché ogni rata è necessariamente associata ad uno e un solo prestito specifico data la natura di #er[Rata] come entità debole. Dal lato di Prestito, invece, la cardinalità è di (1,N), poiché un singolo prestito può essere suddiviso in una o più rate. In sintesi, questa relazione rispecchia un legame di composizione, dove ogni prestito è scomponibile in un insieme di rate, ma ogni rata non può prescindere dal proprio prestito di appartenenza.
 #v(-1.5em)
 #figure(
   image("media/composto.svg", width: 80%),
@@ -237,28 +237,28 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2.5em)
 
-- La relazione #erb[è associato] collega l’entità Conto con l’entità Prestito, definendo il legame tra un finanziamento e il conto bancario a cui è associato. Dal lato di #er[Prestito], la cardinalità è (1,1), poiché ogni prestito deve fare riferimento obbligatoriamente a un solo conto bancario. Dal lato di Conto, invece, la cardinalità è (0,N): questo riflette il fatto che un conto può non avere alcun prestito associato, ma può anche essere collegato a uno o più prestiti contemporaneamente.
+- La relazione #erb[è associato] collega l'entità Conto con l'entità Prestito, definendo il legame tra un finanziamento e il conto bancario a cui è associato. Dal lato di #er[Prestito], la cardinalità è (1,1), poiché ogni prestito deve fare riferimento obbligatoriamente a un solo conto bancario. Dal lato di Conto, invece, la cardinalità è (0,N): questo riflette il fatto che un conto può non avere alcun prestito associato, ma può anche essere collegato a uno o più prestiti contemporaneamente.
 #figure(
   image("media/isassociato.svg", width: 80%),
   caption: [Relazione È ASSOCIATO]
 )
 #v(2.5em)
 
-- La relazione #erb[Possiede] collega le entità #er[Cliente] e #er[Conto]. Un cliente deve possedere almeno un conto e più clienti possono possedere lo stesso conto (caso di conto cointestato), da cui deriva la cardinalità (1, N) della relazione sul lato di #er[Cliente]. D’altro canto un #er[conto] deve essere posseduto da almeno un cliente e più conti possono fare riferimento allo stesso cliente (caso in cui uno stesso cliente ha aperto più conti con la banca), da cui deriva la cardinalità (1, N) della relazione sul lato di #er[conto]. Gli attributi _Operazione_ e _Data_ sulla relazione indicano l’ultima operazione svolta e la data in cui è stata effettuata. Nel caso di operazione congiunta di più clienti possessori dello stesso conto gli attributi _Operazione/Data_ vengono aggiornati per entrambi.
+- La relazione #erb[Possiede] collega le entità #er[Cliente] e #er[Conto]. Un cliente deve possedere almeno un conto e più clienti possono possedere lo stesso conto (caso di conto cointestato), da cui deriva la cardinalità (1, N) della relazione sul lato di #er[Cliente]. D'altro canto un #er[conto] deve essere posseduto da almeno un cliente e più conti possono fare riferimento allo stesso cliente (caso in cui uno stesso cliente ha aperto più conti con la banca), da cui deriva la cardinalità (1, N) della relazione sul lato di #er[conto]. Gli attributi _Operazione_ e _Data_ sulla relazione indicano l'ultima operazione svolta e la data in cui è stata effettuata. Nel caso di operazione congiunta di più clienti possessori dello stesso conto gli attributi _Operazione/Data_ vengono aggiornati per entrambi.
 #figure(
   image("media/possiede.svg", width: 80%),
   caption: [Relazione POSSIEDE]
 )
 #v(2.5em)
 
-- La relazione #erb[Gestisce] lega #er[Dipendente] e #er[Cliente]. Un sottoinsieme dei dipendente possono seguire le pratiche di un certo numero di clienti della banca, da cui ne deriva la cardinalità (0, N) della relazione sul lato di #er[dipendente]. D’altro canto un #er[Cliente] può avere al più un solo gestore che monitora e consiglia le sue attività nella banca, da cui ne deriva la cardinalità (0, 1) della relazione sul lato di cliente.
+- La relazione #erb[Gestisce] lega #er[Dipendente] e #er[Cliente]. Un sottoinsieme dei dipendente possono seguire le pratiche di un certo numero di clienti della banca, da cui ne deriva la cardinalità (0, N) della relazione sul lato di #er[dipendente]. D'altro canto un #er[Cliente] può avere al più un solo gestore che monitora e consiglia le sue attività nella banca, da cui ne deriva la cardinalità (0, 1) della relazione sul lato di cliente.
 #figure(
   image("media/gestisce.svg", width: 80%),
   caption: [Relazione GESTISCE]
 )
 #v(2.5em)
 
-- La relazione #erb[Contiene] collega #er[Filiale] a #er[Conto] in quanto ogni #er[Conto] deve fare riferimento ad una e una sola #er[filiale]. Una filiale può contenere uno o più conti (anche zero se la filiale è appena stata aperta), da cui ne deriva la cardinalità (0, N) della relazione sul lato di FIliale. D’altro canto un #er[conto] deve essere associato ad una e una sola #er[filiale], da cui ne deriva la cardinalità (1, 1) della relazione sul lato di Conto.
+- La relazione #erb[Contiene] collega #er[Filiale] a #er[Conto] in quanto ogni #er[Conto] deve fare riferimento ad una e una sola #er[filiale]. Una filiale può contenere uno o più conti (anche zero se la filiale è appena stata aperta), da cui ne deriva la cardinalità (0, N) della relazione sul lato di FIliale. D'altro canto un #er[conto] deve essere associato ad una e una sola #er[filiale], da cui ne deriva la cardinalità (1, 1) della relazione sul lato di Conto.
 #figure(
   image("media/contiene.svg", width: 80%),
   caption: [Relazione CONTIENE]
@@ -489,3 +489,67 @@ Per questa ridondanza abbiamo concluso quindi che l'attributo somma rate potesse
 )
 */
 
+= Logica di popolamento
+
+Per creare il database richiesto, popolarlo e testare le query assegnate abbiamo dovuto seguire una particolare logica affinché tutto venisse inserito correttamente.
+Infatti si potevano presentare delle problematiche relative a chiavi esterne e/o a dei trigger, ma vediamo nel dettaglio l'ordine delle operazioni che sono state eseguite.
+
+Prima cosa creazione del nuovo database e assegnamento dei volumi dei dati con valori proporzionati alla tabella dei volumi precedentemente proposta.
+Vengono create tutte le tabelle in un ordine preciso, in particolare i vincoli di chiave esterna sono stati aggiunti quando tutte le tabelle coinvolte erano esistenti, altrimenti si genera un errore.
+
+Vengono poi caricati nel sistema tutti i trigger utilizzati e temporaneamente disabilitati per possibili inconsistenze momentanee nell'inserimento dei dati. La modalità di generazione casuale dei dati è stata pensata che, al termine degli inserimenti iniziali, tutto sia coerente e non ci siano errori.
+
+Le prime tabelle popolate sono “Filiale” e “Dipendente”. Al termine del popolamento eseguiamo forzatamente due trigger in maniera tale da assegnare automaticamente i manager (che non erano stai inseriti) e verificare eventuali errori (di base i dati sono stati generati consistentemente).
+
+Estratti dei possibili gestori vengono inseriti i clienti, successivamente la tabella “Conto” con le relative “Conto corrente” e “Conto di risparmio”. Una volta inseriti questi dati è possibile procedere al popolamento della tabella “Possiede” che gestisce tutte le connessioni tra i clienti e i loro conti.
+
+Per la macrocategoria dei prestiti, una volta generati quest'ultimi e le relative rate andiamo, tramite apposito script, a pagare le rate che hanno una data di scadenza antecedente a quella odierna. Inseriti tutti i prestiti aggiorniamo l'attributo “attivi” della tabella “Filiale” in maniera automatica sui dati inseriti e al termine riattiviamo tutti i trigger.
+
+Gli script utilizzati non potevano essere sempre sostituiti dai trigger, infatti non era possibile tenerli tutti attivi e inserire tutti i valori in maniera ordinata e raggruppati per tabelle, ma avremmo dovuto fare attenzione volta per volta. Degli esempi di inserimenti di record sono presentati più avanti.
+
+
+Finito di popolare tutto il database ci assicuriamo tramite dei test che tutto sia perfettamente funzionante, che rispetti i requisiti che ci siamo imposti e che ci dia i risultati attesi. Questa verifica viene vista tramite delle print che restituiscono il risultato dell'operazione e si verifica se è quello atteso o meno.
+
+Il primo gruppo di test riguarda la relazione tra i dipendenti e le loro filiali:
+1.	Tentiamo di modificare la filiale di riferimento di un manager senza togliergli il ruolo nell'altra filiale. Il trigger ci protegge e ci vieta l'inserimento (un dipendente non può lavorare nella filiale A ed essere manager della filiale B).
+2.	Simile al precedente, proviamo ad assegnare il ruolo di manager di una filiale a un dipendente che lavora presso una filiale diversa. Il trigger blocca l'azione e ci restituisce l'errore (la modifica non viene effettuata).
+3.	Inseriamo un nuovo dipendente: non è necessario specificare il campo manager in quanto il trigger apposito si occupa di ricercare l'id del manager nella filiale dove lavora il nuovo dipendente e assegnare il campo corrispondente.
+4.	Come il caso (3) ma con l'aggiunta che questo dipendente diventi manager della filiale in cui lavora. Il trigger che viene innescato sulla modifica del campo manager (che passa da -1 [non manager] a un id di filiale valido) provvede ad aggiornare il campo manager di tutti i dipendenti che lavorano nella filiale dove è appena stato modificato il manager.
+5.	Controlliamo una semplice operazione di rimozione di un dipendente che non è manager.
+
+Il secondo gruppo di test è sulla relazione tra i prestiti e le rate:
+1.	Inseriamo un nuovo prestito. Le rate relative verranno generate in maniera automatica dal trigger che si occupa di andare a recuperare il valore di “mensilità” e generare altrettanti record nella tabella “Rate” riempiendo in maniera adeguata tutti i campi.
+2.	Modifichiamo la data di pagamento di una data, portandola da NULL a una data valida. Il controllo del trigger sarà di verificare che non ci siano rate precedenti ancora da pagare.
+
+Il terzo gruppo di test è sulla relazione tra i conti e le filiali (collegati dalla tabella “Possiede”):
+1.	Simuliamo un versamento e un prelievo, quindi andiamo a modificare il valore del saldo dei conti. A questo punto dei trigger controllano (solo nel secondo caso) che il prelievo possa essere effettuato, quindi che il saldo un numero valido (non minore dello scoperto), dopodiché in entrambi i casi vengono automaticamente aggiornati gli attivi delle filiali. Lo scopo del test è comunque di verificare che il saldo venga correttamente modificato
+2.	Controlliamo che il trigger dei saldi non validi funzioni, forzando la modifica di un saldo a un valore non valido. Ci attendiamo un errore.
+3.	Simile al primo test con il focus sull'aggiornamento degli attivi della filiale di riferimento.
+4.	Proviamo a inserire un iban valido nella tabella “Conto” (necessario per i vincoli di chiave esterna) e poi nella tabella “Conto Corrente”. Questo non dovrebbe generare problemi. Proviamo a inserire l'iban anche in “Conto di Risparmio”, il trigger dovrebbe vietare tale operazione e, dato che siamo all'interno di una transazione, tutti e tre gli inserimenti vengono rimossi (rollback).
+
+Dopo aver verificato che anche i test restituivano i risultati attesi, procediamo con l'esecuzione delle query:
+
+QUERY 1:
+Restituire il numero medio di rate dei prestiti associati a conti nelle filiali di Udine.
+Richiesta immediata, necessario l'utilizzo della funzione AVG()
+
+QUERY 2:	
+Restituire i clienti con solo conti di risparmio in filiali che hanno tra i 30 e i 32 dipendenti.
+Per comodità è stata creata una vista dove veniva fatta una restrizione della tabella delle filiali, tenendo solamente quelle che rispettavano i vincolo sui clienti.
+La query poi si appoggia su questa vista per cercare i clienti che hanno almeno un conto di risparmio in queste filiali e che non hanno nessun conto corrente associato.
+
+QUERY 3:
+Restituire i capi che gestiscono almeno 3 clienti che possiedono almeno 100 000€.
+La vista creata è una restrizione sui clienti che rispettano il vincolo. È stata effettuata con l'utilizzo della funzione SUM() poiché il saldo era relativo a tutti i conti posseduti.
+Per validare un capo è stato fatto il prodotto cartesiano triplo della tabella generata dalla vista precedente e dopo essere stati selezionati solamente le righe con gestore uguale, è stato controllato che i clienti fossero tutti e tre diversi.
+
+QUERY 4:
+Restituire i dipendenti non capi che gestiscono esattamente 2 clienti, uno con solo conti correnti e uno son solo conti di risparmio.
+La prima (seconda) vista seleziona solamente i clienti che hanno almeno un conto corrente (di risparmio) e che non hanno nessun conto di risparmio (corrente).
+La query innanzitutto seleziona i dipendenti non capo (con la verifica id <> capo) e poi controlla che esista un unico cliente nella prima vista e un unico cliente nella seconda vista.
+
+QUERY 5:
+Restituire il cliente con il prestito più alto nella filiale di Roma che non ha come gestore un dipendente con meno di 3 anni di esperienza.
+La prima vista ci restringe i possibili clienti a quelli che hanno un gestore assunto da almeno 3 anni.
+La seconda vista, a partire dalla prima, fa un ulteriore filtro prendendo i clienti solo della filiale di Roma.
+La query si occupa di verificare, per ogni cliente, che tra i clienti della seconda vista non ce ne sia qualcuno con saldo maggiore del proprio, in tal caso stampa il cliente.
