@@ -511,45 +511,55 @@ Gli script utilizzati non potevano essere sempre sostituiti dai trigger, infatti
 Finito di popolare tutto il database ci assicuriamo tramite dei test che tutto sia perfettamente funzionante, che rispetti i requisiti che ci siamo imposti e che ci dia i risultati attesi. Questa verifica viene vista tramite delle print che restituiscono il risultato dell'operazione e si verifica se è quello atteso o meno.
 
 Il primo gruppo di test riguarda la relazione tra i dipendenti e le loro filiali:
-1.	Tentiamo di modificare la filiale di riferimento di un manager senza togliergli il ruolo nell'altra filiale. Il trigger ci protegge e ci vieta l'inserimento (un dipendente non può lavorare nella filiale A ed essere manager della filiale B).
-2.	Simile al precedente, proviamo ad assegnare il ruolo di manager di una filiale a un dipendente che lavora presso una filiale diversa. Il trigger blocca l'azione e ci restituisce l'errore (la modifica non viene effettuata).
-3.	Inseriamo un nuovo dipendente: non è necessario specificare il campo manager in quanto il trigger apposito si occupa di ricercare l'id del manager nella filiale dove lavora il nuovo dipendente e assegnare il campo corrispondente.
-4.	Come il caso (3) ma con l'aggiunta che questo dipendente diventi manager della filiale in cui lavora. Il trigger che viene innescato sulla modifica del campo manager (che passa da -1 [non manager] a un id di filiale valido) provvede ad aggiornare il campo manager di tutti i dipendenti che lavorano nella filiale dove è appena stato modificato il manager.
+
++	Tentiamo di modificare la filiale di riferimento di un manager senza togliergli il ruolo nell'altra filiale. Il trigger ci protegge e ci vieta l'inserimento (un dipendente non può lavorare nella filiale A ed essere manager della filiale B).
+
++	Simile al precedente, proviamo ad assegnare il ruolo di manager di una filiale a un dipendente che lavora presso una filiale diversa. Il trigger blocca l'azione e ci restituisce l'errore (la modifica non viene effettuata).
+
++	Inseriamo un nuovo dipendente: non è necessario specificare il campo manager in quanto il trigger apposito si occupa di ricercare l'id del manager nella filiale dove lavora il nuovo dipendente e assegnare il campo corrispondente.
+
++ Come il caso (3) ma con l'aggiunta che questo dipendente diventi manager della filiale in cui lavora. Il trigger che viene innescato sulla modifica del campo manager (che passa da -1 [non manager] a un id di filiale valido) provvede ad aggiornare il campo manager di tutti i dipendenti che lavorano nella filiale dove è appena stato modificato il manager.
 5.	Controlliamo una semplice operazione di rimozione di un dipendente che non è manager.
 
 Il secondo gruppo di test è sulla relazione tra i prestiti e le rate:
-1.	Inseriamo un nuovo prestito. Le rate relative verranno generate in maniera automatica dal trigger che si occupa di andare a recuperare il valore di “mensilità” e generare altrettanti record nella tabella “Rate” riempiendo in maniera adeguata tutti i campi.
-2.	Modifichiamo la data di pagamento di una data, portandola da NULL a una data valida. Il controllo del trigger sarà di verificare che non ci siano rate precedenti ancora da pagare.
+
++	Inseriamo un nuovo prestito. Le rate relative verranno generate in maniera automatica dal trigger che si occupa di andare a recuperare il valore di “mensilità” e generare altrettanti record nella tabella “Rate” riempiendo in maniera adeguata tutti i campi.
+
++	Modifichiamo la data di pagamento di una data, portandola da NULL a una data valida. Il controllo del trigger sarà di verificare che non ci siano rate precedenti ancora da pagare.
 
 Il terzo gruppo di test è sulla relazione tra i conti e le filiali (collegati dalla tabella “Possiede”):
-1.	Simuliamo un versamento e un prelievo, quindi andiamo a modificare il valore del saldo dei conti. A questo punto dei trigger controllano (solo nel secondo caso) che il prelievo possa essere effettuato, quindi che il saldo un numero valido (non minore dello scoperto), dopodiché in entrambi i casi vengono automaticamente aggiornati gli attivi delle filiali. Lo scopo del test è comunque di verificare che il saldo venga correttamente modificato
-2.	Controlliamo che il trigger dei saldi non validi funzioni, forzando la modifica di un saldo a un valore non valido. Ci attendiamo un errore.
-3.	Simile al primo test con il focus sull'aggiornamento degli attivi della filiale di riferimento.
-4.	Proviamo a inserire un iban valido nella tabella “Conto” (necessario per i vincoli di chiave esterna) e poi nella tabella “Conto Corrente”. Questo non dovrebbe generare problemi. Proviamo a inserire l'iban anche in “Conto di Risparmio”, il trigger dovrebbe vietare tale operazione e, dato che siamo all'interno di una transazione, tutti e tre gli inserimenti vengono rimossi (rollback).
+
++	Simuliamo un versamento e un prelievo, quindi andiamo a modificare il valore del saldo dei conti. A questo punto dei trigger controllano (solo nel secondo caso) che il prelievo possa essere effettuato, quindi che il saldo un numero valido (non minore dello scoperto), dopodiché in entrambi i casi vengono automaticamente aggiornati gli attivi delle filiali. Lo scopo del test è comunque di verificare che il saldo venga correttamente modificato
+
++	Controlliamo che il trigger dei saldi non validi funzioni, forzando la modifica di un saldo a un valore non valido. Ci attendiamo un errore.
+
++	Simile al primo test con il focus sull'aggiornamento degli attivi della filiale di riferimento.
+
++	Proviamo a inserire un iban valido nella tabella “Conto” (necessario per i vincoli di chiave esterna) e poi nella tabella “Conto Corrente”. Questo non dovrebbe generare problemi. Proviamo a inserire l'iban anche in “Conto di Risparmio”, il trigger dovrebbe vietare tale operazione e, dato che siamo all'interno di una transazione, tutti e tre gli inserimenti vengono rimossi (rollback).
 
 Dopo aver verificato che anche i test restituivano i risultati attesi, procediamo con l'esecuzione delle query:
 
-QUERY 1:
-Restituire il numero medio di rate dei prestiti associati a conti nelle filiali di Udine.
+== QUERY 1:
+#quote[Restituire il numero medio di rate dei prestiti associati a conti nelle filiali di Udine.]
 Richiesta immediata, necessario l'utilizzo della funzione AVG()
 
-QUERY 2:	
-Restituire i clienti con solo conti di risparmio in filiali che hanno tra i 30 e i 32 dipendenti.
+== QUERY 2:	
+#quote[Restituire i clienti con solo conti di risparmio in filiali che hanno tra i 30 e i 32 dipendenti.]
 Per comodità è stata creata una vista dove veniva fatta una restrizione della tabella delle filiali, tenendo solamente quelle che rispettavano i vincolo sui clienti.
 La query poi si appoggia su questa vista per cercare i clienti che hanno almeno un conto di risparmio in queste filiali e che non hanno nessun conto corrente associato.
 
-QUERY 3:
-Restituire i capi che gestiscono almeno 3 clienti che possiedono almeno 100 000€.
+== QUERY 3:
+#quote[Restituire i capi che gestiscono almeno 3 clienti che possiedono almeno 100 000€.]
 La vista creata è una restrizione sui clienti che rispettano il vincolo. È stata effettuata con l'utilizzo della funzione SUM() poiché il saldo era relativo a tutti i conti posseduti.
 Per validare un capo è stato fatto il prodotto cartesiano triplo della tabella generata dalla vista precedente e dopo essere stati selezionati solamente le righe con gestore uguale, è stato controllato che i clienti fossero tutti e tre diversi.
 
-QUERY 4:
-Restituire i dipendenti non capi che gestiscono esattamente 2 clienti, uno con solo conti correnti e uno son solo conti di risparmio.
+== QUERY 4:
+#quote[Restituire i dipendenti non capi che gestiscono esattamente 2 clienti, uno con solo conti correnti e uno son solo conti di risparmio.]
 La prima (seconda) vista seleziona solamente i clienti che hanno almeno un conto corrente (di risparmio) e che non hanno nessun conto di risparmio (corrente).
 La query innanzitutto seleziona i dipendenti non capo (con la verifica id <> capo) e poi controlla che esista un unico cliente nella prima vista e un unico cliente nella seconda vista.
 
-QUERY 5:
-Restituire il cliente con il prestito più alto nella filiale di Roma che non ha come gestore un dipendente con meno di 3 anni di esperienza.
-La prima vista ci restringe i possibili clienti a quelli che hanno un gestore assunto da almeno 3 anni.
+== QUERY 5:
+#quote[Restituire il cliente con il prestito più alto nella filiale di Roma che non ha come gestore un dipendente con meno di 3 anni di esperienza.
+La prima vista ci restringe i possibili clienti a quelli che hanno un gestore assunto da almeno 3 anni.]
 La seconda vista, a partire dalla prima, fa un ulteriore filtro prendendo i clienti solo della filiale di Roma.
 La query si occupa di verificare, per ogni cliente, che tra i clienti della seconda vista non ce ne sia qualcuno con saldo maggiore del proprio, in tal caso stampa il cliente.
