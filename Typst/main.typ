@@ -1,5 +1,6 @@
 /* ------------ Libraries ------------- */
 // #import "@preview/wrap-it:0.1.0": wrap-content
+#import "@preview/zebraw:0.5.2": *
 
 /* ------------ Document Setup ------------- */
 #set heading(numbering: "1.")
@@ -14,6 +15,9 @@
  #context it.counter.display(it.numbering)]:
  #emph[#it.body]
 ]
+
+// Code Blocks
+ #show: zebraw-init.with(numbering: false)
 
 /* ------------ Variables ------------- */
 #let title = text(25pt)[Relazione progetto di Laboratorio]
@@ -563,3 +567,30 @@ La query innanzitutto seleziona i dipendenti non capo (con la verifica id <> cap
 La prima vista ci restringe i possibili clienti a quelli che hanno un gestore assunto da almeno 3 anni.]
 La seconda vista, a partire dalla prima, fa un ulteriore filtro prendendo i clienti solo della filiale di Roma.
 La query si occupa di verificare, per ogni cliente, che tra i clienti della seconda vista non ce ne sia qualcuno con saldo maggiore del proprio, in tal caso stampa il cliente.
+
+#line(length: 100%)
+#pagebreak()
+ (test)
+#show: zebraw
+
+```sql
+CREATE SCHEMA banca
+    AUTHORIZATION enrperes;
+
+COMMENT ON SCHEMA banca
+    IS 'Il database per la gestione delle filiali di una banca, progetto di Basi di Dati.';
+
+SET search_path TO banca;
+
+-- Creazione delle tabelle del database
+-- Tabella dipendente senza FOREIGN KEY
+CREATE TABLE dipendente (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(30),
+    cognome VARCHAR(30),
+    data_assunzione DATE NOT NULL,
+    telefono VARCHAR(15) CHECK (telefono ~ '^\+?[0-9]+$') UNIQUE,
+    filiale VARCHAR(30) NOT NULL,
+    capo INT
+);
+```
