@@ -316,7 +316,7 @@ dei dati, che sono stati ipotizzati secondo i volumi di una banca reale di rifer
   ),
   caption: [Tabella dei volumi]
 )
-== Analisi della ridondanze
+== Analisi delle ridondanze
 
 Il primo blocco di operazioni coinvolge l'attributo derivato attivi che produce una ridondanza ed è derivalbile da altre entità, nel nostro caso da Conto, Prestito e Rata, seguendo il caso di attributo derivabile da altre entità secondo funzioni aggregative. Dobbiamo quindi ipotizzare delle operazioni e le loro relative frequenze che vanno a coinvolgere questo attributo ed osservare se è conveniente eliminarlo o mantenerlo. Consideriamo una serie di operazioni e la loro frequenza:
 
@@ -493,28 +493,28 @@ Per questa ridondanza abbiamo concluso quindi che l'attributo somma rate potesse
 )
 */
 
-= Logica di popolamento
+= Popolamento del database
 
 Per creare il database richiesto, popolarlo e testare le query assegnate abbiamo dovuto seguire una particolare logica affinché tutto venisse inserito correttamente.
 Infatti si potevano presentare delle problematiche relative a chiavi esterne e/o a dei trigger, ma vediamo nel dettaglio l'ordine delle operazioni che sono state eseguite.
 
-Prima cosa creazione del nuovo database e assegnamento dei volumi dei dati con valori proporzionati alla tabella dei volumi precedentemente proposta.
-Vengono create tutte le tabelle in un ordine preciso, in particolare i vincoli di chiave esterna sono stati aggiunti quando tutte le tabelle coinvolte erano esistenti, altrimenti si genera un errore.
+Per prima cosa è stato creato il database, assegnando i volumi dei dati con valori proporzionati alla tabella dei volumi precedentemente proposta.
+Vengono poi create tutte le tabelle in un ordine preciso; in particolare i vincoli di chiave esterna sono stati aggiunti solo quando tutte le tabelle coinvolte erano esistenti, altrimenti si sarebbe generato un errore. 
 
-Vengono poi caricati nel sistema tutti i trigger utilizzati e temporaneamente disabilitati per possibili inconsistenze momentanee nell'inserimento dei dati. La modalità di generazione casuale dei dati è stata pensata che, al termine degli inserimenti iniziali, tutto sia coerente e non ci siano errori.
+Vengono poi caricati nel sistema tutti i trigger utilizzati e temporaneamente disabilitati per possibili inconsistenze momentanee nell'inserimento dei dati. La modalità di generazione casuale dei dati è stata pensata in modo tale che, al termine degli inserimenti iniziali, tutto sia coerente e non ci siano errori.
 
-Le prime tabelle popolate sono “Filiale” e “Dipendente”. Al termine del popolamento eseguiamo forzatamente due trigger in maniera tale da assegnare automaticamente i manager (che non erano stai inseriti) e verificare eventuali errori (di base i dati sono stati generati consistentemente).
+Le prime tabelle popolate sono #er[filiale] e #er[dipendente]. Al termine del popolamento vengono eseguiti forzatamente due trigger in maniera tale da assegnare automaticamente i manager (che non erano stai inseriti) e verificare la presenza di eventuali errori (di base i dati sono stati generati consistentemente).
 
-Estratti dei possibili gestori vengono inseriti i clienti, successivamente la tabella “Conto” con le relative “Conto corrente” e “Conto di risparmio”. Una volta inseriti questi dati è possibile procedere al popolamento della tabella “Possiede” che gestisce tutte le connessioni tra i clienti e i loro conti.
+Estratti dai possibili gestori vengono inseriti i clienti, successivamente la tabella #er[conto] con le relative #er[conto corrente] e #er[Conto di risparmio]. Una volta inseriti questi dati è possibile procedere al popolamento della tabella #er[possiede] che gestisce tutte le connessioni tra i clienti e i loro conti.
 
-Per la macrocategoria dei prestiti, una volta generati quest'ultimi e le relative rate andiamo, tramite apposito script, a pagare le rate che hanno una data di scadenza antecedente a quella odierna. Inseriti tutti i prestiti aggiorniamo l'attributo “attivi” della tabella “Filiale” in maniera automatica sui dati inseriti e al termine riattiviamo tutti i trigger.
+Per la macrocategoria dei prestiti, una volta generati quest'ultimi e le relative rate andiamo, tramite apposito script, a pagare le rate che hanno una data di scadenza antecedente a quella odierna. Inseriti tutti i prestiti aggiorniamo l'attributo _attivi_ della tabella #er[Filiale] in maniera automatica sui dati inseriti e al termine riattiviamo tutti i trigger.
 
 Gli script utilizzati non potevano essere sempre sostituiti dai trigger, infatti non era possibile tenerli tutti attivi e inserire tutti i valori in maniera ordinata e raggruppati per tabelle, ma avremmo dovuto fare attenzione volta per volta. Degli esempi di inserimenti di record sono presentati più avanti.
 
+== Test 
+Finito di popolare tutto il database ci assicuriamo tramite dei test che tutto sia perfettamente funzionante, che rispetti i requisiti che ci siamo imposti e che ci dia i risultati attesi. Questa verifica viene effettuata confrontando il risultato ottenuto dalle operazioni con i risultati attesi.
 
-Finito di popolare tutto il database ci assicuriamo tramite dei test che tutto sia perfettamente funzionante, che rispetti i requisiti che ci siamo imposti e che ci dia i risultati attesi. Questa verifica viene vista tramite delle print che restituiscono il risultato dell'operazione e si verifica se è quello atteso o meno.
-
-Il primo gruppo di test riguarda la relazione tra i dipendenti e le loro filiali:
+== Test su relazione Dipendente-Filiale
 
 +	Tentiamo di modificare la filiale di riferimento di un manager senza togliergli il ruolo nell'altra filiale. Il trigger ci protegge e ci vieta l'inserimento (un dipendente non può lavorare nella filiale A ed essere manager della filiale B).
 
@@ -525,13 +525,14 @@ Il primo gruppo di test riguarda la relazione tra i dipendenti e le loro filiali
 + Come il caso (3) ma con l'aggiunta che questo dipendente diventi manager della filiale in cui lavora. Il trigger che viene innescato sulla modifica del campo manager (che passa da -1 [non manager] a un id di filiale valido) provvede ad aggiornare il campo manager di tutti i dipendenti che lavorano nella filiale dove è appena stato modificato il manager.
 5.	Controlliamo una semplice operazione di rimozione di un dipendente che non è manager.
 
-Il secondo gruppo di test è sulla relazione tra i prestiti e le rate:
+== Test su relazione Prestito-Rata
 
 +	Inseriamo un nuovo prestito. Le rate relative verranno generate in maniera automatica dal trigger che si occupa di andare a recuperare il valore di “mensilità” e generare altrettanti record nella tabella “Rate” riempiendo in maniera adeguata tutti i campi.
 
 +	Modifichiamo la data di pagamento di una data, portandola da NULL a una data valida. Il controllo del trigger sarà di verificare che non ci siano rate precedenti ancora da pagare.
 
-Il terzo gruppo di test è sulla relazione tra i conti e le filiali (collegati dalla tabella “Possiede”):
+
+== Test su relazione Conto-Filiale
 
 +	Simuliamo un versamento e un prelievo, quindi andiamo a modificare il valore del saldo dei conti. A questo punto dei trigger controllano (solo nel secondo caso) che il prelievo possa essere effettuato, quindi che il saldo un numero valido (non minore dello scoperto), dopodiché in entrambi i casi vengono automaticamente aggiornati gli attivi delle filiali. Lo scopo del test è comunque di verificare che il saldo venga correttamente modificato
 
@@ -541,11 +542,12 @@ Il terzo gruppo di test è sulla relazione tra i conti e le filiali (collegati d
 
 +	Proviamo a inserire un iban valido nella tabella “Conto” (necessario per i vincoli di chiave esterna) e poi nella tabella “Conto Corrente”. Questo non dovrebbe generare problemi. Proviamo a inserire l'iban anche in “Conto di Risparmio”, il trigger dovrebbe vietare tale operazione e, dato che siamo all'interno di una transazione, tutti e tre gli inserimenti vengono rimossi (rollback).
 
+= Query 
 Dopo aver verificato che anche i test restituivano i risultati attesi, procediamo con l'esecuzione delle query:
 
 == QUERY 1:
 #quote[Restituire il numero medio di rate dei prestiti associati a conti nelle filiali di Udine.]
-Richiesta immediata, necessario l'utilizzo della funzione AVG()
+Richiesta immediata, necessario l'utilizzo della funzione `AVG()`
 
 == QUERY 2:	
 #quote[Restituire i clienti con solo conti di risparmio in filiali che hanno tra i 30 e i 32 dipendenti.]
@@ -571,8 +573,9 @@ La query si occupa di verificare, per ogni cliente, che tra i clienti della seco
 #line(length: 100%)
 #pagebreak()
  (test)
-#show: zebraw
 
+#zebraw(
+  header: [*Creazione Tabelle*],
 ```sql
 CREATE SCHEMA banca
     AUTHORIZATION enrperes;
@@ -594,3 +597,4 @@ CREATE TABLE dipendente (
     capo INT
 );
 ```
+)
