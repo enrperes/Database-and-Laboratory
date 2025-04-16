@@ -570,6 +570,43 @@ La prima vista ci restringe i possibili clienti a quelli che hanno un gestore as
 La seconda vista, a partire dalla prima, fa un ulteriore filtro prendendo i clienti solo della filiale di Roma.
 La query si occupa di verificare, per ogni cliente, che tra i clienti della seconda vista non ce ne sia qualcuno con saldo maggiore del proprio, in tal caso stampa il cliente.
 
+
+= Test e validazione
+== Test relazione dipendente-filiale
+=== Test manager e filiali
+=== Test inserimento dipendenti
+=== Test rimozione dipendenti
+
+== Test relazione prestito-rata
+=== Test generazione rate
+=== Test pagamento rate
+
+== Test relazione conto-filiale
+=== Test operazioni bancarie
+=== Test validazione saldi
+=== Test aggiornamento attivi
+=== Test unicità IBAN
+
+= Analisi dei dati
+== Query implementate
+=== Media rate prestiti per filiale
+=== Clienti con conti specifici
+=== Gestione clienti dai capi
+=== Gestione clienti dai dipendenti
+=== Prestiti maggiori per filiale
+
+== Visualizzazione dei dati
+=== Distribuzione mensilità prestiti
+=== Analisi attivi per anzianità gestori
+=== Analisi conti cointestati
+
+= Conclusioni
+== Risultati ottenuti
+== Possibili miglioramenti
+== Considerazioni finali
+
+
+
 #line(length: 100%)
 #pagebreak()
  (test)
