@@ -114,7 +114,7 @@ Per chiarire il significato e le relazioni dei termini chiave definite nei requi
 
 #figure(
   table(
-    columns: 3, 
+    columns: 2, 
     stroke: 0.5pt,
     fill: (x, y) => if y == 0 { rgb("#ddd") },
     align: (x, y) =>
