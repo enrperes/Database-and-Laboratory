@@ -101,7 +101,7 @@ Al fine di proseguire con la progettazione concettuale, sono state effettuate le
 - Il *capo* di un dipendente è l'unico responsabile della filiale in cui il dipendente lavora.
 - Nei *conti cointestati* i clienti non possono essere seguiti da dipendenti (gestori) diversi.
 - In caso di *ri-assunzione* di un dipendente, si tiene conto solo dell'ultima assunzione per il calcolo dell'anzianità.
-- Tutte le *rate* di un determinato prestito hanno lo stesso ammontare. 
+- Tutte le *rate* di un determinato prestito hanno lo stesso ammontare e devono essere pagate in ordine. 
 
 
 
@@ -121,21 +121,16 @@ Per chiarire il significato e le relazioni dei termini chiave definite nei requi
       if y == 0 { center } else {
         if x < 1 { center + horizon } else { left }
       },
-  table.header([Termine], [Descrizione], [Collegamenti]),
-  [Filiale] , [Unità operativa della banca situata in una determinata città. È gestita da un unico capo.], [Conto, Dipendente, Capo],
-  //[Attivi] , [Ammontare totale della liquidità di una filiale.], [], [],
-  [Cliente] , [Persona fisica con almeno un conto aperto nella banca.], [Conto, Gestore],
-  [Conto] , [Servizio di gestione del denaro che permette diverse operazioni. Può essere esclusivamente corrente o di risparmio.], [Cliente, Filiale], 
-  [Conto Corrente] , [Tipo di conto caratterizzao da uno scoperto ], [Conto],
-  [Conto di risparmio] , [Tipo di conto caratterizzato da un tasso di interessse], [Conto],
-  // [Rata] , [], [], [],
-  // [Dipendente] , [], [], [],
-  [Gestore] , [Dipendente che prende in carico le pratiche di uno o più clienti], [ ],
-  [Capo] , [Unico responsabile della filiale presso cui lavora], [Dipendente],
-  // [Persona a carico] , [Cliente con il privilegio di essere seguita da un gestore], [],
-  //[Possessore (di conto)] , [Altro modo di definire cliente], [], [],
-  // [] , [], [], [],
-  // [] , [], [], [],
+  table.header([Termine], [Descrizione]),
+  [Filiale], [Unità operativa della banca situata in una determinata città. È gestita da un unico capo.],
+  [Cliente], [Persona fisica con almeno un conto aperto nella banca.],
+  [Conto], [Servizio di gestione del denaro che permette diverse operazioni. Può essere esclusivamente corrente o di risparmio.], 
+  [Conto Corrente], [Tipo di conto caratterizzato da uno scoperto.],
+  [Conto di risparmio], [Tipo di conto caratterizzato da un tasso di interesse.],
+  [Dipendente], [Persona fisica che lavora in una certa filiale della banca.],
+  [Gestore], [Dipendente che prende in carico le pratiche di uno o più clienti.],
+  [Operazione], [Transazioni bancarie effettuate su un conto da uno o più intestatari. Sono operazioni l'apertura di un conto, il prelievo, il pagamento elettronico (bancomat) e il versamento.],
+  [Prestito], [Somma di denaro concessa alla banca a un cliente.],
   ),
   caption: [Glossario dei termini chiave]
 )
@@ -144,7 +139,7 @@ Per chiarire il significato e le relazioni dei termini chiave definite nei requi
 
 = Progettazione Concettuale
 == Costruzione dello schema Entità Relazione
-L'analisi dei requisiti ha portato alla definizione di un insieme di entità e relazioni che costituiscono il modello concettuale della base di dati.
+L'analisi dei requisiti ha portato alla definizione di un insieme di entità e relazioni che costituiranno il modello concettuale della base di dati.
 
 #v(1em)
 
@@ -157,14 +152,14 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 // )]
 // )
 
-- L'enittà #erb[filiale] rappresenta una unità operativa della banca situata in una determinata città. La chiave primaria è il _Nome_, mentre gli altri attributi sono _Città_ e _Indirizzo_.  Inoltre, per ogni filiale è presente l'attributo derivato _Attivi_, che rappresenta l'ammontare totale della liquidità della filiale e viene calcolato sulla base dei conti, prestiti e rate ad esso associati.
+- L'entità #erb[filiale] rappresenta una unità operativa della banca situata in una determinata città. La chiave primaria è il _Nome_, mentre gli altri attributi sono _Città_ e _Indirizzo_.  Inoltre, per ogni filiale è presente l'attributo derivato _Attivi_, che rappresenta l'ammontare totale della liquidità della filiale e viene calcolato sulla base dei conti, prestiti e rate ad esso associati.
 #figure(
   image("media/filiale.svg", width: 22%),
   caption: [Entità FILIALE]
 )
 #v(2.5em)
 
-- L'entità #erb[Cliente] rappresenta una persona fisica che ha aperto nella banca almeno un conto. Essa è caratterizzata da un _codice univoco_ assegnato dalla banca ad ogni cliente e dal _codice fiscale_, entrambi questi attributi fungono da chiavi primarie in quanto sono univoche per ogni cliente. Gli altri attributi servono per tenere traccia dell'anagrafica del cliente, quali _Nome_, _Cognome_, _numero di Telefono_, _Data di nascita_ e _residenza_.
+- L'entità #erb[Cliente] rappresenta una persona fisica che ha aperto nella banca almeno un conto. Essa è caratterizzata da un _codice univoco_ assegnato dalla banca ad ogni cliente e dal _codice fiscale_, entrambi questi attributi possono essere due chiavi primarie differenti in quanto sono univoche per ogni cliente. Gli altri attributi servono per tenere traccia dell'anagrafica del cliente: _Nome_, _Cognome_, _Telefono_, _Data di nascita_ e _Residenza_.
 #v(-1em)
 #figure(
   image("media/cliente.svg", width: 30%),
@@ -172,52 +167,52 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2.5em)
 
-- L'entità #erb[dipendente] è caratterizzata da un codice univoco _ID_ che funge da chiave primaria. _Nome_, _Cognome_, _Numero di telefono_, _Data di assunzione_ sono gli altri attributi che la descrivono. è stato scelto di tenere traccia dell'anzianità aziendale sulla base della data di assunzione. \ Il capo viene descritto da una specializzazione parziale di #er[dipendente], chiamata  #er[capo]. 
+- L'entità #erb[dipendente] è caratterizzata da un codice univoco _ID_ che funge da chiave primaria. _Nome_, _Cognome_, _Numero di telefono_, _Data di assunzione_ sono gli altri attributi che la descrivono. È stato scelto di tenere traccia dell'anzianità aziendale sulla base della data di assunzione. \ Il capo viene descritto da una specializzazione parziale di #er[dipendente], chiamata #er[capo]. 
 #figure(
   image("media/dipendente.svg", width: 30%),
   caption: [Entità DIPENDENTE]
 )
 #v(2.5em)
 
-- L'entità #erb[capo] rappresenta il capo di una filiale. Essendo una generalizzazione dell'eneità #er[dipendente], eredita tutti gli attributi di quest'ultima. Un capo è univoco per ogni filiale. 
+- L'entità #erb[Capo] rappresenta il capo di una filiale. Essendo una specializzazione dell'entità #er[dipendente], eredita tutti gli attributi di quest'ultima. Un capo è univoco per ogni filiale. 
 #figure(
   image("media/capo.svg", width: 18%),
   caption: [Entità CAPO]
 )
 #v(2.5em)
 
-- L'entità #erb[Conto] serve per identificare un servizio della banca messo a disposizione per il cliente. Ogni entità viene identificata univocamente da un attributo _IBAN_ e un attributo _Saldo_ tiene traccia dell'ammontare in denaro presente su tale conto. La banca inoltre mette a disposizione due tipi di conto, quindi l'entità Conto è stata specializzata in due sottoentità: #er[Conto Corrente] e #er[Conto di Risparmio]. La specializzazione è totale e disgiunta: l'insieme dei conti correnti e dei conti di risparmio è disgiunto e la loro unione è esattamente l'insieme di tutti i conti all'interno della filiale.
+- L'entità #erb[Conto] serve per identificare un servizio della banca messo a disposizione per il cliente. Ogni entità viene identificata univocamente da un attributo _IBAN_, un attributo _Saldo_ tiene traccia dell'ammontare di denaro presente sul conto. La banca inoltre mette a disposizione due tipi di conto, quindi l'entità Conto è stata specializzata in due sottoentità: #er[Conto Corrente] e #er[Conto di Risparmio]. La specializzazione è totale e disgiunta.
+
+- L'entità #erb[Conto Corrente] è una specializzazione dell'entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell'entità #er[Conto]. L'attributo che lo caratterizza è _Scoperto_ che indica quanto la banca può concedere di debito nei confronti del cliente.
+
+- L'entità #erb[Conto di Risparmio] è una specializzazione dell'entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell'entità di #er[Conto]. L'attributo che lo caratterizza è _Tasso d'interesse_ che indica il valore di rendita mensile del conto.
 #figure(
   image("media/conto.svg", width: 25%),
   caption: [Entità CONTO]
 )
-- L'entità #erb[Conto Corrente] è una specializzazione dell'entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell'entità #er[Conto]. L' attributo che caratterizza #er[Conto Corrente] è _Scoperto_ che indica il valore, concordato tra cliente e banca, di quanto la banca può concedere di debito nei confronti del cliente.
-
-
-- L'entità #erb[Conto di Risparmio] è una specializzazione dell'entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell'entità di Conto. L'attributo che lo caratterizza è Tasso di interesse che indica il valore, concordato tra cliente e banca, di quanto rende mensilmente il deposito su quel conto.
 #v(2.5em)
 
-- L'entità #erb[Prestito] costituisce il servizio creditizio della banca. Essa è caratterizzata innanzitutto da un codice univoco che funge da chiave primaria, garantendo l'identificazione sicura di ogni singolo prestito all'interno del sistema. L'attributo _ammontare_ fornisce invece l'informazione relativa alla somma di denaro effettivamente erogata, mentre l'attributo  _inizio_ registra la data in cui il prestito ha avuto origine. Un aspetto interessante di questa entità è la presenza di un attributo derivato, _somma rate_ calcolato sulla base dell'insieme delle rate associate a quel prestito. Questo calcolo deriva appunto dalla relazione con l'entità #er[Rata], che verrà descritta successivamente. 
+- L'entità #erb[Prestito] costituisce il servizio creditizio della banca. Essa è caratterizzata da un codice univoco che funge da chiave primaria. L'attributo _Ammontare_ fornisce l'informazione relativa alla somma di denaro prestata, mentre l'attributo _Inizio_ registra la data in cui il prestito ha avuto origine. L'attributo _Somma rate_ è un attributo derivato, che tiene traccia dell'importo saldato dal cliente. L'attributo _Mensilità_ indica il numero di rate complessive del prestito.
 #figure(
   image("media/prestito.svg", width: 30%),
   caption: [Entità PRESTITO]
 )
 
-- L'entità #erb[rata] è una entità debole ed ha il compito di rappresentare in modo dettagliato ogni singolo pagamento periodico associato a un determinato prestito. L'identificazione univoca di ciascuna rata è garantita da una chiave primaria composta, costituita dal suo numero (indicante la “posizione” della rata nella sequenza dei pagamenti) e dalla chiave esterna che fa riferimento all'entità Prestito.  Tra gli attributi figurano inoltre la _data scadenza_, ossia il giorno entro cui la rata deve essere corrisposta, e la _data pagamento_, che riporta il momento in cui il versamento è stato effettivamente effettuato. Infine, l'attributo _ammontare_ specifica l'importo dovuto per quella singola rata.
+- L'entità #erb[rata] è una entità debole ed ha il compito di rappresentare ogni singolo pagamento periodico associato a un determinato prestito. L'identificazione univoca di ciascuna rata è garantita da una chiave primaria composta, costituita dal suo numero (indicante la “posizione” della rata nella sequenza dei pagamenti) e dalla chiave esterna che fa riferimento all'entità #er[Prestito]. Tra gli attributi figurano inoltre la _Data scadenza_, ossia il giorno entro cui la rata deve essere corrisposta, e la _Data pagamento_, che riporta il momento in cui il versamento è stato effettuato. Infine, l'attributo _Ammontare_ specifica l'importo dovuto per quella singola rata.
 #figure(
   image("media/rata.svg", width: 25%),
   caption: [Entità RATA]
 )
 #v(2.5em)
 
-- La relazione #erb[è capo] collega l'entità #er[capo] con l'entità #er[filiale], definendo il legame tra il capo di una filiale e la filiale stessa. La cardinalità di (1,1) tra la relazione e l'entità Filiale indica che ogni #er[filiale] ha un solo capo, mentre la cardinalità di (0,1) tra la relazione e l'entità #er[Capo] indica che un dipendente può essere al più capo di una sola filiale.
+- La relazione #erb[è capo] collega l'entità #er[capo] con l'entità #er[filiale], definendo il legame tra il capo di una filiale e la filiale stessa. La cardinalità di (1,1) tra la relazione e l'entità #er[Filiale] indica che ogni filiale ha un solo capo, mentre la cardinalità di (0,1) tra la relazione e l'entità #er[Capo] indica che un dipendente può essere al più capo di una sola filiale.
 #figure(
   image("media/iscapo.svg", width: 80%),
   caption: [Relazione È CAPO]
 )
 #v(2.5em)
 
-- La relazione #erb[lavora] collega l'entità #er[dipendente] con l'entità #er[filiale]. La cardinalità di (1,1) tra la relazione e l'entità Dipendente indica che ogni dipendente lavora in una e in una sola filiale, mentre la cardinalità di (1,N) tra la relazione e l'entità #er[filiale] indica che in una filiale lavora uno o più dipendenti.
+- La relazione #erb[lavora] collega l'entità #er[dipendente] con l'entità #er[filiale]. La cardinalità di (1,1) tra la relazione e l'entità #er[Dipendente] indica che ogni dipendente lavora in una e in una sola filiale, mentre la cardinalità di (1,N) tra la relazione e l'entità #er[filiale] indica che in una filiale lavorano uno o più dipendenti.
 #figure(
   image("media/lavora.svg", width: 80%),
   caption: [Relazione LAVORA]
@@ -225,7 +220,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 #v(2.5em)
 
 
-- La relazione #erb[di] lega l'entità #er[dipendente] con l'entità #er[capo]. La cardinalità di (1,N) tra la relazione e l'entità #er[capo] indica che un capo dirige uno o più dipendenti, mentre la cardinalità di (1,1) tra la relazione e l'entità #er[dipendente] indica che un dipendente ha uno e un solo capo. 
+- La relazione #erb[di] collega l'entità #er[dipendente] con l'entità #er[capo]. La cardinalità di (1,N) tra la relazione e l'entità #er[capo] indica che un capo dirige uno o più dipendenti, mentre la cardinalità di (1,1) tra la relazione e l'entità #er[dipendente] indica che un dipendente ha uno e un solo capo. 
 #figure(
   image("media/di.svg", width: 80%),
   caption: [Relazione DI]
@@ -233,36 +228,35 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 #v(2.5em)
 
 
-- La relazione #erb[é composto] collega l'entità #er[prestito] con l'entità #er[Rata], dando forma al legame logico tra un finanziamento e i singoli pagamenti previsti per il suo rimborso. Dal lato di #er[Rata], la cardinalità è di (1,1), poiché ogni rata è necessariamente associata ad uno e un solo prestito specifico data la natura di #er[Rata] come entità debole. Dal lato di Prestito, invece, la cardinalità è di (1,N), poiché un singolo prestito può essere suddiviso in una o più rate. In sintesi, questa relazione rispecchia un legame di composizione, dove ogni prestito è scomponibile in un insieme di rate, ma ogni rata non può prescindere dal proprio prestito di appartenenza.
-#v(-1.5em)
+- La relazione #erb[è composto] collega l'entità #er[prestito] con l'entità #er[Rata], dando forma al legame logico tra un finanziamento e i singoli pagamenti previsti per il suo rimborso. Dal lato di #er[Rata], la cardinalità è di (1,1), poiché ogni rata è necessariamente associata ad uno e un solo prestito essendo #er[Rata] un'entità debole. Dal lato di Prestito, invece, la cardinalità è di (1,N), poiché un singolo prestito può essere suddiviso in una o più rate.
 #figure(
   image("media/composto.svg", width: 80%),
   caption: [Relazione È COMPOSTO]
 )
 #v(2.5em)
 
-- La relazione #erb[è associato] collega l'entità Conto con l'entità Prestito, definendo il legame tra un finanziamento e il conto bancario a cui è associato. Dal lato di #er[Prestito], la cardinalità è (1,1), poiché ogni prestito deve fare riferimento obbligatoriamente a un solo conto bancario. Dal lato di Conto, invece, la cardinalità è (0,N): questo riflette il fatto che un conto può non avere alcun prestito associato, ma può anche essere collegato a uno o più prestiti contemporaneamente.
+- La relazione #erb[è associato] collega l'entità Conto con l'entità #er[Prestito], definendo il legame tra esso e il conto bancario a cui è associato. Dal lato di #er[Prestito], la cardinalità è (1,1), poiché ogni prestito deve fare riferimento a un solo conto bancario. Dal lato di #er[Conto] la cardinalità è (0,N), infatti un conto non necessariamente ha prestiti associati.
 #figure(
   image("media/isassociato.svg", width: 80%),
   caption: [Relazione È ASSOCIATO]
 )
 #v(2.5em)
 
-- La relazione #erb[Possiede] collega le entità #er[Cliente] e #er[Conto]. Un cliente deve possedere almeno un conto e più clienti possono possedere lo stesso conto (caso di conto cointestato), da cui deriva la cardinalità (1, N) della relazione sul lato di #er[Cliente]. D'altro canto un #er[conto] deve essere posseduto da almeno un cliente e più conti possono fare riferimento allo stesso cliente (caso in cui uno stesso cliente ha aperto più conti con la banca), da cui deriva la cardinalità (1, N) della relazione sul lato di #er[conto]. Gli attributi _Operazione_ e _Data_ sulla relazione indicano l'ultima operazione svolta e la data in cui è stata effettuata. Nel caso di operazione congiunta di più clienti possessori dello stesso conto gli attributi _Operazione/Data_ vengono aggiornati per entrambi.
+- La relazione #erb[Possiede] collega le entità #er[Cliente] e #er[Conto]. Un cliente deve possedere almeno un conto e più clienti possono possedere lo stesso conto (caso di conto cointestato), da cui deriva la cardinalità (1,N) della relazione sul lato di #er[Cliente]. D'altro canto un #er[conto] deve essere posseduto da almeno un cliente e più conti possono fare riferimento allo stesso cliente (caso in cui uno stesso cliente ha aperto più conti con la banca), da cui deriva la cardinalità (1,N) della relazione sul lato di #er[conto]. \ Gli attributi _Operazione_ e _Data_ sulla relazione indicano l'ultima operazione svolta e la data in cui è stata effettuata. Nel caso di operazione congiunta di più clienti gli attributi _Operazione/Data_ vengono aggiornati per entrambi.
 #figure(
   image("media/possiede.svg", width: 80%),
   caption: [Relazione POSSIEDE]
 )
 #v(2.5em)
 
-- La relazione #erb[Gestisce] lega #er[Dipendente] e #er[Cliente]. Un sottoinsieme dei dipendente possono seguire le pratiche di un certo numero di clienti della banca, da cui ne deriva la cardinalità (0, N) della relazione sul lato di #er[dipendente]. D'altro canto un #er[Cliente] può avere al più un solo gestore che monitora e consiglia le sue attività nella banca, da cui ne deriva la cardinalità (0, 1) della relazione sul lato di cliente.
+- La relazione #erb[Gestisce] collega #er[Dipendente] e #er[Cliente]. Un sottoinsieme dei dipendenti può seguire le pratiche di un certo numero di clienti della banca, da cui ne deriva la cardinalità (0,N) della relazione sul lato di #er[dipendente]. D'altro canto un #er[Cliente] può avere al più un solo gestore che segue le sue attività nella banca, da cui ne deriva la cardinalità (0,1) della relazione sul lato di #er[cliente].
 #figure(
   image("media/gestisce.svg", width: 80%),
   caption: [Relazione GESTISCE]
 )
 #v(2.5em)
 
-- La relazione #erb[Contiene] collega #er[Filiale] a #er[Conto] in quanto ogni #er[Conto] deve fare riferimento ad una e una sola #er[filiale]. Una filiale può contenere uno o più conti (anche zero se la filiale è appena stata aperta), da cui ne deriva la cardinalità (0, N) della relazione sul lato di FIliale. D'altro canto un #er[conto] deve essere associato ad una e una sola #er[filiale], da cui ne deriva la cardinalità (1, 1) della relazione sul lato di Conto.
+- La relazione #erb[Contiene] collega #er[Filiale] a #er[Conto] in quanto ogni #er[Conto] deve fare riferimento ad una e una sola #er[filiale]. Una filiale può contenere uno o più conti (anche zero se la filiale è appena stata aperta), da cui ne deriva la cardinalità (0,N) della relazione sul lato di filiale. D'altro canto un #er[conto] deve essere associato ad una e una sola #er[filiale], da cui ne deriva la cardinalità (1,1) della relazione sul lato di #er[Conto].
 #figure(
   image("media/contiene.svg", width: 80%),
   caption: [Relazione CONTIENE]
