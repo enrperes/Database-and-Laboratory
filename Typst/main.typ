@@ -298,13 +298,11 @@ Alcuni vincoli non possono essere catturati tramite il modello ER, vengono ripor
 - La somma dell'importo delle rate deve corrispondere all'ammontare del prestito.
 
 = Progettazione Logica
-== Tabella dei volumi
-
-Analizziamo ora i passi che abbiamo effettuato per le ridondanze ed i volumi del
-nostro schema. Nella ottimizzazione delle prestazione e nella semplificazione dello
-schema ER concettuale verso lo schema ristrutturato abbiamo considerato i volumi
-dei dati, che sono stati ipotizzati secondo i volumi di una banca reale di riferimento
-(Banca Intesa San Paolo) e delle operazioni che in seguito elencheremo. 
+Nell'ottimizzazione delle prestazioni, per lo studio delle ridondanze, e nella semplificazione dello
+schema ER concettuale verso lo schema ristrutturato, abbiamo considerato dei volumi
+di dati che sono stati ipotizzati secondo una banca reale di riferimento
+(Banca Intesa San Paolo).
+== Tabella dei volumi 
 
 #figure(
   table(
@@ -316,35 +314,36 @@ dei dati, che sono stati ipotizzati secondo i volumi di una banca reale di rifer
         if x < 1 { center + horizon } else { left }
       },
   table.header([Nome], [Costrutto], [Volume]),
-  [Dipendente] , [Entità], [100.000],
   [Cliente] , [Entità], [15.000.000],
-  [Filiale] , [Entità], [3.000],
   [Conto] , [Entità], [12.000.000],
   [Conto Corrente] , [Entità], [10.000.000],
-  [Conto di Risparmio] , [Entità], [2.000.000],
+  [Conto Risparmio] , [Entità], [2.000.000],
+  [Dipendente] , [Entità], [100.000],
+  [Filiale] , [Entità], [3.000],
   [Prestito] , [Entità], [7.000.000],
-  [Gestisce] , [Relazione], [10.000.000],
-  [Lavora] , [Relazione], [100.000],
+  [Contiene] , [Relazione], [12.000.000],
+  [Di] , [Relazione], [100.000],
+  [#upper[è] associato] , [Relazione], [7.000.000],
   [#upper[è] capo] , [Relazione], [3.000],
   [#upper[è] composto] , [Relazione], [7.000.000],
-  [Di] , [Relazione], [100.000],
+  [Gestisce] , [Relazione], [10.000.000],
+  [Lavora] , [Relazione], [100.000],
   [Possiede] , [Relazione], [19.000.000],
-  [Contiene] , [Relazione], [12.000.000],
-  [#upper[è] associato] , [Relazione], [7.000.000],
   ),
   caption: [Tabella dei volumi]
 )
 == Analisi delle ridondanze
 
-Il primo blocco di operazioni coinvolge l'attributo derivato attivi che produce una ridondanza ed è derivalbile da altre entità, nel nostro caso da Conto, Prestito e Rata, seguendo il caso di attributo derivabile da altre entità secondo funzioni aggregative. Dobbiamo quindi ipotizzare delle operazioni e le loro relative frequenze che vanno a coinvolgere questo attributo ed osservare se è conveniente eliminarlo o mantenerlo. Consideriamo una serie di operazioni e la loro frequenza:
 
-  + interrogazione per leggere il valore attivi di ogni filiale con frequenza 1 volta al giorno, 
-  + inserimento di un conto nella base di dati con frequenza 150 volte al giorno, 
-  + inserimento di una operazione in possiede con frequenza 1.000.000 al giorno, 
-  + aggiornamento di tutti i prestiti con frequenza di 1 volta al mese.
-Queste operazioni con la presenza dell'attributo ridondante _attivi_ portano ai seguenti costi:
+=== Studio dell'attributo derivato _Attivi_ di #er[filiale]
+Il primo blocco di operazioni coinvolge l'attributo derivato _Attivi_ che produce una ridondanza ed è derivabile da altre entità, nel nostro caso da #er[Conto, Prestito] e #er[Rata]. Ipotizziamo delle operazioni e le loro relative frequenze che vanno a coinvolgere questo attributo e osserviamo se è conveniente eliminarlo o mantenerlo.
 
-=== Con ridondanza
+  + Interrogazione per leggere il valore attivi di ogni filiale con frequenza di una volta al giorno, 
+  + Inserimento di un conto nella base di dati con frequenza 150 volte al giorno, 
+  + Inserimento di una operazione in possiede con frequenza 1.000.000 al giorno, 
+  + Aggiornamento di tutti i prestiti con frequenza di una volta al mese.
+Queste operazioni con la presenza dell'attributo ridondante _Attivi_ portano ai seguenti costi:
+
 
 #figure(
   table(
@@ -355,7 +354,7 @@ Queste operazioni con la presenza dell'attributo ridondante _attivi_ portano ai 
       if y == 0 { center } else {
         if x == 2 { center + horizon } else { left }
       },
-  table.header([Nome], [Costrutto], [Acecssi], [Tipo]),
+  table.header([Nome], [Costrutto], [Accessi], [Tipo]),
   [Filiale], [Entità], [3000], [Lettura],
   ),
   caption: [Operazione 1]
@@ -423,8 +422,9 @@ Queste operazioni con la presenza dell'attributo ridondante _attivi_ portano ai 
   ),
   caption: [Operazione 4]
 )
+#v(2.5em)
 
-=== Senza ridondanza
+Le stesse operazioni ma senza la ridondanza:
 
 #figure(
   table(
@@ -455,15 +455,16 @@ op3: (3 scrittura{Possiede, conto, filiale} + 4 letture{Possiede, conto, filiale
 op4: (3 scritture{Rata, Prestito, Filiale} + 5 Letture{}) x 7.000.000 x 1/30
 totale: 12.107.500
 
-Senza ridondanza
+Conti:
 op1: ((2 letture * 4000 {Contenuto, Conto}) + (2 letture * 2333{è associato, Prestito})) * 3000
 op2: (3 scritture{Possiede, Conto, Contenuto}) * 150 
 op3 : (2 letture{Possiede, Conto}, 2 scritture{Possiede, Conto}) * 1.000.000 
 op4: (1 scrittura, 1 lettura) * 7.000.000 x 1/30 
 totale: 44.700.900
 
-La seguente analisi ci suggerisce che la conservazione dell'attributo derivato attivi sia utile e quindi lo manteniamo nel nostro schema ristrutturato. 
+La seguente analisi ci suggerisce che la conservazione dell'attributo derivato attivi sia utile e quindi lo manterremo nel nostro schema ER ristrutturato. 
 
+=== Studio dell'attributo derivato _Somma rate_ di #er[prestito]
 Il secondo blocco di operazioni riguardano la ridondanza introdotta dall'attributo derivato somma rate dell'entità Prestito, anche in questo caso è il caso di un attributo derivato secondo funzioni aggregative e le entità che sono coinvolte sono Rata e Prestito. Possiamo considerare due operazioni che sono:
 1- inserimento di una rata una volta al mese per ogni prestito della banca 
 2- lettura del valore della somma delle rate pagate per ogni prestito con frequenza di 2 volte all'anno.
@@ -479,7 +480,7 @@ Inserimento di una rata: 1 (scrittura) * 7.000.000 (prestiti) * 1 (volta al mese
 Lettura = 12 * 7.000.000 * 1/6 = 84 mln
 totale: 28.000.000
 
-Per questa ridondanza abbiamo concluso quindi che l'attributo somma rate potesse essere rimosso dal nostro schema e non utilizzato nello schema ER ristrutturato.
+Per questa ridondanza abbiamo concluso quindi che l'attributo somma rate possa essere rimosso e non essere utilizzato nello schema ER ristrutturato.
 
 
 === 
