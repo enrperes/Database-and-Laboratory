@@ -483,11 +483,29 @@ totale: 28.000.000
 Per questa ridondanza abbiamo concluso quindi che l'attributo somma rate possa essere rimosso e non essere utilizzato nello schema ER ristrutturato.
 
 
-=== 
-===
 == Selelezione delle chiavi primarie
-== Schema E-R ristrutturato 
+Nell'entità #er[Cliente] abbiamo scelto come chiave primaria l'attributo _ID_ rispetto a _Codice Fiscale_ per mantenere una linearità con l'entità #er[DIPENDENTE] la quale è identificata a sua volta da un codice identificativo.
+
+== Rimozione delle specializzazioni
+Per le analisi fatte in precedenza siamo giunti alla conclusione che il blocco #er[Capo-Di-Dipendente] può essere "compresso", riducendo la complessità visiva e pratica del problema, eliminando la specializzazione capo e la relativa relazione #er[DI], sostituendo il tutto con un nuovo attributo derivato posto nell'entità #er[Dipendente]: _Id capo_.
+Di conseguenza viene anche cambiato il riferimento della relazione #er[è capo] che non farà più riferimento all'entità #er[capo] in quanto è stata eliminata ma bensì a #er[Dipendente] mantenendo le cardinalità invariate.
+Non c'è perdita di informazione in quanto il nuovo attributo _ID capo_ viene ricavato dalle relazioni #er[Lavora] ed #er[è capo].
+Per ricavare il capo di un certo dipendente posso andare a vedere la filiale in cui lavora (che è unica per le cardinalità della relazione), tale filiale sarà gestita da uno e un solo capo (deducibile dalle cardinalità della relazione è capo).
+Si può quindi, in maniera univoca, ricavare il capo di un certo dipendente passando attraverso le relazioni e salvare il dato di interesse nell'attributo _ID capo_.
+
+Successivamente la specializzazione di #er[CONTO] è stata ristrutturata aggiungendo due nuove relazioni: #er[Tipo-Corrente] e #er[Tipo-Risparmio] che legano rispettivamente le entità #er[CORRENTE] e #er[RISPARMIO].
+Gli attributi delle tre relazioni coinvolte nella specializzazione sono rimasti invariati.
+Le cardinalità delle due nuove relazioni sono (0,1) dal lato di #er[conto] in quanto un conto è sicuramente di uno dei due tipi e sicuramente non di entrambi, e dal lato di #er[CORRENTE] e #er[RISPARMIO] è (1,1) in quanto i due tipi di conto esistono e sono associate a uno e un solo conto.
+Le chiavi primarie di #er[CORRENTE] e di #er[RISPARMIO] sono delle chiavi primarie legate alla relazione con conto, ne ereditano quindi la chiave primaria _IBAN_.
+Da notare il fatto che l'insieme degli _IBAN_ di #er[CORRENTE] deve essere disgiunto dall'insieme _IBAN_ di #er[RISPARMIO] (non esiste un conto che è sia corrente che di risparmio in quanto la specializzazione originariamente era disgiunta).
+
+
+== Schema ER ristrutturato 
+@PERE METTI QUI L'IMMAGINE, LA TROVI GIÀ PRONTA SU draw.io
+
 == Schema Logico 
+@PERE METTERE LA PAGINA "SCHEMA RELAZIONALE" (DEI DOCS GOOGLE) COSÌ COME NELLA RELAZIONE DI ZANOLIN (VEDI PAR. 3.7)
+
 
 /*
 #figure(
