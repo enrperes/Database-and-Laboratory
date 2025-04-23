@@ -280,12 +280,13 @@ Dopo le analisi fatte, lo schema concettuale nel modello Entità Relazione è il
 
 == Analisi dei cicli
 - Ciclo #er[dipendente - fliale - capo]:
-@PERE METTI LA FIGURA QUI, GIÀ PRONTA SU draw.io
+
+// @PERE METTI LA FIGURA QUI, GIÀ PRONTA SU draw.io
 Questo ciclo è problematico in quanto potrebbe accadere che il capo di una filiale non lavori presso la filiale di cui è responsabile. È necessario imporre dei vincoli di integrità per evitare che ciò accada.
 #v(2.5em)
 
 - Ciclo #er[dipendente - cliente - conto - filiale]:
-@PERE METTI LA FIGURA QUI, GIÀ PRONTA SU draw.io
+// @PERE METTI LA FIGURA QUI, GIÀ PRONTA SU draw.io
 Questo ciclo non genera problemi di inconsistenza, in quanto a un cliente è permesso avere un gestore che lavora presso una certa filiale e avere più conti aperti in filiali diverse.
 #v(2.5em)
 
@@ -501,11 +502,12 @@ Da notare il fatto che l'insieme degli _IBAN_ di #er[CORRENTE] deve essere disgi
 
 
 == Schema ER ristrutturato 
+/*
 @PERE METTI QUI L'IMMAGINE, LA TROVI GIÀ PRONTA SU draw.io
-
+*/
 == Schema Logico 
-@PERE METTERE LA PAGINA "SCHEMA RELAZIONALE" (DEI DOCS GOOGLE) COSÌ COME NELLA RELAZIONE DI ZANOLIN (VEDI PAR. 3.7)
-
+/* @PERE METTERE LA PAGINA "SCHEMA RELAZIONALE" (DEI DOCS GOOGLE) COSÌ COME NELLA RELAZIONE DI ZANOLIN (VEDI PAR. 3.7)
+*/
 
 /*
 #figure(
