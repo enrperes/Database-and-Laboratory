@@ -167,7 +167,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2.5em)
 
-- L'entità #erb[dipendente] è caratterizzata da un codice univoco _ID_ che funge da chiave primaria. _Nome_, _Cognome_, _Numero di telefono_, _Data di assunzione_ sono gli altri attributi che la descrivono. È stato scelto di tenere traccia dell'anzianità aziendale sulla base della data di assunzione. \ Il capo viene descritto da una specializzazione parziale di #er[dipendente], chiamata #er[capo]. 
+- L'entità #erb[dipendente] è caratterizzata da un codice univoco _ID_ che funge da chiave primaria. _Nome_, _Cognome_, _Numero di telefono_, _Data di assunzione_ sono gli altri attributi che la descrivono. È stato scelto di tenere traccia dell'anzianità aziendale sulla base della data di assunzione. \ La qualifica di capo viene descritta da una specializzazione parziale di #er[dipendente], chiamata #er[capo]. 
 #figure(
   image("media/dipendente.svg", width: 30%),
   caption: [Entità DIPENDENTE]
@@ -263,16 +263,40 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2.5em)
 
+== Scelte particolari
+- La specializzazione non totale #er[capo - dipendente] ci permette di inserire la molteplicità (1,1) nella relazione #er[è capo] e di non dover tenere la molteplicità (0,1) nel caso in cui #er[dipendente] non avesse avuto la specializzazione. Favorisce inoltre una maggiore chiarezza nella relazione #er[di].
+- La specializzazione totale di #er[conto] è dovuta alla presenza dei diversi attributi che caratterizzazno le due specializzazioni.
+- La scelta di assegnare il ruolo di entità a #er[rata] è dovuto alla numerosità degli attuributi e alla gestione dell'ammontare dei prestiti. Avendo un numero seriale che non è univoco, è necessario che una parte della chiave sia il codice del prestito.
+#v(2.5em)
 
 
+
+== Schema Concettuale
+Dopo le analisi fatte, lo schema concettuale nel modello Entità Relazione è il seguente:
 #figure(
   image("media/ER_Banca_1.svg", width: 120%),
-  caption: [Schema concettuale nel modello Entità Relazioni]
+  caption: [Schema concettuale nel modello Entità Relazione]
 )
 
-=== 
-===
-== Schema Concettuale
+== Analisi dei cicli
+- Ciclo #er[dipendente - fliale - capo]:
+@PERE METTI LA FIGURA QUI, GIÀ PRONTA SU draw.io
+Questo ciclo è problematico in quanto potrebbe accadere che il capo di una filiale non lavori presso la filiale di cui è responsabile. È necessario imporre dei vincoli di integrità per evitare che ciò accada.
+#v(2.5em)
+
+- Ciclo #er[dipendente - cliente - conto - filiale]:
+@PERE METTI LA FIGURA QUI, GIÀ PRONTA SU draw.io
+Questo ciclo non genera problemi di inconsistenza, in quanto a un cliente è permesso avere un gestore che lavora presso una certa filiale e avere più conti aperti in filiali diverse.
+#v(2.5em)
+
+== Vincoli d'integrità (da riprendere nella sezione di implementazione fisica)
+Alcuni vincoli non possono essere catturati tramite il modello ER, vengono riportati di seguito e saranno tenuti in considerazione nella sezione di implementazione fisica:
+- Il capo di una filiale deve lavorare nella filiale in cui è responsabile.
+- Due clienti con gestore differente non possono avere un conto condiviso.
+- Un dipendente non può gestire se stesso.
+- Le rate vanno pagate in ordine complessivo.
+- La somma dell'importo delle rate deve corrispondere all'ammontare del prestito.
+
 = Progettazione Logica
 == Tabella dei volumi
 
