@@ -81,11 +81,11 @@
 == Richiesta Originale
 #quote[
   Si vuole progettare una base di dati di supporto ad alcune delle attività di una banca. \
-  La banca è organizzata in un certo numero di filiali. Ogni filiale si trova in una determinata città ed è identificata univocamente da un nome (si noti che in unc città vi possono essere più filiali). La banca tiene traccia dei risultati (attivi) conseguiti da ciascuna filiale. \
-  Ai clienti della banca è assegnato un codice che li identifica univocamente. La banca tiene traccia del nome del cliente e della sua residenza. I clienti possono possedere uno o più conti e possono chiedere prestitil. Ad un cliente può essere associato un particolare dipendente della banca, che segue personalmente tutte le pratiche del cliente (si tenga presente che non tutti i clienti godono di tale privilegio e che ad un dipendente della banca possono essere associati zero, uno o più clienti). \ 
-  I dipendenti della banca sono identificati da un codice. La banca memorizza nome e recapito telefonico di ogni dipendente, il nome delele persone a suo carico e il codice dell'eventuale capo. La banca tiene inoltre traccia della data di assunzione di ciascun dipendente e dell'anzianità aziendale di ciascun dipendente (da quanto tempo tale dipendente lavora per la banca). \
-  La banca offre due tipi di conto: conto corrente (con la possibilità di emettere assegni, ma senza interessi) e conto di risparmio (senza la possibilità di emettere assegni, ma con interessi). Un conto èuò essere posseduto congiuntamente da più clienti e un cliente può possedere più conti. Ogni conto è caratterizzato da un numero che lo identifica univocamente. Per ogni conto, la banca tiene traccia del saldo corrente e della data dell'ultima operazione eseguita da ciascuno dei possessori (un'operazione può essere eseguita congiuntamente da più possessori). Ogni conto di risparmio è caratterizzado da un tasso di interesse, mentre ogni conto corrente è caratterizzato da uno scoperto accordato al cliente. \
-  Un prestito (ad esempio, un mutuo) viene emesso da una specifica filiale e può essere attribuito a uno o più clienti congiuntamente. Ogni prestito è identificato univocamente da un codice numerico. Ogni prestito è caratterizzato da un ammontare e da un insieme di rate per la restutuzione del prestito. Ogni rata di un dato prestito è contraddistinta da un numreo d'ordine (prima rata, seconda rata...). Di ogni rata vengono memorizzati anche la data e l'ammontare. \
+  La banca è organizzata in un certo numero di filiali. Ogni filiale si trova in una determinata città ed è identificata univocamente da un nome (si noti che in una città vi possono essere più filiali). La banca tiene traccia dei risultati (attivi) conseguiti da ciascuna filiale. \
+  Ai clienti della banca è assegnato un codice che li identifica univocamente. La banca tiene traccia del nome del cliente e della sua residenza. I clienti possono possedere uno o più conti e possono chiedere prestiti. A un cliente può essere associato un particolare dipendente della banca, che segue personalmente tutte le pratiche del cliente (si tenga presente che non tutti i clienti godono di tale privilegio e che ad un dipendente della banca possono essere associati zero, uno o più clienti). \ 
+  I dipendenti della banca sono identificati da un codice. La banca memorizza nome e recapito telefonico di ogni dipendente, il nome delle persone a suo carico e il codice dell'eventuale capo. La banca tiene inoltre traccia della data di assunzione di ciascun dipendente e dell'anzianità aziendale di ciascun dipendente (da quanto tempo tale dipendente lavora per la banca). \
+  La banca offre due tipi di conto: conto corrente (con la possibilità di emettere assegni, ma senza interessi) e conto di risparmio (senza la possibilità di emettere assegni, ma con interessi). Un conto può essere posseduto congiuntamente da più clienti e un cliente può possedere più conti. Ogni conto è caratterizzato da un numero che lo identifica univocamente. Per ogni conto, la banca tiene traccia del saldo corrente e della data dell'ultima operazione eseguita da ciascuno dei possessori (un'operazione può essere eseguita congiuntamente da più possessori). Ogni conto di risparmio è caratterizzado da un tasso di interesse, mentre ogni conto corrente è caratterizzato da uno scoperto accordato al cliente. \
+  Un prestito (ad esempio, un mutuo) viene emesso da una specifica filiale e può essere attribuito a uno o più clienti congiuntamente. Ogni prestito è identificato univocamente da un codice numerico. Ogni prestito è caratterizzato da un ammontare e da un insieme di rate per la restutuzione del prestito. Ogni rata di un dato prestito è contraddistinta da un numero d'ordine (prima rata, seconda rata...). Di ogni rata vengono memorizzati anche la data e l'ammontare. \
 ]
 
 
@@ -97,9 +97,9 @@ Al fine di proseguire con la progettazione concettuale, sono state effettuate le
 - Un *cliente* può avere conti in filiali diverse e ogni conto è associato ad una singola filiale. 
 - I *prestiti* sono legati al conto, non al cliente.
 - Un *dipendente* non può gestire se stesso.
-- Un *dipendente* può gestire clienti al di fuori della propria filiale e lavora in una sola filiale.
+- Un *dipendente* lavora in una sola filiale con la possibilità di gestire clienti al di fuori della propria filiale.
 - Il *capo* di un dipendente è l'unico responsabile della filiale in cui il dipendente lavora.
-- Nei *conti cointestati* i clienti devono avere lo stesso dipendente (gestore) che li gestisce.
+- Nei *conti cointestati* i clienti non possono essere seguiti da dipendenti (gestori) diversi.
 - In caso di *ri-assunzione* di un dipendente, si tiene conto solo dell'ultima assunzione per il calcolo dell'anzianità.
 - Tutte le *rate* di un determinato prestito hanno lo stesso ammontare. 
 
@@ -122,10 +122,10 @@ Per chiarire il significato e le relazioni dei termini chiave definite nei requi
         if x < 1 { center + horizon } else { left }
       },
   table.header([Termine], [Descrizione], [Collegamenti]),
-  [Filiale] , [Unità operativa della banca situata in  una determinata città. È gestita da un unico capo. ], [Conto, Dipendente, Capo],
+  [Filiale] , [Unità operativa della banca situata in una determinata città. È gestita da un unico capo.], [Conto, Dipendente, Capo],
   //[Attivi] , [Ammontare totale della liquidità di una filiale.], [], [],
-  [Cliente] , [Persona fisica con almeno un conto aperto nella banca], [Conto, Gestore],
-  [Conto] , [Servizio di gestione del denaro che permette diverse operazioni. Può essere esclusivamente corrente o di risparmio], [Cliente, Filiale], 
+  [Cliente] , [Persona fisica con almeno un conto aperto nella banca.], [Conto, Gestore],
+  [Conto] , [Servizio di gestione del denaro che permette diverse operazioni. Può essere esclusivamente corrente o di risparmio.], [Cliente, Filiale], 
   [Conto Corrente] , [Tipo di conto caratterizzao da uno scoperto ], [Conto],
   [Conto di risparmio] , [Tipo di conto caratterizzato da un tasso di interessse], [Conto],
   // [Rata] , [], [], [],
