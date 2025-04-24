@@ -20,6 +20,7 @@
 ]
 #show outline.entry.where(level: 1): set text(weight: "bold", size: 13pt)
 #show outline.entry.where(level: 1): set block(above: 1.5em)
+#show heading.where(level: 4): set heading(numbering: none)
 
 // Code Blocks styling
  #show: zebraw-init.with(numbering: false)
@@ -162,7 +163,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 #v(2.5em)
 
 - L'entità #erb[Cliente] rappresenta una persona fisica che ha aperto nella banca almeno un conto. Essa è caratterizzata da un _codice univoco_ assegnato dalla banca ad ogni cliente e dal _codice fiscale_, entrambi questi attributi possono essere due chiavi primarie differenti in quanto sono univoche per ogni cliente. Gli altri attributi servono per tenere traccia dell'anagrafica del cliente: _Nome_, _Cognome_, _Telefono_, _Data di nascita_ e _Residenza_.
-#v(-1em)
+
 #figure(
   image("media/cliente.svg", width: 30%),
   caption: [Entità CLIENTE]
@@ -691,7 +692,7 @@ Da notare il fatto che l'insieme degli _IBAN_ di #er[CORRENTE] deve essere disgi
 
 == Schema ER ristrutturato 
 #figure(
-  image("media/flowchart-ER-ristrutturato.svg", width: 120%),
+  image("media/flowchart-ER-ristrutturato-v2.svg", width: 120%),
   caption: [Schema ER ristrutturato]
 )
 
