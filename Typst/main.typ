@@ -486,6 +486,7 @@ Per questa ridondanza abbiamo concluso quindi che l'attributo somma rate possa e
 
 == Selelezione delle chiavi primarie
 Nell'entità #er[Cliente] abbiamo scelto come chiave primaria l'attributo _ID_ rispetto a _Codice Fiscale_ per mantenere una linearità con l'entità #er[DIPENDENTE] la quale è identificata a sua volta da un codice identificativo.
+In tutti gli altri casi la chiave candidata a essere primaria era unica.
 
 == Rimozione delle specializzazioni
 Per le analisi fatte in precedenza siamo giunti alla conclusione che il blocco #er[Capo-Di-Dipendente] può essere "compresso", riducendo la complessità visiva e pratica del problema, eliminando la specializzazione capo e la relativa relazione #er[DI], sostituendo il tutto con un nuovo attributo derivato posto nell'entità #er[Dipendente]: _Id capo_.
@@ -534,17 +535,17 @@ Da notare il fatto che l'insieme degli _IBAN_ di #er[CORRENTE] deve essere disgi
 
 = Popolamento del database
 
-Per creare il database richiesto, popolarlo e testare le query assegnate abbiamo dovuto seguire una particolare logica affinché tutto venisse inserito correttamente.
-Infatti si potevano presentare delle problematiche relative a chiavi esterne e/o a dei trigger, ma vediamo nel dettaglio l'ordine delle operazioni che sono state eseguite.
+Per creare il database richiesto, popolarlo e testare le query assegnate è stata seguita una particolare logica affinché tutto venisse inserito correttamente.
+Infatti si potevano presentare delle problematiche relative a chiavi esterne e/o a dei trigger.
 
 Per prima cosa è stato creato il database, assegnando i volumi dei dati con valori proporzionati alla tabella dei volumi precedentemente proposta.
-Vengono poi create tutte le tabelle in un ordine preciso; in particolare i vincoli di chiave esterna sono stati aggiunti solo quando tutte le tabelle coinvolte erano esistenti, altrimenti si sarebbe generato un errore. 
+Sono state poi create tutte le tabelle in un ordine preciso; in particolare i vincoli di chiave esterna sono stati aggiunti solo quando tutte le tabelle coinvolte erano esistenti. 
 
 Vengono poi caricati nel sistema tutti i trigger utilizzati e temporaneamente disabilitati per possibili inconsistenze momentanee nell'inserimento dei dati. La modalità di generazione casuale dei dati è stata pensata in modo tale che, al termine degli inserimenti iniziali, tutto sia coerente e non ci siano errori.
 
-Le prime tabelle popolate sono #er[filiale] e #er[dipendente]. Al termine del popolamento vengono eseguiti forzatamente due trigger in maniera tale da assegnare automaticamente i manager (che non erano stai inseriti) e verificare la presenza di eventuali errori (di base i dati sono stati generati consistentemente).
+Le prime tabelle popolate sono #er[filiale] e #er[dipendente]. Al termine del popolamento vengono eseguiti forzatamente due trigger in maniera tale da assegnare automaticamente i manager (che non erano stati inseriti) e verificare la presenza di eventuali errori (di base i dati sono stati generati consistentemente).
 
-Estratti dai possibili gestori vengono inseriti i clienti, successivamente la tabella #er[conto] con le relative #er[conto corrente] e #er[Conto di risparmio]. Una volta inseriti questi dati è possibile procedere al popolamento della tabella #er[possiede] che gestisce tutte le connessioni tra i clienti e i loro conti.
+Estratti dei possibili gestori vengono inseriti i clienti, successivamente la tabella #er[conto] con le relative #er[conto corrente] e #er[Conto di risparmio]. Una volta inseriti questi dati è possibile procedere al popolamento della tabella #er[possiede] che gestisce tutte le connessioni tra i clienti e i loro conti.
 
 Per la macrocategoria dei prestiti, una volta generati quest'ultimi e le relative rate andiamo, tramite apposito script, a pagare le rate che hanno una data di scadenza antecedente a quella odierna. Inseriti tutti i prestiti aggiorniamo l'attributo _attivi_ della tabella #er[Filiale] in maniera automatica sui dati inseriti e al termine riattiviamo tutti i trigger.
 
@@ -553,86 +554,70 @@ Gli script utilizzati non potevano essere sempre sostituiti dai trigger, infatti
 == Test 
 Finito di popolare tutto il database ci assicuriamo tramite dei test che tutto sia perfettamente funzionante, che rispetti i requisiti che ci siamo imposti e che ci dia i risultati attesi. Questa verifica viene effettuata confrontando il risultato ottenuto dalle operazioni con i risultati attesi.
 
-== Test su relazione Dipendente-Filiale
+== Test Dipendente-Filiale
 
-+	Tentiamo di modificare la filiale di riferimento di un manager senza togliergli il ruolo nell'altra filiale. Il trigger ci protegge e ci vieta l'inserimento (un dipendente non può lavorare nella filiale A ed essere manager della filiale B).
++	Tentiamo di modificare la filiale di riferimento di un manager senza aggiornare il ruolo di managaer. Il trigger ci protegge e ci vieta l'inserimento (un dipendente non può lavorare nella filiale #er[A] ed essere manager della filiale #er[B]).
 
 +	Simile al precedente, proviamo ad assegnare il ruolo di manager di una filiale a un dipendente che lavora presso una filiale diversa. Il trigger blocca l'azione e ci restituisce l'errore (la modifica non viene effettuata).
 
 +	Inseriamo un nuovo dipendente: non è necessario specificare il campo manager in quanto il trigger apposito si occupa di ricercare l'id del manager nella filiale dove lavora il nuovo dipendente e assegnare il campo corrispondente.
 
 + Come il caso (3) ma con l'aggiunta che questo dipendente diventi manager della filiale in cui lavora. Il trigger che viene innescato sulla modifica del campo manager (che passa da -1 [non manager] a un id di filiale valido) provvede ad aggiornare il campo manager di tutti i dipendenti che lavorano nella filiale dove è appena stato modificato il manager.
-5.	Controlliamo una semplice operazione di rimozione di un dipendente che non è manager.
 
-== Test su relazione Prestito-Rata
-
-+	Inseriamo un nuovo prestito. Le rate relative verranno generate in maniera automatica dal trigger che si occupa di andare a recuperare il valore di “mensilità” e generare altrettanti record nella tabella “Rate” riempiendo in maniera adeguata tutti i campi.
-
-+	Modifichiamo la data di pagamento di una data, portandola da NULL a una data valida. Il controllo del trigger sarà di verificare che non ci siano rate precedenti ancora da pagare.
++	Controlliamo una semplice operazione di rimozione di un dipendente che non è manager.
 
 
-== Test su relazione Conto-Filiale
+== Test Prestito-Rata
 
-+	Simuliamo un versamento e un prelievo, quindi andiamo a modificare il valore del saldo dei conti. A questo punto dei trigger controllano (solo nel secondo caso) che il prelievo possa essere effettuato, quindi che il saldo un numero valido (non minore dello scoperto), dopodiché in entrambi i casi vengono automaticamente aggiornati gli attivi delle filiali. Lo scopo del test è comunque di verificare che il saldo venga correttamente modificato
++	Inseriamo un nuovo prestito. Le rate relative verranno generate in maniera automatica dal trigger che si occupa di andare a recuperare il valore di _Mensilità_ e generare altrettanti record nella tabella #er[rata] riempiendo in maniera adeguata tutti i campi.
 
-+	Controlliamo che il trigger dei saldi non validi funzioni, forzando la modifica di un saldo a un valore non valido. Ci attendiamo un errore.
++	Modifichiamo la data di pagamento di una rata, portandola da NULL a una data valida. Il controllo del trigger sarà di verificare che non ci siano rate precedenti ancora da pagare.
+
+
+== Test Conto-Filiale
+
++	Simuliamo un versamento e un prelievo, quindi andiamo a modificare il valore del saldo dei conti. A questo punto dei trigger controllano (solo nel secondo caso) che il prelievo possa essere effettuato, quindi che il saldo sia un numero valido (non minore dello scoperto), dopodiché in entrambi i casi vengono automaticamente aggiornati gli attivi delle filiali. Lo scopo del test è comunque di verificare che il saldo venga correttamente modificato.
+
++	Controlliamo che il trigger che controlla la validità dei saldi funzioni, forzando la modifica di un saldo a un valore non valido. Ci attendiamo un errore.
 
 +	Simile al primo test con il focus sull'aggiornamento degli attivi della filiale di riferimento.
 
-+	Proviamo a inserire un iban valido nella tabella “Conto” (necessario per i vincoli di chiave esterna) e poi nella tabella “Conto Corrente”. Questo non dovrebbe generare problemi. Proviamo a inserire l'iban anche in “Conto di Risparmio”, il trigger dovrebbe vietare tale operazione e, dato che siamo all'interno di una transazione, tutti e tre gli inserimenti vengono rimossi (rollback).
++	Proviamo a inserire un IBAN valido nella tabella #er[conto] (necessario per i vincoli di chiave esterna) e poi nella tabella #er[Conto Corrente]. Questo non dovrebbe generare problemi. Proviamo a inserire l'IBAN anche in #er[Conto Risparmio], il trigger vieta tale operazione e, dato che siamo all'interno di una transazione, tutti e tre gli inserimenti vengono rimossi (rollback).
+
++ Test di consistenza dei gestori diversi su conti cointestati
+
 
 = Query 
-Dopo aver verificato che anche i test restituivano i risultati attesi, procediamo con l'esecuzione delle query:
+PER PERE: METTERE LE QUERY IN SQL DOPO LA QUOTE E PRIMA DEL COMMENTO \
+Dopo aver verificato che anche i test restituivano i risultati attesi, procediamo con l'esecuzione delle query assegnate:
 
 == QUERY 1:
 #quote[Restituire il numero medio di rate dei prestiti associati a conti nelle filiali di Udine.]
-Richiesta immediata, necessario l'utilizzo della funzione `AVG()`
+Richiesta immediata, necessario l'utilizzo della funzione aggregata `AVG()`
 
 == QUERY 2:	
 #quote[Restituire i clienti con solo conti di risparmio in filiali che hanno tra i 30 e i 32 dipendenti.]
-Per comodità è stata creata una vista dove veniva fatta una restrizione della tabella delle filiali, tenendo solamente quelle che rispettavano i vincolo sui clienti.
+Per comodità è stata creata una vista dove è stat fatta una selezione sulla tabella #er[filiale], tenendo solamente quelle che rispettavano il vincolo sul numero dei dipendenti.
 La query poi si appoggia su questa vista per cercare i clienti che hanno almeno un conto di risparmio in queste filiali e che non hanno nessun conto corrente associato.
 
 == QUERY 3:
 #quote[Restituire i capi che gestiscono almeno 3 clienti che possiedono almeno 100 000€.]
-La vista creata è una restrizione sui clienti che rispettano il vincolo. È stata effettuata con l'utilizzo della funzione SUM() poiché il saldo era relativo a tutti i conti posseduti.
-Per validare un capo è stato fatto il prodotto cartesiano triplo della tabella generata dalla vista precedente e dopo essere stati selezionati solamente le righe con gestore uguale, è stato controllato che i clienti fossero tutti e tre diversi.
+La vista creata è una restrizione sui clienti che rispettano il vincolo. È stata effettuata con l'utilizzo della funzione `SUM()` poiché il saldo era relativo a tutti i conti posseduti.
+Per validare un capo è stato fatto il prodotto cartesiano triplo della vista e, dopo essere state selezionati solamente le righe con gestore uguale, è stato controllato che i clienti fossero tutti e tre diversi.
 
 == QUERY 4:
-#quote[Restituire i dipendenti non capi che gestiscono esattamente 2 clienti, uno con solo conti correnti e uno son solo conti di risparmio.]
+#quote[Restituire i dipendenti non capo che gestiscono esattamente 2 clienti, uno con solo conti correnti e uno son solo conti di risparmio.]
 La prima (seconda) vista seleziona solamente i clienti che hanno almeno un conto corrente (di risparmio) e che non hanno nessun conto di risparmio (corrente).
-La query innanzitutto seleziona i dipendenti non capo (con la verifica id <> capo) e poi controlla che esista un unico cliente nella prima vista e un unico cliente nella seconda vista.
+La query seleziona i dipendenti non capo (con la verifica _ID_ <> _Capo_) e poi controlla che esista un unico cliente nella prima vista e un unico cliente nella seconda vista.
 
 == QUERY 5:
-#quote[Restituire il cliente con il prestito più alto nella filiale di Roma che non ha come gestore un dipendente con meno di 3 anni di esperienza.
-La prima vista ci restringe i possibili clienti a quelli che hanno un gestore assunto da almeno 3 anni.]
+#quote[Restituire il cliente con il prestito più alto nella filiale di Roma che non ha come gestore un dipendente con meno di 3 anni di esperienza.]
+La prima vista ci restringe i possibili clienti a quelli che hanno un gestore assunto da almeno 3 anni.
 La seconda vista, a partire dalla prima, fa un ulteriore filtro prendendo i clienti solo della filiale di Roma.
 La query si occupa di verificare, per ogni cliente, che tra i clienti della seconda vista non ce ne sia qualcuno con saldo maggiore del proprio, in tal caso stampa il cliente.
 
 
-= Test e validazione
-== Test relazione dipendente-filiale
-=== Test manager e filiali
-=== Test inserimento dipendenti
-=== Test rimozione dipendenti
-
-== Test relazione prestito-rata
-=== Test generazione rate
-=== Test pagamento rate
-
-== Test relazione conto-filiale
-=== Test operazioni bancarie
-=== Test validazione saldi
-=== Test aggiornamento attivi
-=== Test unicità IBAN
-
 = Analisi dei dati
-== Query implementate
-=== Media rate prestiti per filiale
-=== Clienti con conti specifici
-=== Gestione clienti dai capi
-=== Gestione clienti dai dipendenti
-=== Prestiti maggiori per filiale
 
 == Visualizzazione dei dati
 === Distribuzione mensilità prestiti
