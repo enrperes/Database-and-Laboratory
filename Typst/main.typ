@@ -19,7 +19,7 @@
  #emph[#it.body]
 ]
 #show outline.entry.where(level: 1): set text(weight: "bold", size: 13pt)
-#show outline.entry.where(level: 2): set block(below: 12em)
+#show outline.entry.where(level: 1): set block(above: 1.5em)
 
 // Code Blocks styling
  #show: zebraw-init.with(numbering: false)
