@@ -523,8 +523,6 @@ Da notare il fatto che l'insieme degli _IBAN_ di #er[CORRENTE] deve essere disgi
 )
 
 == Schema Logico 
-Legenda: Le chiavi primarie sono sottolineate e le chiavi esterne sono in corsivo. 
-#v(1.5em)
 
 #erb[CLIENTE] (#u[ID], CF, Residenza, DataDiNascita, Telefono, Cognome, Nome, _Gestore_)
 - _CF_: UNIQUE
@@ -535,11 +533,10 @@ Legenda: Le chiavi primarie sono sottolineate e le chiavi esterne sono in corsiv
 #erb[CONTO_CORRENTE] (#u[_IBAN_], Scoperto)
 - _IBAN_: UNIQUE
 
-#erb[CONTO_DI_RISPARMIO] (#u[_IBAN_], TassoInteresse)
+#erb[CONTO_RISPARMIO] (#u[_IBAN_], TassoInteresse)
 - _IBAN_: UNIQUE
 
 #erb[POSSIEDE] (#u[_Cliente_, _Conto_], Operazione, Data)
-- _Conto_ chiave esterna da CONTO.
 
 #erb[PRESTITO] (#u[Codice], Ammontare, Inizio, Tipo, _ContoAssociato_)
 - _ContoAssociato_: NOT NULL
@@ -552,11 +549,14 @@ Legenda: Le chiavi primarie sono sottolineate e le chiavi esterne sono in corsiv
 #erb[DIPENDENTE] (#u[ID], Nome, Cognome, Telefono, DataAssunzione, _IDCapo_ (derivato), _Filiale_)
 - _Filiale_ NOT NULL
 
+Legenda: Le chiavi primarie sono sottolineate e le chiavi esterne sono in corsivo. 
+
 === Chiavi esterne
 - _Gestore_ è chiave esterna di #er[cliente] rispetto a #er[DIPENDENTE]
 
 - _FilialeAppartenenza_ è chiave esterna di #er[conto] rispetto a #er[filiale]
 - _IBAN_ è chiave esterna di #er[conto corrente, conto risparmio] rispetto a #er[conto]
+- _Conto_ chiave esterna di #er[possiede] rispetto a #er[CONTO].
 - _Cliente_ è chiave esterna di #er[possiede] rispetto a #er[cliente]
 - _ContoAssociato_ è chiave esterna di #er[prestito] rispetto a CONTO
 - _Capo_ è chiave esterna di #er[filiale] rispetto a #er[DIPENDENTE]
@@ -614,7 +614,7 @@ Riportiamo di seguito la tabella dei volumi debitamente proporzionata sulla qual
 Questi dati non richiedevano particolari attenzioni poiché non soggetti a nessun tipo di vincolo particolare.
 
 === Dati #er[diepndente]
-... To be continued by you :)
+ ... To be continued by you 🥰
 
 
 == Creazione dei trigger
