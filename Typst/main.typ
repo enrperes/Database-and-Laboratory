@@ -546,6 +546,7 @@ La tabella possiede è stata creata in quanto corrisponde alla relazione molti a
 
 
 == Modalità di generazione dei dati
+Riportiamo di seguito la tabella dei volumi debitamente proporzionata sulla quale abbiamo creato i dati per il nostro database.
 
 #figure(
   table(
@@ -576,8 +577,38 @@ La tabella possiede è stata creata in quanto corrisponde alla relazione molti a
   caption: [Tabella dei volumi proporzionata]
 )
 
+=== Dati #er[filiale]
+Questi dati non richiedevano particolari attenzioni poiché non soggetti a nessun tipo di vincolo particolare.
+
+=== Dati #er[diepndente]
+... To be continued by you :)
+
 
 == Creazione dei trigger
+
+=== Trigger #er[filiale-dipendente]
+Sono stati creati dei trigger per gestire le problematicità tra dipendente e filiale che non sono stati possibili catturare coi vincoli tramite lo schema relazionale.
+
+Il manager di una filiale deve fare riferimento alla filiale che gestisce, pertanto non deve essere possibile cambiare la filiale di un manager. Il trigger controlla che su ogni inserimento o modifica nella tabella dipendente venga rispettato il vincolo appena descritto, sollevando un'eccezione in caso di problemi bloccando di conseguenza l'inserimento o la modifica.
+
+Un altro trigger simile controlla che una volta assegnato il manager in una filiale esso lavori effettivamente in quella filiale.
+
+
+=== Trigger #er[filiale-conto-prestito-rata]
+La creazione delle rate di un prestito sono state gestite in modo automatico da un trigger il quale dopo l'inserimento di un prestito, calcola l'importo mensile di ogni rata in base all'ammontare e il numero di mensilità, creando le rate (tutte con lo stesso importo mensile) e mettendo la data di scadenza in modo coerente e sequenziale.
+
+Un altro trigger controlla la possibilità di poter pagare una rata bloccando l'aggiornamento in caso la rata fosse già stata pagata, in caso di pagamento concesso, il trigger si occupa anche di aggiornare gli attivi della filiale corrispondente.
+
+In modo analogo un trigger aggiorna gli attivi della filiale ogni volta che un nuovo prestito viene creato.
+
+
+=== Trigger #er[possiede-conto-filiale]
+Il calcolo degli attivi, analogamente come quello di prestiti/rate, viene fatto in automatico da un trigger ogni volta che viene aggiornato il saldo di un conto.
+
+Per le scelte fatte nessun IBAN in conto corrente deve comparire in conto di risparmio e viceversa ma tutti gli IBAN di #er[conto corrente] e di #er[conto risparmio] devono comparire in #er[conto], tale vincolo viene rispettato da due opportuni trigger.
+
+La coerenza delle operazioni eseguibili su un determinato conto anch'essa è verificata da due appositi trigger. Viene controllato che l'operazione sia sensata sul conto (non posso aprire un conto due volte e non posso fare operazioni sul conto di risparmio) e in caso di prelievo un trigger si occupa di verificare il saldo rimanente e di aggiornarlo.
+
 
 
 == Inserimento tabelle e dati nel database
@@ -663,7 +694,6 @@ La query si occupa di verificare, per ogni cliente, che tra i clienti della seco
 
 
 = Analisi dei dati
-
 == Visualizzazione dei dati
 === Distribuzione mensilità prestiti
 === Analisi attivi per anzianità gestori
