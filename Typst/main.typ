@@ -212,14 +212,14 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 - La relazione #erb[è capo] collega l'entità #er[capo] con l'entità #er[filiale], definendo il legame tra il capo di una filiale e la filiale stessa. La cardinalità di (1,1) tra la relazione e l'entità #er[Filiale] indica che ogni filiale ha un solo capo, mentre la cardinalità di (0,1) tra la relazione e l'entità #er[Capo] indica che un dipendente può essere al più capo di una sola filiale.
 #figure(
   image("media/iscapo.svg", width: 80%),
-  caption: [Relazione È CAPO]
+  caption: [Relazione è capo]
 )
 #v(2.5em)
 
 - La relazione #erb[lavora] collega l'entità #er[dipendente] con l'entità #er[filiale]. La cardinalità di (1,1) tra la relazione e l'entità #er[Dipendente] indica che ogni dipendente lavora in una e in una sola filiale, mentre la cardinalità di (1,N) tra la relazione e l'entità #er[filiale] indica che in una filiale lavorano uno o più dipendenti.
 #figure(
   image("media/lavora.svg", width: 80%),
-  caption: [Relazione LAVORA]
+  caption: [Relazione lavora]
 )
 #v(2.5em)
 
@@ -227,7 +227,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 - La relazione #erb[di] collega l'entità #er[dipendente] con l'entità #er[capo]. La cardinalità di (1,N) tra la relazione e l'entità #er[capo] indica che un capo dirige uno o più dipendenti, mentre la cardinalità di (1,1) tra la relazione e l'entità #er[dipendente] indica che un dipendente ha uno e un solo capo. 
 #figure(
   image("media/di.svg", width: 80%),
-  caption: [Relazione DI]
+  caption: [Relazione di]
 )
 #v(2.5em)
 
@@ -235,42 +235,42 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 - La relazione #erb[è composto] collega l'entità #er[prestito] con l'entità #er[Rata], dando forma al legame logico tra un finanziamento e i singoli pagamenti previsti per il suo rimborso. Dal lato di #er[Rata], la cardinalità è di (1,1), poiché ogni rata è necessariamente associata ad uno e un solo prestito essendo #er[Rata] un'entità debole. Dal lato di Prestito, invece, la cardinalità è di (1,N), poiché un singolo prestito può essere suddiviso in una o più rate.
 #figure(
   image("media/composto.svg", width: 80%),
-  caption: [Relazione È COMPOSTO]
+  caption: [Relazione è composto]
 )
 #v(2.5em)
 
 - La relazione #erb[è associato] collega l'entità Conto con l'entità #er[Prestito], definendo il legame tra esso e il conto bancario a cui è associato. Dal lato di #er[Prestito], la cardinalità è (1,1), poiché ogni prestito deve fare riferimento a un solo conto bancario. Dal lato di #er[Conto] la cardinalità è (0,N), infatti un conto non necessariamente ha prestiti associati.
 #figure(
   image("media/isassociato.svg", width: 80%),
-  caption: [Relazione È ASSOCIATO]
+  caption: [Relazione è associato]
 )
 #v(2.5em)
 
 - La relazione #erb[Possiede] collega le entità #er[Cliente] e #er[Conto]. Un cliente deve possedere almeno un conto e più clienti possono possedere lo stesso conto (caso di conto cointestato), da cui deriva la cardinalità (1,N) della relazione sul lato di #er[Cliente]. D'altro canto un #er[conto] deve essere posseduto da almeno un cliente e più conti possono fare riferimento allo stesso cliente (caso in cui uno stesso cliente ha aperto più conti con la banca), da cui deriva la cardinalità (1,N) della relazione sul lato di #er[conto]. \ Gli attributi _Operazione_ e _Data_ sulla relazione indicano l'ultima operazione svolta e la data in cui è stata effettuata. Nel caso di operazione congiunta di più clienti gli attributi _Operazione/Data_ vengono aggiornati per entrambi.
 #figure(
   image("media/possiede.svg", width: 80%),
-  caption: [Relazione POSSIEDE]
+  caption: [Relazione possiede]
 )
 #v(2.5em)
 
 - La relazione #erb[Gestisce] collega #er[Dipendente] e #er[Cliente]. Un sottoinsieme dei dipendenti può seguire le pratiche di un certo numero di clienti della banca, da cui ne deriva la cardinalità (0,N) della relazione sul lato di #er[dipendente]. D'altro canto un #er[Cliente] può avere al più un solo gestore che segue le sue attività nella banca, da cui ne deriva la cardinalità (0,1) della relazione sul lato di #er[cliente].
 #figure(
   image("media/gestisce.svg", width: 80%),
-  caption: [Relazione GESTISCE]
+  caption: [Relazione gestisce]
 )
 #v(2.5em)
 
 - La relazione #erb[Contiene] collega #er[Filiale] a #er[Conto] in quanto ogni #er[Conto] deve fare riferimento ad una e una sola #er[filiale]. Una filiale può contenere uno o più conti (anche zero se la filiale è appena stata aperta), da cui ne deriva la cardinalità (0,N) della relazione sul lato di filiale. D'altro canto un #er[conto] deve essere associato ad una e una sola #er[filiale], da cui ne deriva la cardinalità (1,1) della relazione sul lato di #er[Conto].
 #figure(
   image("media/contiene.svg", width: 80%),
-  caption: [Relazione CONTIENE]
+  caption: [Relazione contiene]
 )
 #v(2.5em)
 
 == Scelte particolari
 - La specializzazione non totale #er[capo - dipendente] ci permette di inserire la molteplicità (1,1) nella relazione #er[è capo] e di non dover tenere la molteplicità (0,1) nel caso in cui #er[dipendente] non avesse avuto la specializzazione. Favorisce inoltre una maggiore chiarezza nella relazione #er[di].
 - La specializzazione totale di #er[conto] è dovuta alla presenza dei diversi attributi che caratterizzazno le due specializzazioni.
-- La scelta di assegnare il ruolo di entità a #er[rata] è dovuto alla numerosità degli attuributi e alla gestione dell'ammontare dei prestiti. Avendo un numero seriale che non è univoco, è necessario che una parte della chiave sia il codice del prestito.
+- La scelta di assegnare il ruolo di entità a #er[rata] è dovuto alla numerosità degli attributi e alla gestione dell'ammontare dei prestiti. Avendo un numero seriale che non è univoco, è necessario che una parte della chiave sia il codice del prestito.
 #v(2.5em)
 
 #pagebreak()
@@ -306,7 +306,7 @@ Alcuni vincoli non possono essere catturati tramite il modello ER, vengono ripor
 - Il capo di una filiale deve lavorare nella filiale in cui è responsabile.
 - Due clienti con gestore differente non possono avere un conto condiviso.
 - Un dipendente non può gestire se stesso.
-- Le rate vanno pagate in ordine complessivo.
+- Le rate vanno pagate in ordine cronologico.
 - La somma dell'importo delle rate deve corrispondere all'ammontare del prestito.
 
 #pagebreak()
@@ -315,7 +315,6 @@ Nel processo di ottimizzazione delle prestazioni, nell’analisi delle ridondanz
 
 == Tabella dei volumi 
 
-⚠️ Da spiegare bene le scelte fatte 
 
 #figure(
   table(
@@ -345,18 +344,21 @@ Nel processo di ottimizzazione delle prestazioni, nell’analisi delle ridondanz
   ),
   caption: [Tabella dei volumi]
 )
+
+=== Considerazioni
+Il numero di clienti, conti, dipendenti e filiali è stato stimato sulla base di dati reali dell' Intesa Sanpaolo. Abbiamo ipotizzato un numero di prestiti sulla base di una proporzione realistica rispetto ai conti. Per distinguere tra conti correnti e conti di risparmio, abbiamo utilizzato la percentuale media nazionale, applicandola al numero totale di conti. I volumi per le relazioni sono state calcolate tenendo conto delle cardinalità e della natura dei legami tra le entità coinvolte, in modo da mantenere coerenza con il modello concettuale.
+
+
 == Analisi delle ridondanze
 
 
 === Studio dell'attributo derivato _Attivi_ di #er[filiale]
 Il primo blocco di operazioni coinvolge l'attributo derivato _Attivi_ che produce una ridondanza ed è derivabile da altre entità, nel nostro caso da #er[Conto, Prestito] e #er[Rata]. Ipotizziamo delle operazioni e le loro relative frequenze che vanno a coinvolgere questo attributo e osserviamo se è conveniente eliminarlo o mantenerlo.
 
-  + Interrogazione per leggere il valore attivi di ogni filiale con frequenza di una volta al giorno, 
-  + Inserimento di un conto nella base di dati con frequenza 150 volte al giorno, 
-  + Inserimento di una operazione in possiede con frequenza 1.000.000 al giorno, 
-  + Aggiornamento di tutti i prestiti con frequenza di una volta al mese.
-Queste operazioni con la presenza dell'attributo ridondante _Attivi_ portano ai seguenti costi:
+==== Operazione 1: 
+Interrogazione per leggere il valore _attivi_ di ogni filiale con frequenza di una volta al giorno
 
+*Con attributo _attivi_: *
 
 #figure(
   table(
@@ -372,7 +374,43 @@ Queste operazioni con la presenza dell'attributo ridondante _Attivi_ portano ai 
   ),
   caption: [Operazione 1]
 )
+$ "op1: (1 lettura)" dot 3.000 $ \
 
+Per leggere il valore _attivi_ di ogni filiale, è necessario eseguire una lettura della tabella #er[Filiale] e leggere l'attributo derivato _attivi_.
+
+*Senza attributo _attivi_: *
+
+#figure(
+  table(
+    columns: 4, 
+    stroke: 0.5pt,
+    fill: (x, y) => if y == 0 { rgb("#ddd") },
+    align: (x, y) =>
+      if y == 0 { center } else {
+        if x == 2 { center + horizon } else { left }
+      },
+  table.header([Nome], [Costrutto], [Accessi], [Tipo]),
+  [Filiale], [Entità], [3000], [Lettura],
+  [Contiene], [Relazione], [12.000.000], [Lettura],
+  [Conto], [Entità], [12.000.000], [Lettura],
+  [#upper[è] associato], [Relazione], [7.000.000], [Lettura],
+  [Prestito], [Entità], [7.000.000], [Lettura],
+  ),
+  caption: [Operazione 1]
+)
+
+$ "op1:" ((3 "letture" {"Filiale, contiene, conto"} dot 4000) + (2 "letture" {"è associato", "Prestito"} dot 2333)) dot 3000 $
+
+Senza l'attributo _attivi_, per calcolare gli _attivi_ di ogni filiale vengono lette le 3.000 righe della tabella #er[Filiale]. Poi, per ogni filiale, si risale ai conti che possiede: in media sono circa 4.000. Vengono poi effettuati altri 4.000 accessi alla tabella Conto per ottenere i saldi. 
+
+Lo stesso vale per i prestiti: per ogni filiale si leggono in media 4.000 righe nella tabella Associato e poi si accede a Prestito per recuperarne l'importo.
+
+In totale quindi, come si vede dalla tabella, bisognerà leggere interamente le relazioni _contiene_, _è associato_ e tutte le entità Conto e Prestito.
+
+==== Operazione 2
+Inserimento di un conto nella base di dati con frequenza 150 volte al giorno
+
+*Con attributo _attivi_:*
 #figure(
   table(
     columns: 4, 
@@ -384,7 +422,7 @@ Queste operazioni con la presenza dell'attributo ridondante _Attivi_ portano ai 
       },
   table.header([Nome], [Costrutto], [Accessi], [Tipo]),
   [Conto], [Entità], [150], [Scrittura],
-  [Contiene], [Entità], [150], [Scrittura],
+  [Contiene], [Relazione], [150], [Scrittura],
   [Possiede], [Relazione], [150], [Scrittura],
   [Filiale], [Entità], [150], [Scrittura],
   [Filiale], [Entità], [150], [Lettura],
@@ -392,6 +430,37 @@ Queste operazioni con la presenza dell'attributo ridondante _Attivi_ portano ai 
   caption: [Operazione 2]
 )
 
+$ "op2: (4 scrittura{conto, contiene, possiede, filiale}" + 1 "lettura{filiale})" dot 150 $
+
+Per inserire un conto bisogna scrivere nell'entità Conto e nelle due relazioni Contiene e Possiede, poichè un conto deve avere un cliente che lo possiede e il conto deve essere contenuto da una filiale. 
+Infine bisogna leggere e scrivere nell'entità Filiale per aggiornare l'attributo _Attivi_ con il saldo del conto appena inserito. 
+
+*Senza attributo _attivi_:*
+#figure(
+  table(
+    columns: 4, 
+    stroke: 0.5pt,
+    fill: (x, y) => if y == 0 { rgb("#ddd") },
+    align: (x, y) =>
+      if y == 0 { center } else {
+        if x == 2{ center + horizon } else { left }
+      },
+  table.header([Nome], [Costrutto], [Accessi], [Tipo]),
+  [Conto], [Entità], [150], [Scrittura],
+  [Contiene], [Relazione], [150], [Scrittura],
+  [Possiede], [Relazione], [150], [Scrittura],
+  ),
+  caption: [Operazione 2]
+)
+
+$ "op2: (3 scrittura{conto, contiene, possiede})" dot 150 $
+
+La logica è come quella vista sopra, con l'eccezione che non serve aggiornare l'attributo _Attivi_, che non è presente. 
+
+==== Operazione 3
+Inserimento di una operazione in possiede con frequenza 1.000.000 al giorno
+
+*Con attributo _Attivi_: *
 #figure(
   table(
     columns: 4, 
@@ -413,6 +482,12 @@ Queste operazioni con la presenza dell'attributo ridondante _Attivi_ portano ai 
   caption: [Operazione 3]
 )
 
+$ "op3: (3 scrittura{Possiede, conto, filiale} + 4 letture{Possiede, conto, filiale, contiene})" dot 1.000.000 $
+
+Poichè la relazione Possiede contiene l'attributo operazione, ogni volta che un'operazione viene eseguita bisogna aggiornare l'attributo, ciò comporta una lettura e una scrittura. dopodiché, bisogna anche in questo caso aggiornare il saldo del conto che fa riferimento a quella tupla in possiede, dopodiché solamente leggere la relazione Contiene per individuare la filiale in cui quel conto ha sede e aggiornare quindi l'attributo _Attivi_ della filiale.
+
+
+*Senza attributo _attivi_:*
 #figure(
   table(
     columns: 4, 
@@ -423,22 +498,51 @@ Queste operazioni con la presenza dell'attributo ridondante _Attivi_ portano ai 
         if x == 2 { center + horizon } else { left }
       },
   table.header([Nome], [Costrutto], [Accessi], [Tipo]),
-  [Rata], [Entità], [], [Scrittura],
-  [#upper[è] composto], [Relazione], [], [Scrittura],
-  [#upper[è] composto], [Relazione], [], [Lettura],
-  [Prestito], [Entità], [], [Lettura],
-  [#upper[è] associato], [Relazione], [], [Lettura],
-  [Conto], [Entità], [], [Lettura],
-  [Contiene], [Relazione], [], [Lettura],
-  [Filiale], [Entità], [], [Lettura],
-  [Filiale], [Entità], [], [Scrittura],
+  [Possiede], [Relazione], [1.000.000], [Scrittura],
+  [Possiede], [Relazione], [1.000.000], [Lettura],
+  [Conto], [Entità], [1.000.000], [Scrittura],
+  [Conto], [Entità], [1.000.000], [Lettura],
+  ),
+  caption: [Operazione 3]
+)
+
+$ "op3: (2 scritture{Possiede, conto} + 2 letture{Possiede, conto})" dot 1.000.000 $
+
+La logica è la stessa di prima, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere nell'entità Filiale.
+
+==== Operazione 4
+Aggiornamento di tutti i prestiti con frequenza di una volta al mese.
+
+
+*Con attributo _attivi_:*
+#figure(
+  table(
+    columns: 4, 
+    stroke: 0.5pt,
+    fill: (x, y) => if y == 0 { rgb("#ddd") },
+    align: (x, y) =>
+      if y == 0 { center } else {
+        if x == 2 { center + horizon } else { left }
+      },
+  table.header([Nome], [Costrutto], [Accessi], [Tipo]),
+  [Rata], [Entità], [233.333], [Lettura],
+  [Rata], [Entità], [233.333], [Scrittura],
+  [#upper[è] composto], [Relazione], [233.333], [Lettura],
+  [Prestito], [Entità], [233.333], [Lettura],
+  [Prestito], [Entità], [233.333], [Scrittura],
+  [#upper[è] associato], [Relazione], [233.333], [Lettura],
+  [Contiene], [Relazione], [233.333], [Lettura],
+  [Filiale], [Entità], [233.333], [Lettura],
+  [Filiale], [Entità], [233.333], [Scrittura],
   ),
   caption: [Operazione 4]
 )
-#v(2.5em)
 
-Le stesse operazioni ma senza la ridondanza:
+$ "op4: (3 scritture{Rata, Prestito, Filiale}" + \ 6 "Letture{Rata, è composto, Prestito, è associato, Contiene, Filiale})" dot 7.000.000 dot 1/30 $ ⚠️
 
+Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta la lettura e scrittura della rata che viene saldata in quel mese e da cui poi bisogna risalire al prestito a cui essa fa riferimento tramite la relazione _è composto_, aggiornare il prestito di riferimento, dopodiché tramite la relazione _è associato_ ricavare l'iban del conto a cui è associato, poter quindi leggere in Contiene la filiale in cui quel prestito fa riferimento e quindi operare un aggiornamento dell'attributo attivi della filiale. 
+
+*Senza attributo attivi:*
 #figure(
   table(
     columns: 4, 
@@ -449,35 +553,23 @@ Le stesse operazioni ma senza la ridondanza:
         if x == 2 { center + horizon } else { left }
       },
   table.header([Nome], [Costrutto], [Accessi], [Tipo]),
-  [Rata], [Entità], [], [Scrittura],
-  [#upper[è] composto], [Relazione], [], [Scrittura],
-  [#upper[è] composto], [Relazione], [], [Lettura],
-  [Prestito], [Entità], [], [Lettura],
-  [#upper[è] associato], [Relazione], [], [Lettura],
-  [Conto], [Entità], [], [Lettura],
-  [Contiene], [Relazione], [], [Lettura],
-  [Filiale], [Entità], [], [Lettura],
-  [Filiale], [Entità], [], [Scrittura],
+  [Rata], [Entità], [233.333], [Lettura],
+  [Rata], [Entità], [233.333], [Scrittura],
+  [#upper[è] composto], [Relazione], [233.333], [Lettura],
+  [Prestito], [Entità], [233.333], [Lettura],
+  [Prestito], [Entità], [233.333], [Scrittura],
   ),
-  caption: [Operazione 1]
+  caption: [Operazione 4]
 )
 
-//#show math.equation: set text(font: "Latin Modern Math")
+$ "op4: (2 scritture{Rata, Prestito} + 3 Letture{Rata, è composto, Prestito})" dot 7.000.000 dot 1/30$ 
 
-$ "op1: (1 lettura)" dot 3.000 $ \
-$ "op2: (4 scrittura{conto, contiene, possiede, filiale}" + 1 "lettura{filiale})" dot 150 $ \
-$ "op3: (3 scrittura{Possiede, conto, filiale} + 4 letture{Possiede, conto, filiale, contiene})" dot 1.000.000 $
-$ "op4: (3 scritture{Rata, Prestito, Filiale} + 5 Letture{})" dot 7.000.000 dot 1/30
-\ "Totale": 12.107.500 $
+Anche in questo caso la logica rimane la stessa, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere nell'entità Filiale e nelle relazioni _è associato_ e _contiene_.
 
-Conti:
-op1: ((2 letture * 4000 {Contenuto, Conto}) + (2 letture * 2333{è associato, Prestito})) * 3000
-op2: (3 scritture{Possiede, Conto, Contenuto}) * 150 
-op3 : (2 letture{Possiede, Conto}, 2 scritture{Possiede, Conto}) * 1.000.000 
-op4: (1 scrittura, 1 lettura) * 7.000.000 x 1/30 
-totale: 44.700.900
-
-La seguente analisi ci suggerisce che la conservazione dell'attributo derivato attivi sia utile e quindi lo manterremo nel nostro schema ER ristrutturato. 
+ $ "Totale con attributo attivi": 13.507.350 $ 
+ $ "Totale senza attributo attivi": 46.098.900 $ 
+ 
+Questa analisi ci suggerisce che la conservazione dell'attributo derivato attivi sia utile e quindi lo manterremo nel nostro schema ER ristrutturato. 
 
 === Studio dell'attributo derivato _Somma rate_ di #er[prestito]
 Il secondo blocco di operazioni riguardano la ridondanza introdotta dall'attributo derivato somma rate dell'entità Prestito, anche in questo caso è il caso di un attributo derivato secondo funzioni aggregative e le entità che sono coinvolte sono Rata e Prestito. Possiamo considerare due operazioni che sono:
