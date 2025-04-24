@@ -10,6 +10,7 @@
 #set par(justify: true)
 #show heading.where(level: 1): set text(20pt)
 #show heading.where(level: 2): set text(15pt)
+#show heading.where(level: 3): set text(12pt)
 #show heading: set block(below: 1.5em)
 #show figure.caption: it => [
  #text(9pt)[ 
@@ -516,49 +517,54 @@ Da notare il fatto che l'insieme degli _IBAN_ di #er[CORRENTE] deve essere disgi
 
 
 == Schema ER ristrutturato 
-/*
-@PERE METTI QUI L'IMMAGINE, LA TROVI GIÀ PRONTA SU draw.io
-*/
+#figure(
+  image("media/flowchart-ER-ristrutturato.svg", width: 120%),
+  caption: [Schema ER ristrutturato]
+)
 
 == Schema Logico 
+Legenda: Le chiavi primarie sono sottolineate e le chiavi esterne sono in corsivo. 
+#v(1.5em)
 
-#erb[CLIENTE] (#u[ID], CF, Residenza, DataDiNascita, Telefono, Cognome, Nome, Gestore)
-- _Gestore_ chiave esterna da DIPENDENTE.
+#erb[CLIENTE] (#u[ID], CF, Residenza, DataDiNascita, Telefono, Cognome, Nome, _Gestore_)
 - _CF_: UNIQUE
 
-#erb[CONTO] (#u[IBAN], Saldo, FilialeAppartenenza)
-- FilialeAppartenenza chiave esterna da FILIALE.
+#erb[CONTO] (#u[_IBAN_], Saldo, _FilialeAppartenenza_)
 - FilialeAppartenenza: NOT NULL
 
-#erb[CONTO_CORRENTE] (IBAN, Scoperto)
-- _IBAN_ chiave esterna da CONTO.
+#erb[CONTO_CORRENTE] (#u[_IBAN_], Scoperto)
 - _IBAN_: UNIQUE
 
-CONTO_DI_RISPARMIO(IBAN, TassoInteresse)
-IBAN chiave esterna da CONTO.
-IBAN: UNIQUE
+#erb[CONTO_DI_RISPARMIO] (#u[_IBAN_], TassoInteresse)
+- _IBAN_: UNIQUE
 
-POSSIEDE(Cliente, Conto, Operazione, Data)
-Cliente chiave esterna da CLIENTE.
-Conto chiave esterna da CONTO.
+#erb[POSSIEDE] (#u[_Cliente_, _Conto_], Operazione, Data)
+- _Conto_ chiave esterna da CONTO.
 
-PRESTITO(Codice, Ammontare, Inizio, Tipo, ContoAssociato)
-ContoAssociato chiave esterna da CONTO.
-ContoAssociato: NOT NULL
+#erb[PRESTITO] (#u[Codice], Ammontare, Inizio, Tipo, _ContoAssociato_)
+- _ContoAssociato_: NOT NULL
 
-RATA(Numero, CodicePrestito, Ammontare, DataPagamento, DataScadenza)
-CodicePrestito chiave esterna da PRESTITO.
+#erb[RATA] (#u[Numero], _CodicePrestito_, Ammontare, DataPagamento, DataScadenza)
 
-FILIALE(Nome, Città, Attivi(derivato), Indirizzo, Capo)
-Capo chiave esterna da DIPENDENTE.
-Capo NOT NULL
+#erb[FILIALE] (#u[Nome], Città, Attivi(derivato), Indirizzo, _Capo_)
+- _Capo_ NOT NULL
 
-DIPENDENTE(ID, Nome, Cognome, Telefono, DataAssunzione, IDCapo(derivato), Filiale)
-IDCapo chiave esterna da DIPENDENTE.
-Filiale chiave esterna da FILIALE.
-Filiale NOT NULL
+#erb[DIPENDENTE] (#u[ID], Nome, Cognome, Telefono, DataAssunzione, _IDCapo_ (derivato), _Filiale_)
+- _Filiale_ NOT NULL
 
+=== Chiavi esterne
+- _Gestore_ è chiave esterna di #er[cliente] rispetto a #er[DIPENDENTE]
 
+- _FilialeAppartenenza_ è chiave esterna di #er[conto] rispetto a #er[filiale]
+- _IBAN_ è chiave esterna di #er[conto corrente, conto risparmio] rispetto a #er[conto]
+- _Cliente_ è chiave esterna di #er[possiede] rispetto a #er[cliente]
+- _ContoAssociato_ è chiave esterna di #er[prestito] rispetto a CONTO
+- _Capo_ è chiave esterna di #er[filiale] rispetto a #er[DIPENDENTE]
+- _CodicePrestito_ è chiave esterna di #er[rata] rispetto a #er[PRESTITO]
+- _IDCapo_ è chiave esterna di #er[dipendente] rispetto a DIPENDENTE
+- _Filiale_ è chiave esterna di #er[cliente] rispetto a #er[FILIALE]
+
+#pagebreak()
 
 = Popolamento del database
 
