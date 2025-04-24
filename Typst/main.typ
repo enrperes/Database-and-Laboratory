@@ -9,15 +9,20 @@
 #set quote(block: true)
 #set par(justify: true)
 #show heading.where(level: 1): set text(20pt)
+#show heading.where(level: 2): set text(15pt)
+#show heading: set block(below: 1.5em)
 #show figure.caption: it => [
  #text(9pt)[ 
  #it.supplement
  #context it.counter.display(it.numbering)]:
  #emph[#it.body]
 ]
+#show outline.entry.where(level: 1): set text(weight: "bold", size: 13pt)
+#show outline.entry.where(level: 2): set block(below: 12em)
 
-// Code Blocks
+// Code Blocks styling
  #show: zebraw-init.with(numbering: false)
+
 
 /* ------------ Variables ------------- */
 #let title = text(25pt)[Relazione progetto di Laboratorio]
@@ -29,6 +34,7 @@
   show figure: set align(right)
   figure(..args)
 }
+#let u(text) = underline(offset: 0.2em, stroke: 1pt, text)
 
 
 
@@ -55,14 +61,18 @@
 
 #align(center)[
   #v(5em)
-  #text(15pt)[#strong()[#upper[Progettazione e implementazione \ di una base di dati per la gestione di una banca]]]
+  #text(17pt)[#strong()[#upper[Progettazione e implementazione \ di una base di dati per la gestione di una banca]]]
   #v(2em)
 ]
 #pagebreak()
 
-/* ------------------------- */
+/* ------------Outline------------- */
 
-#outline(indent: auto, title: "Indice")
+#outline(
+  indent: 2.5em, title: "Indice",
+  // target: selector.or(heading, figure.where(kind:table))
+  )
+
 
 /* 
 1. Analisi dei requisiti 
@@ -143,15 +153,6 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 
 #v(1em)
 
-// Allineamento orizzontale 
-// #grid(
-//   columns: (1fr, 0.5fr), 
-//   [- L'enittà #erb[filiale] rappresenta una unità operativa della banca situata in una determinata città. La chiave primaria è il _Nome_, mentre gli altri attributi sono _Città_ e _Indirizzo_.  Inoltre, per ogni filiale è presente l'attributo derivato _Attivi_, che rappresenta l'ammontare totale della liquidità della filiale e viene calcolato sulla base dei conti, prestiti e rate ad esso associati.],[#figure(
-//   image("media/filiale.svg", width: 72%),
-//   caption: [Entità FILIALE]
-// )]
-// )
-
 - L'entità #erb[filiale] rappresenta una unità operativa della banca situata in una determinata città. La chiave primaria è il _Nome_, mentre gli altri attributi sono _Città_ e _Indirizzo_.  Inoltre, per ogni filiale è presente l'attributo derivato _Attivi_, che rappresenta l'ammontare totale della liquidità della filiale e viene calcolato sulla base dei conti, prestiti e rate ad esso associati.
 #figure(
   image("media/filiale.svg", width: 22%),
@@ -168,6 +169,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 #v(2.5em)
 
 - L'entità #erb[dipendente] è caratterizzata da un codice univoco _ID_ che funge da chiave primaria. _Nome_, _Cognome_, _Numero di telefono_, _Data di assunzione_ sono gli altri attributi che la descrivono. È stato scelto di tenere traccia dell'anzianità aziendale sulla base della data di assunzione. \ La qualifica di capo viene descritta da una specializzazione parziale di #er[dipendente], chiamata #er[capo]. 
+#v(-0.7em)
 #figure(
   image("media/dipendente.svg", width: 30%),
   caption: [Entità DIPENDENTE]
@@ -176,23 +178,24 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 
 - L'entità #erb[Capo] rappresenta il capo di una filiale. Essendo una specializzazione dell'entità #er[dipendente], eredita tutti gli attributi di quest'ultima. Un capo è univoco per ogni filiale. 
 #figure(
-  image("media/capo.svg", width: 18%),
+  image("media/capo.svg", width: 16%),
   caption: [Entità CAPO]
 )
 #v(2.5em)
 
 - L'entità #erb[Conto] serve per identificare un servizio della banca messo a disposizione per il cliente. Ogni entità viene identificata univocamente da un attributo _IBAN_, un attributo _Saldo_ tiene traccia dell'ammontare di denaro presente sul conto. La banca inoltre mette a disposizione due tipi di conto, quindi l'entità Conto è stata specializzata in due sottoentità: #er[Conto Corrente] e #er[Conto di Risparmio]. La specializzazione è totale e disgiunta.
 
-- L'entità #erb[Conto Corrente] è una specializzazione dell'entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell'entità #er[Conto]. L'attributo che lo caratterizza è _Scoperto_ che indica quanto la banca può concedere di debito nei confronti del cliente.
+  - L'entità #erb[Conto Corrente] è una specializzazione dell'entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell'entità #er[Conto]. L'attributo che lo caratterizza è _Scoperto_ che indica quanto la banca può concedere di debito nei confronti del cliente.
 
-- L'entità #erb[Conto di Risparmio] è una specializzazione dell'entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell'entità di #er[Conto]. L'attributo che lo caratterizza è _Tasso d'interesse_ che indica il valore di rendita mensile del conto.
+  - L'entità #erb[Conto di Risparmio] è una specializzazione dell'entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell'entità di #er[Conto]. L'attributo che lo caratterizza è _Tasso d'interesse_ che indica il valore di rendita mensile del conto.
 #figure(
   image("media/conto.svg", width: 25%),
   caption: [Entità CONTO]
 )
-#v(2.5em)
+#v(2em)
 
 - L'entità #erb[Prestito] costituisce il servizio creditizio della banca. Essa è caratterizzata da un codice univoco che funge da chiave primaria. L'attributo _Ammontare_ fornisce l'informazione relativa alla somma di denaro prestata, mentre l'attributo _Inizio_ registra la data in cui il prestito ha avuto origine. L'attributo _Somma rate_ è un attributo derivato, che tiene traccia dell'importo saldato dal cliente. L'attributo _Mensilità_ indica il numero di rate complessive del prestito.
+#v(-1em)
 #figure(
   image("media/prestito.svg", width: 30%),
   caption: [Entità PRESTITO]
@@ -269,28 +272,35 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 - La scelta di assegnare il ruolo di entità a #er[rata] è dovuto alla numerosità degli attuributi e alla gestione dell'ammontare dei prestiti. Avendo un numero seriale che non è univoco, è necessario che una parte della chiave sia il codice del prestito.
 #v(2.5em)
 
-
+#pagebreak()
 
 == Schema Concettuale
 Dopo le analisi fatte, lo schema concettuale nel modello Entità Relazione è il seguente:
 #figure(
-  image("media/ER_Banca_1.svg", width: 120%),
+  image("media/ER_Banca_1.svg", width: 130%),
   caption: [Schema concettuale nel modello Entità Relazione]
 )
 
 == Analisi dei cicli
-- Ciclo #er[dipendente - fliale - capo]:
+=== Ciclo #er[dipendente - fliale - capo]:
 
-// @PERE METTI LA FIGURA QUI, GIÀ PRONTA SU draw.io
+#figure(
+  image("media/ciclo_cap_dip_fil.svg", width: 50%),
+  caption: [Ciclo DIPENDENTE - FILIALE - CAPO]
+)
 Questo ciclo è problematico in quanto potrebbe accadere che il capo di una filiale non lavori presso la filiale di cui è responsabile. È necessario imporre dei vincoli di integrità per evitare che ciò accada.
 #v(2.5em)
 
-- Ciclo #er[dipendente - cliente - conto - filiale]:
-// @PERE METTI LA FIGURA QUI, GIÀ PRONTA SU draw.io
+=== Ciclo #er[dipendente - cliente - conto - filiale]:
+#figure(
+  image("media/ciclo_dip_cli_conto_fil.svg", width: 70%),
+  caption: [Ciclo DIPENDENTE - CLIENTE - CONTO - FILIALE]
+)
 Questo ciclo non genera problemi di inconsistenza, in quanto a un cliente è permesso avere un gestore che lavora presso una certa filiale e avere più conti aperti in filiali diverse.
 #v(2.5em)
 
-== Vincoli d'integrità (da riprendere nella sezione di implementazione fisica)
+== Vincoli d'integrità 
+// (da riprendere nella sezione di implementazione fisica)
 Alcuni vincoli non possono essere catturati tramite il modello ER, vengono riportati di seguito e saranno tenuti in considerazione nella sezione di implementazione fisica:
 - Il capo di una filiale deve lavorare nella filiale in cui è responsabile.
 - Due clienti con gestore differente non possono avere un conto condiviso.
@@ -298,12 +308,13 @@ Alcuni vincoli non possono essere catturati tramite il modello ER, vengono ripor
 - Le rate vanno pagate in ordine complessivo.
 - La somma dell'importo delle rate deve corrispondere all'ammontare del prestito.
 
+#pagebreak()
 = Progettazione Logica
-Nell'ottimizzazione delle prestazioni, per lo studio delle ridondanze, e nella semplificazione dello
-schema ER concettuale verso lo schema ristrutturato, abbiamo considerato dei volumi
-di dati che sono stati ipotizzati secondo una banca reale di riferimento
-(Banca Intesa San Paolo).
+Nel processo di ottimizzazione delle prestazioni, nell’analisi delle ridondanze e nella semplificazione dello schema ER concettuale in vista della sua ristrutturazione, sono stati presi in considerazione volumi di dati stimati sulla base di una banca reale di riferimento, Intesa Sanpaolo S.p.A
+
 == Tabella dei volumi 
+
+⚠️ Da spiegare bene le scelte fatte 
 
 #figure(
   table(
@@ -450,11 +461,13 @@ Le stesse operazioni ma senza la ridondanza:
   caption: [Operazione 1]
 )
 
-$ "op1: (1 lettura)" dot 3.000$ \
-$"op2: (4 scrittura{conto, contiene, possiede, filiale}" + 1 "lettura{filiale})" dot 150$
-op3: (3 scrittura{Possiede, conto, filiale} + 4 letture{Possiede, conto, filiale, contiene}) x 1.000.000
-op4: (3 scritture{Rata, Prestito, Filiale} + 5 Letture{}) x 7.000.000 x 1/30
-totale: 12.107.500
+//#show math.equation: set text(font: "Latin Modern Math")
+
+$ "op1: (1 lettura)" dot 3.000 $ \
+$ "op2: (4 scrittura{conto, contiene, possiede, filiale}" + 1 "lettura{filiale})" dot 150 $ \
+$ "op3: (3 scrittura{Possiede, conto, filiale} + 4 letture{Possiede, conto, filiale, contiene})" dot 1.000.000 $
+$ "op4: (3 scritture{Rata, Prestito, Filiale} + 5 Letture{})" dot 7.000.000 dot 1/30
+\ "Totale": 12.107.500 $
 
 Conti:
 op1: ((2 letture * 4000 {Contenuto, Conto}) + (2 letture * 2333{è associato, Prestito})) * 3000
@@ -506,32 +519,46 @@ Da notare il fatto che l'insieme degli _IBAN_ di #er[CORRENTE] deve essere disgi
 /*
 @PERE METTI QUI L'IMMAGINE, LA TROVI GIÀ PRONTA SU draw.io
 */
-== Schema Logico 
-/* @PERE METTERE LA PAGINA "SCHEMA RELAZIONALE" (DEI DOCS GOOGLE) COSÌ COME NELLA RELAZIONE DI ZANOLIN (VEDI PAR. 3.7)
-*/
 
-/*
-#figure(
-  table(
-    columns: 4, 
-    stroke: 0.5pt,
-    fill: (x, y) => if y == 0 { rgb("#ddd") },
-    align: (x, y) =>
-      if y == 0 { center } else {
-        if x < 1 { center + horizon } else { left }
-      },
-  table.header([Nome], [Costrutto], [Accessi], [Tipo]),
-  [], [], [], [],
-  [], [], [], [],
-  [], [], [], [],
-  [], [], [], [],
-  [], [], [], [],
-  [], [], [], [],
-  [], [], [], [],
-  ),
-  caption: [Operazione 1]
-)
-*/
+== Schema Logico 
+
+#erb[CLIENTE] (#u[ID], CF, Residenza, DataDiNascita, Telefono, Cognome, Nome, Gestore)
+- _Gestore_ chiave esterna da DIPENDENTE.
+- _CF_: UNIQUE
+
+#erb[CONTO] (#u[IBAN], Saldo, FilialeAppartenenza)
+- FilialeAppartenenza chiave esterna da FILIALE.
+- FilialeAppartenenza: NOT NULL
+
+#erb[CONTO_CORRENTE] (IBAN, Scoperto)
+- _IBAN_ chiave esterna da CONTO.
+- _IBAN_: UNIQUE
+
+CONTO_DI_RISPARMIO(IBAN, TassoInteresse)
+IBAN chiave esterna da CONTO.
+IBAN: UNIQUE
+
+POSSIEDE(Cliente, Conto, Operazione, Data)
+Cliente chiave esterna da CLIENTE.
+Conto chiave esterna da CONTO.
+
+PRESTITO(Codice, Ammontare, Inizio, Tipo, ContoAssociato)
+ContoAssociato chiave esterna da CONTO.
+ContoAssociato: NOT NULL
+
+RATA(Numero, CodicePrestito, Ammontare, DataPagamento, DataScadenza)
+CodicePrestito chiave esterna da PRESTITO.
+
+FILIALE(Nome, Città, Attivi(derivato), Indirizzo, Capo)
+Capo chiave esterna da DIPENDENTE.
+Capo NOT NULL
+
+DIPENDENTE(ID, Nome, Cognome, Telefono, DataAssunzione, IDCapo(derivato), Filiale)
+IDCapo chiave esterna da DIPENDENTE.
+Filiale chiave esterna da FILIALE.
+Filiale NOT NULL
+
+
 
 = Popolamento del database
 
