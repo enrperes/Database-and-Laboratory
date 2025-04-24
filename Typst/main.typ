@@ -525,7 +525,6 @@ Aggiornamento di tutti i prestiti con frequenza di una volta al mese.
         if x == 2 { center + horizon } else { left }
       },
   table.header([Nome], [Costrutto], [Accessi], [Tipo]),
-  [Rata], [Entità], [233.333], [Lettura],
   [Rata], [Entità], [233.333], [Scrittura],
   [#upper[è] composto], [Relazione], [233.333], [Lettura],
   [Prestito], [Entità], [233.333], [Lettura],
@@ -538,9 +537,9 @@ Aggiornamento di tutti i prestiti con frequenza di una volta al mese.
   caption: [Operazione 4]
 )
 
-$ "op4: (3 scritture{Rata, Prestito, Filiale}" + \ 6 "Letture{Rata, è composto, Prestito, è associato, Contiene, Filiale})" dot 7.000.000 dot 1/30 $ ⚠️
+$ "op4: (3 scritture{Rata, Prestito, Filiale}" + \ 5 "Letture{è composto, Prestito, è associato, Contiene, Filiale})" dot 7.000.000 dot 1/30 $ ⚠️
 
-Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta la lettura e scrittura della rata che viene saldata in quel mese e da cui poi bisogna risalire al prestito a cui essa fa riferimento tramite la relazione _è composto_, aggiornare il prestito di riferimento, dopodiché tramite la relazione _è associato_ ricavare l'iban del conto a cui è associato, poter quindi leggere in Contiene la filiale in cui quel prestito fa riferimento e quindi operare un aggiornamento dell'attributo attivi della filiale. 
+Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta la  scrittura della rata che viene saldata in quel mese e da cui poi bisogna risalire al prestito a cui essa fa riferimento tramite la relazione _è composto_, aggiornare il prestito di riferimento, dopodiché tramite la relazione _è associato_ ricavare l'iban del conto a cui è associato, poter quindi leggere in Contiene la filiale in cui quel prestito fa riferimento e quindi operare un aggiornamento dell'attributo attivi della filiale. 
 
 *Senza attributo attivi:*
 #figure(
@@ -553,7 +552,7 @@ Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta 
         if x == 2 { center + horizon } else { left }
       },
   table.header([Nome], [Costrutto], [Accessi], [Tipo]),
-  [Rata], [Entità], [233.333], [Lettura],
+
   [Rata], [Entità], [233.333], [Scrittura],
   [#upper[è] composto], [Relazione], [233.333], [Lettura],
   [Prestito], [Entità], [233.333], [Lettura],
@@ -562,30 +561,112 @@ Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta 
   caption: [Operazione 4]
 )
 
-$ "op4: (2 scritture{Rata, Prestito} + 3 Letture{Rata, è composto, Prestito})" dot 7.000.000 dot 1/30$ 
+$ "op4: (2 scritture{Rata, Prestito} + 2 Letture{è composto, Prestito})" dot 7.000.000 dot 1/30$ 
 
 Anche in questo caso la logica rimane la stessa, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere nell'entità Filiale e nelle relazioni _è associato_ e _contiene_.
 
- $ "Totale con attributo attivi": 13.507.350 $ 
- $ "Totale senza attributo attivi": 46.098.900 $ 
+ $ "Totale con attributo attivi": 13.274.017 $ 
+ $ "Totale senza attributo attivi": 45.865.567 $ 
  
 Questa analisi ci suggerisce che la conservazione dell'attributo derivato attivi sia utile e quindi lo manterremo nel nostro schema ER ristrutturato. 
 
 === Studio dell'attributo derivato _Somma rate_ di #er[prestito]
-Il secondo blocco di operazioni riguardano la ridondanza introdotta dall'attributo derivato somma rate dell'entità Prestito, anche in questo caso è il caso di un attributo derivato secondo funzioni aggregative e le entità che sono coinvolte sono Rata e Prestito. Possiamo considerare due operazioni che sono:
-1- inserimento di una rata una volta al mese per ogni prestito della banca 
-2- lettura del valore della somma delle rate pagate per ogni prestito con frequenza di 2 volte all'anno.
-Per questa analisi abbiamo dovuto introdurre una ulteriore ipotesi e cioè il numero medio di rate presenti nella nostra base di dati per ogni prestito. Abbiamo supposto essere questo numero 12, che equivale ad un anno di rate pagate.
+Il secondo blocco di operazioni riguardano la ridondanza introdotta dall'attributo derivato somma rate dell'entità Prestito che misura il numero di rate che sono state pagate. Anche in questo caso è il caso di un attributo derivato secondo funzioni aggregative e le entità che sono coinvolte sono Rata e Prestito. Possiamo considerare due operazioni che sono:
 
-Con ridondanza
-Inserimento di una rata: 2 (scritture) * 7.000.000 (prestiti) * 1 (volta al mese) = 28 mln
-Lettura: 1 (lettura) * 7.000.000 (prestiti) * 1/6 mese = 7/6 mln
-totale: 29.160.000
+==== Operazione 1
+Inserimento di una rata una volta al mese per ogni prestito della banca 
 
-Senza ridondanza
-Inserimento di una rata: 1 (scrittura) * 7.000.000 (prestiti) * 1 (volta al mese) = 14 mln
-Lettura = 12 * 7.000.000 * 1/6 = 84 mln
-totale: 28.000.000
+*Con attributo ridondante _Somma rate_: *
+#figure(
+  table(
+    columns: 4, 
+    stroke: 0.5pt,
+    fill: (x, y) => if y == 0 { rgb("#ddd") },
+    align: (x, y) =>
+      if y == 0 { center } else {
+        if x == 2 { center + horizon } else { left }
+      },
+  table.header([Nome], [Costrutto], [Accessi], [Tipo]),
+  [Rata], [Entità], [7.000.000], [Scrittura],
+  [Prestito], [Entità], [7.000.000], [Lettura],
+  [Prestito], [Entità], [7.000.000], [Scrittura],
+  [è composto], [Relazione], [7.000.000], [Lettura],
+
+  ),
+  caption: [Operazione 1]
+)
+
+$ "op1: (2 scritture{Rata, Prestito} + 2 Letture{Prestito, è composto})" dot 7.000.000 dot 12/365 $ 
+
+*Senza attributo ridondante _Somma rate_:* 
+
+#figure(
+  table(
+    columns: 4, 
+    stroke: 0.5pt,
+    fill: (x, y) => if y == 0 { rgb("#ddd") },
+    align: (x, y) =>
+      if y == 0 { center } else {
+        if x == 2 { center + horizon } else { left }
+      },
+  table.header([Nome], [Costrutto], [Accessi], [Tipo]),
+  [Rata], [Entità], [7.000.000], [Scrittura],
+  ),
+  caption: [Operazione 1]
+)
+
+$ "op1: (1 scrittura{Rata})" dot 7.000.000 dot 12/365 $ 
+
+In questo caso, l'operazione di inserimento di una rata comporta la scrittura della rata e la scrittura del prestito, senza la necessità di leggere il prestito per aggiornare l'attributo somma rate.
+
+
+==== Operazione 2
+Lettura del valore della somma delle rate pagate per ogni prestito con frequenza di 2 volte all'anno.
+
+Per questa analisi abbiamo dovuto introdurre un' ulteriore ipotesi, ovvero il numero medio di rate presenti nella nostra base di dati per ogni prestito. Abbiamo supposto questo numero essere 12, che equivale ad un anno di rate pagate.
+
+*Con attributo ridondante _Somma rate_: *
+
+#figure(
+  table(
+    columns: 4, 
+    stroke: 0.5pt,
+    fill: (x, y) => if y == 0 { rgb("#ddd") },
+    align: (x, y) =>
+      if y == 0 { center } else {
+        if x == 2 { center + horizon } else { left }
+      },
+  table.header([Nome], [Costrutto], [Accessi], [Tipo]),
+  [Prestito], [Entità], [7.000.000], [Lettura],
+  ),
+  caption: [Operazione 2]
+)
+
+$ "op2: (1 lettura{Prestito})" dot 7.000.000 dot 2/365 $ 
+
+*Senza attributo ridondante _Somma rate_:* 
+
+#figure(
+  table(
+    columns: 4, 
+    stroke: 0.5pt,
+    fill: (x, y) => if y == 0 { rgb("#ddd") },
+    align: (x, y) =>
+      if y == 0 { center } else {
+        if x == 2 { center + horizon } else { left }
+      },
+  table.header([Nome], [Costrutto], [Accessi], [Tipo]),
+  [Prestito], [Entità], [7.000.000], [Lettura],
+  [è associato], [Entità], [7.000.000], [Lettura],
+  [Rata], [Entità], [7.000.000], [Lettura],
+  ),
+  caption: [Operazione 2]
+)
+
+$ "op2: (2 letture{Prestito, è associato} + 1 lettura{Rata}" dot 12) dot 7.000.000 dot 2/365$ 
+
+$ "Totale con ridondanza: " 1.419.178,08 $
+$ "Totale senza ridondanza: " 997.960,27 $ ⚠️
 
 Per questa ridondanza abbiamo concluso quindi che l'attributo somma rate possa essere rimosso e non essere utilizzato nello schema ER ristrutturato.
 
