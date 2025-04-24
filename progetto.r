@@ -120,9 +120,15 @@ pcf_files <- c(
   "/possiede_conto_filiale/check_iban2_un_trigger.sql"
 )
 
+## ==== CLIENTE_DIPENDENTE ====
+cd_files <- c(
+  "cliente_dipendente/cliente_dipendente.sql",
+  "cliente_dipendente/cliente_dipendente_trigger.sql"
+)
+
 
 # Esecuzione dei file ----
-for (file in c(df_files, fcpr_files, pcf_files)) {
+for (file in c(df_files, fcpr_files, pcf_files, cd_files)) {
   query <- paste(readLines(file.path(base_path, file)), collapse = "\n")
   tryCatch({
     dbExecute(con, query)
@@ -175,18 +181,33 @@ dbExecute(con, "UPDATE filiale SET manager = manager;")
 
 ## POPOLAMENTO CLIENTI ----
 
-gestori_possibili <- dbGetQuery(con, "SELECT id FROM dipendente")$id
-
 clienti <- data.frame(
   cf           = v_cf,
   nome         = sample(v_nomi, num_clienti, replace = TRUE),
   cognome      = sample(v_cognomi, num_clienti, replace = TRUE),
   data_nascita = v_data_nascita,
   residenza    = v_residenza,
-  telefono     = v_telefono[(num_dipendenti + 1):(num_dipendenti + num_clienti)],
-  gestore      = sample(c(gestori_possibili, rep(NA, floor(num_clienti * 0.67))), num_clienti, replace = TRUE)
+  telefono     = v_telefono[(num_dipendenti + 1):(num_dipendenti + num_clienti)]
 )
+
+# Assegna gestori in modo sequenziale
+gestori_possibili <- c(1:100)
+clienti$gestore <- NA  # inizializza
+
+num_primi <- floor(0.67 * 24000)
+for (i in 1:num_primi) {
+  clienti$gestore[i] <- gestori_possibili[(i - 1) %% length(gestori_possibili) + 1]
+}
+
+num_ultimi <- floor(0.67 * 6000)
+offset <- 24000
+for (i in 1:num_ultimi) {
+  clienti$gestore[offset + i] <- gestori_possibili[(i - 1) %% length(gestori_possibili) + 1]
+}
+
+# Scrive nel DB
 dbWriteTable(con, name = "cliente", value = clienti, append = TRUE, row.names = FALSE)
+
 
 
 ## POPOLAMENTO CONTO ----
@@ -236,6 +257,8 @@ additional <- data.frame(
 )
 # Unione dei due data frame
 possiede_df <- rbind(possiede, additional)
+print(possiede_df$conto[24001])
+print(possiede_df$conto[1])
 dbWriteTable(con, "possiede", possiede_df, append = TRUE, row.names = FALSE)
 
 
@@ -657,6 +680,26 @@ print(risp_inserito)
 possiede_inserito <- dbGetQuery(con, paste0("SELECT * FROM possiede WHERE conto = '", iban_nuovo, "';"))
 print(possiede_inserito)
 
+### Test 6: Inserimento di un gestore in un cliente ----
+cat("\n=== Test Inserimento di un gestore in un cliente ===\n")
+
+cliente_mio <- 29999
+gestore_ok <- dbGetQuery(con, "SELECT gestore FROM cliente WHERE id=5999")
+gestore_sbagliato <- dbGetQuery(con, "SELECT gestore FROM cliente WHERE id=6001")
+
+dbExecute(con, paste0("
+      UPDATE cliente
+      SET gestore = '",gestore_sbagliato,"'
+      WHERE id = 29999;
+    "))
+
+dbExecute(con, paste0("
+      UPDATE cliente
+      SET gestore = '",gestore_ok,"'
+      WHERE id = 29999;
+"))
+result <- dbGetQuery(con, "SELECT * FROM cliente WHERE id = 29999")
+print(result)
 
 
 
@@ -863,10 +906,32 @@ plot(table[,2], table[,1], main="titolo")
 
 # 3. Per filiale, il numero di conti cointestatari con un prestito afferente ----
 
+# Il numero di conti cointestati per filiale che hanno almeno un prestito associato.
+dbExecute(con, paste0("
+  CREATE VIEW conti_cointestati AS
+  SELECT p1.conto, conto.filiale
+  FROM possiede AS p1, conto
+  WHERE p1.conto = conto.iban AND EXISTS (
+    SELECT *
+    FROM possiede AS p2
+    WHERE p1.conto = p2.conto AND p1.cliente < p2.cliente)
+;"))
+#Giusto mettere solo < e non <> perchè se no conto doppi?
+  
+  
+table <- dbGetQuery(con, paste0("
+  SELECT filiale, COUNT(*) AS n_conti
+  FROM conti_cointestati, prestito
+  WHERE conti_cointestati.conto = prestito.conto
+  AND ammontare > 50.000
+  GROUP BY filiale
+;"))
 
-# NOTA TRIGGER PER CONTROLLARE LOGICA DIPENDENTE, CLIENTE, con controllo
-# di conto cointestato, gestore ecc.
+table$n_conti <- as.numeric(table$n_conti)
 
+barplot(table$n_conti, names.arg = table$filiale,
+        main = "Numero conti cointestati con prestito per filiale",
+        xlab = "Filiale", ylab = "Numero conti", col = "skyblue", border = "white", las = 2)
 
 
 
