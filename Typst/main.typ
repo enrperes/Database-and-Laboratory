@@ -535,11 +535,55 @@ Da notare il fatto che l'insieme degli _IBAN_ di #er[CORRENTE] deve essere disgi
 
 = Popolamento del database
 
+== Creazione delle tabelle
+Per ogni entità è stata creata una tabella nello schema fisico dove gli attributi dell'entità corrispondono ai campi della tabella. I campi della tabella sono stati opportunamente dichiarati in base al tipo di dato e aggiunto eventuali controlli sul loro valore per avere coerenza logica con quanto richiesto tramite l'utilizzo della condizione `CHECK()`.
+
+Campi particolari che richiedevano di essere ad esempio chiave primaria, unici, o non nulli sono stati settati tramite gli appositi comandi.
+
+Le tabelle sono state create in un ordine preciso; in particolare i vincoli di chiave esterna sono stati aggiunti solo quando tutte le tabelle coinvolte erano esistenti. 
+
+La tabella possiede è stata creata in quanto corrisponde alla relazione molti a molti tra l'entità #er[conto] e l'entità #er[cliente].
+
+
+== Modalità di generazione dei dati
+
+#figure(
+  table(
+    columns: 3, 
+    stroke: 0.5pt,
+    fill: (x, y) => if y == 0 { rgb("#ddd") },
+    align: (x, y) =>
+      if y == 0 { center } else {
+        if x < 1 { center + horizon } else { left }
+      },
+  table.header([Nome], [Costrutto], [Volume]),
+  [Cliente] , [Entità], [30.000],
+  [Conto] , [Entità], [24.000],
+  [Conto Corrente] , [Entità], [20.000],
+  [Conto Risparmio] , [Entità], [4.000],
+  [Dipendente] , [Entità], [200],
+  [Filiale] , [Entità], [6],
+  [Prestito] , [Entità], [14.000],
+  [Contiene] , [Relazione], [24.000],
+  [Di] , [Relazione], [200],
+  [#upper[è] associato] , [Relazione], [14.000],
+  [#upper[è] capo] , [Relazione], [6],
+  [#upper[è] composto] , [Relazione], [14.000],
+  [Gestisce] , [Relazione], [20.000],
+  [Lavora] , [Relazione], [200],
+  [Possiede] , [Relazione], [38.000],
+  ),
+  caption: [Tabella dei volumi proporzionata]
+)
+
+
+== Creazione dei trigger
+
+
+== Inserimento tabelle e dati nel database
 Per creare il database richiesto, popolarlo e testare le query assegnate è stata seguita una particolare logica affinché tutto venisse inserito correttamente.
-Infatti si potevano presentare delle problematiche relative a chiavi esterne e/o a dei trigger.
 
 Per prima cosa è stato creato il database, assegnando i volumi dei dati con valori proporzionati alla tabella dei volumi precedentemente proposta.
-Sono state poi create tutte le tabelle in un ordine preciso; in particolare i vincoli di chiave esterna sono stati aggiunti solo quando tutte le tabelle coinvolte erano esistenti. 
 
 Vengono poi caricati nel sistema tutti i trigger utilizzati e temporaneamente disabilitati per possibili inconsistenze momentanee nell'inserimento dei dati. La modalità di generazione casuale dei dati è stata pensata in modo tale che, al termine degli inserimenti iniziali, tutto sia coerente e non ci siano errori.
 
@@ -550,6 +594,7 @@ Estratti dei possibili gestori vengono inseriti i clienti, successivamente la ta
 Per la macrocategoria dei prestiti, una volta generati quest'ultimi e le relative rate andiamo, tramite apposito script, a pagare le rate che hanno una data di scadenza antecedente a quella odierna. Inseriti tutti i prestiti aggiorniamo l'attributo _attivi_ della tabella #er[Filiale] in maniera automatica sui dati inseriti e al termine riattiviamo tutti i trigger.
 
 Gli script utilizzati non potevano essere sempre sostituiti dai trigger, infatti non era possibile tenerli tutti attivi e inserire tutti i valori in maniera ordinata e raggruppati per tabelle, ma avremmo dovuto fare attenzione volta per volta. Degli esempi di inserimenti di record sono presentati più avanti.
+
 
 == Test 
 Finito di popolare tutto il database ci assicuriamo tramite dei test che tutto sia perfettamente funzionante, che rispetti i requisiti che ci siamo imposti e che ci dia i risultati attesi. Questa verifica viene effettuata confrontando il risultato ottenuto dalle operazioni con i risultati attesi.
