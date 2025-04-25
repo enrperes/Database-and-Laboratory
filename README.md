@@ -6,4 +6,4 @@
 Progettazione e implementazione di una base di dati per la gestione di una banca
 
 
-![image](/Typst/media/ER_banca_final.png)
+![image](/Typst/media/ER_banca.png)
