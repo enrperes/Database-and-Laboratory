@@ -136,7 +136,7 @@ Per chiarire il significato e le relazioni dei termini chiave definite nei requi
   table.header([Termine], [Descrizione]),
   [Filiale], [Unità operativa della banca situata in una determinata città. È gestita da un unico capo.],
   [Cliente], [Persona fisica con almeno un conto aperto nella banca.],
-  [Conto], [Servizio di gestione del denaro che permette diverse operazioni. Può essere esclusivamente corrente o di risparmio.], 
+  [Conto], [Servizio di gestione del denaro che permette diverse operazioni. Può essere esclusivamente di tipo corrente o di risparmio.], 
   [Conto Corrente], [Tipo di conto caratterizzato da uno scoperto.],
   [Conto di risparmio], [Tipo di conto caratterizzato da un tasso di interesse.],
   [Dipendente], [Persona fisica che lavora in una certa filiale della banca.],
@@ -155,7 +155,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 
 #v(1em)
 
-- L'entità #erb[filiale] rappresenta una unità operativa della banca situata in una determinata città. La chiave primaria è il _Nome_, mentre gli altri attributi sono _Città_ e _Indirizzo_.  Inoltre, per ogni filiale è presente l'attributo derivato _Attivi_, che rappresenta l'ammontare totale della liquidità della filiale e viene calcolato sulla base dei conti, prestiti e rate ad esso associati.
+- L'entità #erb[filiale] rappresenta un'unità operativa della banca situata in una determinata città. La chiave primaria è il _Nome_, mentre gli altri attributi sono _Città_ e _Indirizzo_.  Inoltre, per ogni filiale è presente l'attributo derivato _Attivi_, che rappresenta l'ammontare totale della liquidità della filiale e viene calcolato sulla base dei conti, prestiti e rate ad esso associati.
 #figure(
   image("media/filiale.svg", width: 22%),
   caption: [Entità FILIALE]
@@ -197,11 +197,11 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 #v(2em)
 
 - L'entità #erb[Prestito] costituisce il servizio creditizio della banca. Essa è caratterizzata da un codice univoco che funge da chiave primaria. L'attributo _Ammontare_ fornisce l'informazione relativa alla somma di denaro prestata, mentre l'attributo _Inizio_ registra la data in cui il prestito ha avuto origine. L'attributo _Somma rate_ è un attributo derivato, che tiene traccia dell'importo saldato dal cliente. L'attributo _Mensilità_ indica il numero di rate complessive del prestito.
-#v(-1em)
 #figure(
   image("media/prestito.svg", width: 30%),
   caption: [Entità PRESTITO]
 )
+#v(2.5em)
 
 - L'entità #erb[rata] è una entità debole ed ha il compito di rappresentare ogni singolo pagamento periodico associato a un determinato prestito. L'identificazione univoca di ciascuna rata è garantita da una chiave primaria composta, costituita dal suo numero (indicante la “posizione” della rata nella sequenza dei pagamenti) e dalla chiave esterna che fa riferimento all'entità #er[Prestito]. Tra gli attributi figurano inoltre la _Data scadenza_, ossia il giorno entro cui la rata deve essere corrisposta, e la _Data pagamento_, che riporta il momento in cui il versamento è stato effettuato. Infine, l'attributo _Ammontare_ specifica l'importo dovuto per quella singola rata.
 #figure(
@@ -271,7 +271,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 == Scelte particolari
 - La specializzazione non totale #er[capo - dipendente] ci permette di inserire la molteplicità (1,1) nella relazione #er[è capo] e di non dover tenere la molteplicità (0,1) nel caso in cui #er[dipendente] non avesse avuto la specializzazione. Favorisce inoltre una maggiore chiarezza nella relazione #er[di].
 - La specializzazione totale di #er[conto] è dovuta alla presenza dei diversi attributi che caratterizzazno le due specializzazioni.
-- La scelta di assegnare il ruolo di entità a #er[rata] è dovuto alla numerosità degli attributi e alla gestione dell'ammontare dei prestiti. Avendo un numero seriale che non è univoco, è necessario che una parte della chiave sia il codice del prestito.
+- La scelta di assegnare il ruolo di entità a #er[rata] è dovuta alla numerosità degli attributi e alla gestione dell'ammontare dei prestiti. Avendo un numero seriale non è univoco, è necessario che una parte della chiave sia il codice del prestito.
 #v(2.5em)
 
 #pagebreak()
@@ -279,7 +279,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 == Schema Concettuale
 Dopo le analisi fatte, lo schema concettuale nel modello Entità Relazione è il seguente:
 #figure(
-  image("media/ER_Banca_1.svg", width: 130%),
+  image("media/ER_Banca_1.svg", width: 125%),
   caption: [Schema concettuale nel modello Entità Relazione]
 )
 
