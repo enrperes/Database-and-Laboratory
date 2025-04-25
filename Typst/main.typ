@@ -24,7 +24,12 @@
 #show heading.where(level: 4): set heading(numbering: none)
 
 // Code Blocks styling
-#show: zebraw-init.with(numbering: false, lang:false, comment-font-args: (font: "Courier", size: 10pt))
+#show: zebraw-init.with(
+  numbering: false,
+  lang:true,
+  comment-font-args: (font: "Courier", size: 10pt),
+  comment-color: rgb("#ddd"),
+)
 
 
 /* ------------ Variables ------------- */
@@ -872,7 +877,7 @@ Finito di popolare tutto il database ci assicuriamo tramite dei test che tutto s
 
 
 = Query 
-Dopo aver verificato che anche i test restituivano i risultati attesi, procediamo con l'esecuzione delle query assegnate:
+Dopo aver verificato che anche i test restituissero i risultati attesi, abbiamo proceduto con la scrittura delle query richieste.
 
 == Query 1
 #emph[#quote[Restituire il numero medio di rate dei prestiti associati a conti nelle filiali di Udine.]]
@@ -889,13 +894,13 @@ SELECT AVG(mensilità) AS media_rate
 )
 La richiesta è immediata con l'utilizzo della funzione aggregata `AVG()`.
 
-== QUERY 2:	
+== Query 2:	
 #emph[#quote[Restituire i clienti con solo conti di risparmio in filiali che hanno tra i 30 e i 32 dipendenti.]]
 Per comodità è stata creata una vista dove è stat fatta una selezione sulla tabella #er[filiale], tenendo solamente quelle che rispettavano il vincolo sul numero dei dipendenti.
 La query poi si appoggia su questa vista per cercare i clienti che hanno almeno un conto di risparmio in queste filiali e che non hanno nessun conto corrente associato.
 
 #zebraw(
-header: [Query 1], 
+header: [Query 2], 
 ```sql
 CREATE OR REPLACE VIEW filiali_3032 AS
   SELECT filiale, COUNT(*) AS n_dip
@@ -916,18 +921,126 @@ SELECT cliente.id
 ```
 )
 
-== QUERY 3:
-#emph[#quote[Restituire i capi che gestiscono almeno 3 clienti che possiedono almeno 100 000€.]]
+== Query 3: 
+#emph[#quote[Restituire i capi che gestiscono almeno 3 clienti che possiedono almeno 100.000€.]]
+
+#zebraw(
+header: [Query 2], 
+```sql
+CREATE OR REPLACE VIEW clienti_ricchi AS
+  SELECT cliente.id, SUM(conto.saldo) AS soldi, cliente.gestore
+  FROM cliente, possiede, conto
+  WHERE cliente.id = possiede.cliente
+    AND conto.iban = possiede.conto
+  GROUP BY cliente.id, cliente.gestore
+  HAVING SUM(conto.saldo) > 100000;
+
+SELECT DISTINCT capo
+  FROM dipendente
+  WHERE EXISTS (
+    SELECT *
+    FROM clienti_ricchi c1, clienti_ricchi c2, clienti_ricchi c3
+    WHERE c1.gestore = dipendente.id
+      AND c2.gestore = dipendente.id
+      AND c3.gestore = dipendente.id
+      AND c1.id < c2.id AND c2.id < c3.id
+  );
+```
+)
+
 La vista creata è una restrizione sui clienti che rispettano il vincolo. È stata effettuata con l'utilizzo della funzione `SUM()` poiché il saldo era relativo a tutti i conti posseduti.
 Per validare un capo è stato fatto il prodotto cartesiano triplo della vista e, dopo essere state selezionati solamente le righe con gestore uguale, è stato controllato che i clienti fossero tutti e tre diversi.
 
-== QUERY 4:
+== Query 4:
 #emph[#quote[Restituire i dipendenti non capo che gestiscono esattamente 2 clienti, uno con solo conti correnti e uno son solo conti di risparmio.]]
+
+#zebraw(
+  header: [Query 4],
+```sql
+CREATE OR REPLACE VIEW clienti_correnti AS
+  SELECT possiede.cliente, cliente.gestore
+  FROM possiede, cliente
+  WHERE possiede.cliente = cliente.id
+    AND NOT EXISTS (
+      SELECT 1
+      FROM contorisparmio
+      WHERE contorisparmio.iban = possiede.conto
+    );
+
+  CREATE OR REPLACE VIEW clienti_risparmio AS
+  SELECT possiede.cliente, cliente.gestore
+  FROM possiede, cliente
+  WHERE possiede.cliente = cliente.id
+    AND NOT EXISTS (
+      SELECT 1
+      FROM contocorrente
+      WHERE contocorrente.iban = possiede.conto
+    );
+
+ SELECT id
+  FROM dipendente
+  WHERE capo <> id
+    AND EXISTS (
+      SELECT *
+      FROM clienti_correnti cc1
+      WHERE cc1.gestore = dipendente.id
+        AND NOT EXISTS (
+          SELECT *
+          FROM clienti_correnti cc2
+          WHERE cc2.gestore = dipendente.id
+            AND cc1.cliente <> cc2.cliente
+        )
+    )
+    AND EXISTS (
+      SELECT *
+      FROM clienti_risparmio cr1
+      WHERE cr1.gestore = dipendente.id
+        AND NOT EXISTS (
+          SELECT *
+          FROM clienti_risparmio cr2
+          WHERE cr2.gestore = dipendente.id
+            AND cr1.cliente <> cr2.cliente
+        )
+    );
+```
+)
+
 La prima (seconda) vista seleziona solamente i clienti che hanno almeno un conto corrente (di risparmio) e che non hanno nessun conto di risparmio (corrente).
 La query seleziona i dipendenti non capo (con la verifica _ID_ <> _Capo_) e poi controlla che esista un unico cliente nella prima vista e un unico cliente nella seconda vista.
 
-== QUERY 5:
+== Query 5: 
 #emph[#quote[Restituire il cliente con il prestito più alto nella filiale di Roma che non ha come gestore un dipendente con meno di 3 anni di esperienza.]]
+
+
+#zebraw(
+  header: [Query 5],  
+```sql
+ CREATE OR REPLACE VIEW clienti_gestiti_3 AS
+  SELECT cliente.id
+  FROM cliente, dipendente
+  WHERE cliente.gestore = dipendente.id
+    AND dipendente.data_assunzione < DATE '", data_limite, "';
+
+ CREATE OR REPLACE VIEW candidati AS
+  SELECT cliente.id, prestito.ammontare
+  FROM cliente, clienti_gestiti_3, possiede, prestito, conto, filiale
+  WHERE cliente.id = clienti_gestiti_3.id
+    AND cliente.id = possiede.cliente
+    AND possiede.conto = prestito.conto
+    AND prestito.conto = conto.iban
+    AND conto.filiale = filiale.nome
+    AND filiale.città = 'Roma';
+
+  SELECT id, ammontare
+  FROM candidati c1
+  WHERE NOT EXISTS (
+    SELECT 1
+    FROM candidati c2
+    WHERE c2.ammontare > c1.ammontare
+  );
+```
+)
+
 La prima vista ci restringe i possibili clienti a quelli che hanno un gestore assunto da almeno 3 anni.
 La seconda vista, a partire dalla prima, fa un ulteriore filtro prendendo i clienti solo della filiale di Roma.
 La query si occupa di verificare, per ogni cliente, che tra i clienti della seconda vista non ce ne sia qualcuno con saldo maggiore del proprio, in tal caso stampa il cliente.

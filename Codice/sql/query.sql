@@ -1,11 +1,11 @@
--- Il numero medio di rate dei prestiti associati a conti delle filiali di UD.
+--1 Il numero medio di rate dei prestiti associati a conti delle filiali di UD.
 SELECT AVG(mensilità) AS media_rate
   FROM prestito, conto, filiale
   WHERE prestito.conto = conto.iban
     AND conto.filiale = filiale.nome
     AND filiale.città = 'Udine';
 
--- Tutti i clienti che hanno solo conti risparmio in filiali con almeno 10 e al massimo 20 dipendenti.
+--2 Tutti i clienti che hanno solo conti risparmio in filiali con almeno 10 e al massimo 20 dipendenti.
 CREATE OR REPLACE VIEW filiali_3032 AS
   SELECT filiale, COUNT(*) AS n_dip
   FROM dipendente
@@ -23,7 +23,7 @@ SELECT cliente.id
       WHERE contocorrente.iban = conto.iban
     );
 
--- Tutti i capi dei dipendenti che gestiscono almeno 3 clienti e che ciascun cliente abbia almeno 100k euro 
+--3 Tutti i capi dei dipendenti che gestiscono almeno 3 clienti e che ciascun cliente abbia almeno 100k euro 
 -- in conti (inteso come somma di tutti i conti che ha)
 CREATE OR REPLACE VIEW clienti_ricchi AS
   SELECT cliente.id, SUM(conto.saldo) AS soldi, cliente.gestore
@@ -43,9 +43,9 @@ SELECT DISTINCT capo
       AND c3.gestore = dipendente.id
       AND c1.id < c2.id AND c2.id < c3.id
   );
-)
 
---Tutti i dipendenti non capo che gestiscono esattamente 2 clienti di cui uno ha solo conti di risparmio e uno ha solo conti correnti.
+
+--4 Tutti i dipendenti non capo che gestiscono esattamente 2 clienti di cui uno ha solo conti di risparmio e uno ha solo conti correnti.
 CREATE OR REPLACE VIEW clienti_correnti AS
   SELECT possiede.cliente, cliente.gestore
   FROM possiede, cliente
