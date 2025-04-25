@@ -7,9 +7,10 @@
 #set text(lang: "it")
 #set page(numbering: "1")
 #set quote(block: true)
+#show quote: set text(font: "", size: 12pt)
 #set par(justify: true)
 #show heading.where(level: 1): set text(20pt)
-#show heading.where(level: 2): set text(15pt)
+#show heading.where(level: 2): set text(14pt)
 #show heading.where(level: 3): set text(12pt)
 #show heading: set block(below: 1.5em)
 #show figure.caption: it => [
@@ -23,7 +24,7 @@
 #show heading.where(level: 4): set heading(numbering: none)
 
 // Code Blocks styling
- #show: zebraw-init.with(numbering: false)
+#show: zebraw-init.with(numbering: false, lang:false, comment-font-args: (font: "Courier", size: 10pt))
 
 
 /* ------------ Variables ------------- */
@@ -871,30 +872,62 @@ Finito di popolare tutto il database ci assicuriamo tramite dei test che tutto s
 
 
 = Query 
-PER PERE: METTERE LE QUERY IN SQL DOPO LA QUOTE E PRIMA DEL COMMENTO \
 Dopo aver verificato che anche i test restituivano i risultati attesi, procediamo con l'esecuzione delle query assegnate:
 
-== QUERY 1:
-#quote[Restituire il numero medio di rate dei prestiti associati a conti nelle filiali di Udine.]
-Richiesta immediata, necessario l'utilizzo della funzione aggregata `AVG()`
+== Query 1
+#emph[#quote[Restituire il numero medio di rate dei prestiti associati a conti nelle filiali di Udine.]]
+
+#zebraw(
+  header: [Query 1], 
+```sql
+SELECT AVG(mensilità) AS media_rate
+  FROM prestito, conto, filiale
+  WHERE prestito.conto = conto.iban
+    AND conto.filiale = filiale.nome
+    AND filiale.città = 'Udine';
+```
+)
+La richiesta è immediata con l'utilizzo della funzione aggregata `AVG()`.
 
 == QUERY 2:	
-#quote[Restituire i clienti con solo conti di risparmio in filiali che hanno tra i 30 e i 32 dipendenti.]
+#emph[#quote[Restituire i clienti con solo conti di risparmio in filiali che hanno tra i 30 e i 32 dipendenti.]]
 Per comodità è stata creata una vista dove è stat fatta una selezione sulla tabella #er[filiale], tenendo solamente quelle che rispettavano il vincolo sul numero dei dipendenti.
 La query poi si appoggia su questa vista per cercare i clienti che hanno almeno un conto di risparmio in queste filiali e che non hanno nessun conto corrente associato.
 
+#zebraw(
+header: [Query 1], 
+```sql
+CREATE OR REPLACE VIEW filiali_3032 AS
+  SELECT filiale, COUNT(*) AS n_dip
+  FROM dipendente
+  GROUP BY filiale
+  HAVING COUNT(*) BETWEEN 30 AND 32;
+
+SELECT cliente.id
+  FROM cliente, possiede, conto, filiali_3032
+  WHERE cliente.id = possiede.cliente
+    AND possiede.conto = conto.iban
+    AND conto.filiale = filiali_3032.filiale
+    AND NOT EXISTS (
+      SELECT 1
+      FROM contocorrente
+      WHERE contocorrente.iban = conto.iban
+    );
+```
+)
+
 == QUERY 3:
-#quote[Restituire i capi che gestiscono almeno 3 clienti che possiedono almeno 100 000€.]
+#emph[#quote[Restituire i capi che gestiscono almeno 3 clienti che possiedono almeno 100 000€.]]
 La vista creata è una restrizione sui clienti che rispettano il vincolo. È stata effettuata con l'utilizzo della funzione `SUM()` poiché il saldo era relativo a tutti i conti posseduti.
 Per validare un capo è stato fatto il prodotto cartesiano triplo della vista e, dopo essere state selezionati solamente le righe con gestore uguale, è stato controllato che i clienti fossero tutti e tre diversi.
 
 == QUERY 4:
-#quote[Restituire i dipendenti non capo che gestiscono esattamente 2 clienti, uno con solo conti correnti e uno son solo conti di risparmio.]
+#emph[#quote[Restituire i dipendenti non capo che gestiscono esattamente 2 clienti, uno con solo conti correnti e uno son solo conti di risparmio.]]
 La prima (seconda) vista seleziona solamente i clienti che hanno almeno un conto corrente (di risparmio) e che non hanno nessun conto di risparmio (corrente).
 La query seleziona i dipendenti non capo (con la verifica _ID_ <> _Capo_) e poi controlla che esista un unico cliente nella prima vista e un unico cliente nella seconda vista.
 
 == QUERY 5:
-#quote[Restituire il cliente con il prestito più alto nella filiale di Roma che non ha come gestore un dipendente con meno di 3 anni di esperienza.]
+#emph[#quote[Restituire il cliente con il prestito più alto nella filiale di Roma che non ha come gestore un dipendente con meno di 3 anni di esperienza.]]
 La prima vista ci restringe i possibili clienti a quelli che hanno un gestore assunto da almeno 3 anni.
 La seconda vista, a partire dalla prima, fa un ulteriore filtro prendendo i clienti solo della filiale di Roma.
 La query si occupa di verificare, per ogni cliente, che tra i clienti della seconda vista non ce ne sia qualcuno con saldo maggiore del proprio, in tal caso stampa il cliente.
@@ -917,27 +950,9 @@ La query si occupa di verificare, per ogni cliente, che tra i clienti della seco
 #pagebreak()
  (test)
 
-#zebraw(
-  header: [*Creazione Tabelle*],
-```sql
-CREATE SCHEMA banca
-    AUTHORIZATION enrperes;
+// #zebraw(
+//   header: [],
+// ```sql
 
-COMMENT ON SCHEMA banca
-    IS 'Il database per la gestione delle filiali di una banca, progetto di Basi di Dati.';
-
-SET search_path TO banca;
-
--- Creazione delle tabelle del database
--- Tabella dipendente senza FOREIGN KEY
-CREATE TABLE dipendente (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(30),
-    cognome VARCHAR(30),
-    data_assunzione DATE NOT NULL,
-    telefono VARCHAR(15) CHECK (telefono ~ '^\+?[0-9]+$') UNIQUE,
-    filiale VARCHAR(30) NOT NULL,
-    capo INT
-);
-```
-)
+// ```
+// )
