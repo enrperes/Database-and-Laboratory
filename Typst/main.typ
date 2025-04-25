@@ -877,7 +877,7 @@ Finito di popolare tutto il database ci assicuriamo tramite dei test che tutto s
 
 
 = Query 
-Dopo aver verificato che anche i test restituissero i risultati attesi, abbiamo proceduto con la scrittura delle query richieste.
+Dopo aver verificato il corretto funzionamento del database e dei trigger con i test sopra esposti, andiamo a sviluppare le query richieste. 
 
 == Query 1
 #emph[#quote[Restituire il numero medio di rate dei prestiti associati a conti nelle filiali di Udine.]]
@@ -896,8 +896,6 @@ La richiesta è immediata con l'utilizzo della funzione aggregata `AVG()`.
 
 == Query 2:	
 #emph[#quote[Restituire i clienti con solo conti di risparmio in filiali che hanno tra i 30 e i 32 dipendenti.]]
-Per comodità è stata creata una vista dove è stat fatta una selezione sulla tabella #er[filiale], tenendo solamente quelle che rispettavano il vincolo sul numero dei dipendenti.
-La query poi si appoggia su questa vista per cercare i clienti che hanno almeno un conto di risparmio in queste filiali e che non hanno nessun conto corrente associato.
 
 #zebraw(
 header: [Query 2], 
@@ -920,6 +918,9 @@ SELECT cliente.id
     );
 ```
 )
+
+Per comodità è stata creata una vista dove è stata fatta una selezione sulla tabella #er[filiale], tenendo solamente quelle che rispettavano il vincolo sul numero dei dipendenti.\
+La query sfrutta questa vista per cercare i clienti che hanno almeno un conto di risparmio in queste filiali e che non hanno nessun conto corrente associato.
 
 == Query 3: 
 #emph[#quote[Restituire i capi che gestiscono almeno 3 clienti che possiedono almeno 100.000€.]]
