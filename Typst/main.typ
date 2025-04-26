@@ -637,7 +637,7 @@ La lettura del prestito corretto comporta poi la scrittura per aggiornare l'attr
 $ "op1: (1 scrittura{Rata})" dot 7.000.000 dot 12/365 $ 
 $ "op1 = 460.274" $
 
-In questo caso, l'operazione di inserimento di una rata comporta semplicamente la scrittura della rata, senza la necessità di leggere il prestito per aggiornare l'attributo somma rate.
+In questo caso l'operazione di inserimento di una rata comporta semplicemente la scrittura della rata, senza la necessità di leggere il prestito per aggiornare l'attributo somma rate.
 
 
 ==== Operazione 2
