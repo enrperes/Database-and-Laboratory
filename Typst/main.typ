@@ -381,7 +381,8 @@ Interrogazione per leggere il valore _attivi_ di ogni filiale con frequenza di u
   ),
   caption: [Operazione 1]
 )
-$ "op1: (1 lettura)" dot 3.000 $ \
+$ "op1: (1 lettura)" dot 3.000 $
+$ "op1 = 3000$" \
 
 Per leggere il valore _attivi_ di ogni filiale, è necessario eseguire una lettura della tabella #er[Filiale] e leggere l'attributo derivato _attivi_.
 
@@ -407,6 +408,7 @@ Per leggere il valore _attivi_ di ogni filiale, è necessario eseguire una lettu
 )
 
 $ "op1:" ((3 "letture" {"Filiale, contiene, conto"} dot 4000) + (2 "letture" {"è associato", "Prestito"} dot 2333)) dot 3000 $
+$ "op1 = 49.998.000" $
 
 Senza l'attributo _attivi_, per calcolare gli _attivi_ di ogni filiale vengono lette le 3.000 righe della tabella #er[Filiale]. Poi, per ogni filiale, si risale ai conti che possiede: in media sono circa 4.000. Vengono poi effettuati altri 4.000 accessi alla tabella Conto per ottenere i saldi. 
 
@@ -438,6 +440,7 @@ Inserimento di un conto nella base di dati con frequenza 150 volte al giorno
 )
 
 $ "op2: (4 scrittura{conto, contiene, possiede, filiale}" + 1 "lettura{filiale})" dot 150 $
+$ "op2 = 1350" $
 
 Per inserire un conto bisogna scrivere nell'entità Conto e nelle due relazioni Contiene e Possiede, poiché un conto deve avere un cliente che lo possiede e il conto deve essere contenuto da una filiale. 
 Infine bisogna leggere e scrivere nell'entità Filiale per aggiornare l'attributo _Attivi_ con il saldo del conto appena inserito. 
@@ -461,6 +464,7 @@ Infine bisogna leggere e scrivere nell'entità Filiale per aggiornare l'attribut
 )
 
 $ "op2: (3 scrittura{conto, contiene, possiede})" dot 150 $
+$ "op2 = 900" $
 
 La logica è come quella vista sopra, con l'eccezione che non serve aggiornare l'attributo _Attivi_, che non è presente. 
 
@@ -490,6 +494,7 @@ Inserimento di una operazione in possiede con frequenza 1.000.000 al giorno
 )
 
 $ "op3: (3 scrittura{Possiede, conto, filiale} + 4 letture{Possiede, conto, filiale, contiene})" dot 1.000.000 $
+$ "op3 = 10.000.000" $
 
 Poichè la relazione Possiede contiene l'attributo operazione, ogni volta che un'operazione viene eseguita bisogna aggiornare l'attributo, ciò comporta una lettura e una scrittura. dopodiché, bisogna anche in questo caso aggiornare il saldo del conto che fa riferimento a quella tupla in possiede, dopodiché solamente leggere la relazione Contiene per individuare la filiale in cui quel conto ha sede e aggiornare quindi l'attributo _Attivi_ della filiale.
 
@@ -514,6 +519,7 @@ Poichè la relazione Possiede contiene l'attributo operazione, ogni volta che un
 )
 
 $ "op3: (2 scritture{Possiede, conto} + 2 letture{Possiede, conto})" dot 1.000.000 $
+$ "op3 = 6.000.000" $
 
 La logica è la stessa di prima, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere nell'entità Filiale.
 
@@ -545,6 +551,7 @@ Aggiornamento di tutti i prestiti con frequenza di una volta al mese.
 )
 
 $ "op4: (3 scritture{Rata, Prestito, Filiale}" + \ 5 "Letture{è composto, Prestito, è associato, Contiene, Filiale})" dot 7.000.000 dot 1/30 $ ⚠️
+$ "op4 = 1.166.667" $
 
 Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta la  scrittura della rata che viene saldata in quel mese e da cui poi bisogna risalire al prestito a cui essa fa riferimento tramite la relazione _è composto_, aggiornare il prestito di riferimento, dopodiché tramite la relazione _è associato_ ricavare l'iban del conto a cui è associato, poter quindi leggere in Contiene la filiale in cui quel prestito fa riferimento e quindi operare un aggiornamento dell'attributo attivi della filiale. 
 
@@ -569,16 +576,17 @@ Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta 
 )
 
 $ "op4: (2 scritture{Rata, Prestito} + 2 Letture{è composto, Prestito})" dot 7.000.000 dot 1/30$ 
+$ "op4 = 14.000.000"
 
 Anche in questo caso la logica rimane la stessa, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere nell'entità Filiale e nelle relazioni _è associato_ e _contiene_.
 
- $ "Totale con attributo attivi": 13.274.017 $ 
- $ "Totale senza attributo attivi": 45.865.567 $ 
+ $ "Totale con attributo attivi": 13.274.017 "(a me viene 11.171.017)" $ 
+ $ "Totale senza attributo attivi": 45.865.567 "(a me viene 69.998.900)" $ 
  
 Questa analisi ci suggerisce che la conservazione dell'attributo derivato attivi sia utile e quindi lo manterremo nel nostro schema ER ristrutturato. 
 
 === Studio dell'attributo derivato _Somma rate_ di #er[prestito]
-Il secondo blocco di operazioni riguarda la ridondanza introdotta dall'attributo derivato somma rate dell'entità Prestito che misura il numero di rate che sono state pagate. Anche in questo caso si tratta di un attributo derivato secondo funzioni aggregative e le entità coinvolte sono Rata e Prestito. Possiamo considerare due operazioni:
+Il secondo blocco di operazioni riguarda la ridondanza introdotta dall'attributo derivato somma rate dell'entità Prestito che misura il numero di rate che sono state pagate. Anche in questo caso si tratta di un attributo derivato secondo funzioni aggregative e le entità coinvolte sono Rata e Prestito. Possiamo considerare due operazioni (per coerenze con lo studio precedente riportiamo il numero di operazioni giornaliere):
 
 ==== Operazione 1
 Inserimento di una rata una volta al mese per ogni prestito della banca 
@@ -604,6 +612,10 @@ Inserimento di una rata una volta al mese per ogni prestito della banca
 )
 
 $ "op1: (2 scritture{Rata, Prestito} + 2 Letture{Prestito, è composto})" dot 7.000.000 dot 12/365 $ 
+$ "op1 = 1.380.822" $
+
+L'inserimento di una nuova rata comporta la scrittura di una istanza dell'entità rata, seguito dalla lettura nella relazione è composto per risalire al prestito corrispondente.
+La lettura del prestito corretto comporta poi la scrittura per aggiornare l'attributo "somma rate".
 
 *Senza attributo ridondante _Somma rate_:* 
 
@@ -623,8 +635,9 @@ $ "op1: (2 scritture{Rata, Prestito} + 2 Letture{Prestito, è composto})" dot 7.
 )
 
 $ "op1: (1 scrittura{Rata})" dot 7.000.000 dot 12/365 $ 
+$ "op1 = 460.274" $
 
-In questo caso, l'operazione di inserimento di una rata comporta la scrittura della rata e la scrittura del prestito, senza la necessità di leggere il prestito per aggiornare l'attributo somma rate.
+In questo caso, l'operazione di inserimento di una rata comporta semplicamente la scrittura della rata, senza la necessità di leggere il prestito per aggiornare l'attributo somma rate.
 
 
 ==== Operazione 2
@@ -650,6 +663,9 @@ Per questa analisi abbiamo dovuto introdurre un'ulteriore ipotesi, ovvero il num
 )
 
 $ "op2: (1 lettura{Prestito})" dot 7.000.000 dot 2/365 $ 
+$ "op2 = 38.356" $
+
+In questo caso è necessaria una semplice lettura dell'attributo dal prestito corretto, senza la necessità di leggere ogni rata ad esso associata.
 
 *Senza attributo ridondante _Somma rate_:* 
 
@@ -664,16 +680,20 @@ $ "op2: (1 lettura{Prestito})" dot 7.000.000 dot 2/365 $
       },
   table.header([Nome], [Costrutto], [Accessi], [Tipo]),
   [Prestito], [Entità], [7.000.000], [Lettura],
-  [è associato], [Entità], [7.000.000], [Lettura],
+  [è associato], [Relazione], [7.000.000], [Lettura],
   [Rata], [Entità], [7.000.000], [Lettura],
   ),
   caption: [Operazione 2]
 )
 
 $ "op2: (2 letture{Prestito, è associato} + 1 lettura{Rata}" dot 12) dot 7.000.000 dot 2/365$ 
+$ "op2 = 536.986" $
 
-$ "Totale con ridondanza: " 1.419.178,08 $
-$ "Totale senza ridondanza: " 997.960,27 $ ⚠️
+Senza l'attributo ridondante oltre alla lettura del prestito corretto devo leggere anche nella relazione "è associato" per ottenere tutte le rate associate al mio prestito.
+Tra le rate associate mediamente 12 sono state pagate, da aggiungere quindi una media di ulteriori 12 letture per risalire all'ammontare effettivo già pagato.
+
+$ "Totale con ridondanza: " 1.419.178 $
+$ "Totale senza ridondanza: " 997.260 $ ⚠️
 
 Per questa ridondanza abbiamo concluso quindi che l'attributo somma rate possa essere rimosso e non essere utilizzato nello schema ER ristrutturato.
 
