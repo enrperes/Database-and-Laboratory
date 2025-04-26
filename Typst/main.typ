@@ -382,7 +382,7 @@ Interrogazione per leggere il valore _attivi_ di ogni filiale con frequenza di u
   caption: [Operazione 1]
 )
 $ "op1: (1 lettura)" dot 3.000 $
-$ "op1 = 3000$" \
+$ "op1 = 3000" \ $
 
 Per leggere il valore _attivi_ di ogni filiale, è necessario eseguire una lettura della tabella #er[Filiale] e leggere l'attributo derivato _attivi_.
 
@@ -550,7 +550,7 @@ Aggiornamento di tutti i prestiti con frequenza di una volta al mese.
   caption: [Operazione 4]
 )
 
-$ "op4: (3 scritture{Rata, Prestito, Filiale}" + \ 5 "Letture{è composto, Prestito, è associato, Contiene, Filiale})" dot 7.000.000 dot 1/30 $ ⚠️
+$ "op4: (3 scritture{Rata, Prestito, Filiale}" + \ 5 "Letture{è composto, Prestito, è associato, Contiene, Filiale})" dot 7.000.000 dot 1/30 $
 $ "op4 = 1.166.667" $
 
 Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta la  scrittura della rata che viene saldata in quel mese e da cui poi bisogna risalire al prestito a cui essa fa riferimento tramite la relazione _è composto_, aggiornare il prestito di riferimento, dopodiché tramite la relazione _è associato_ ricavare l'iban del conto a cui è associato, poter quindi leggere in Contiene la filiale in cui quel prestito fa riferimento e quindi operare un aggiornamento dell'attributo attivi della filiale. 
@@ -576,12 +576,12 @@ Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta 
 )
 
 $ "op4: (2 scritture{Rata, Prestito} + 2 Letture{è composto, Prestito})" dot 7.000.000 dot 1/30$ 
-$ "op4 = 14.000.000"
+$ "op4 = 14.000.000" $
 
 Anche in questo caso la logica rimane la stessa, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere nell'entità Filiale e nelle relazioni _è associato_ e _contiene_.
 
- $ "Totale con attributo attivi": 13.274.017 "(a me viene 11.171.017)" $ 
- $ "Totale senza attributo attivi": 45.865.567 "(a me viene 69.998.900)" $ 
+$ "Totale con attributo attivi": 13.274.017 "(a me viene 11.171.017)" $ 
+$ "Totale senza attributo attivi": 45.865.567 "(a me viene 69.998.900)" $ 
  
 Questa analisi ci suggerisce che la conservazione dell'attributo derivato attivi sia utile e quindi lo manterremo nel nostro schema ER ristrutturato. 
 
@@ -686,14 +686,15 @@ In questo caso è necessaria una semplice lettura dell'attributo dal prestito co
   caption: [Operazione 2]
 )
 
-$ "op2: (2 letture{Prestito, è associato} + 1 lettura{Rata}" dot 12) dot 7.000.000 dot 2/365$ 
+$ "op2: (2 letture{Prestito, è associato} + 1 lettura{Rata}" dot 12) dot 7.000.000 dot 2/365 $
 $ "op2 = 536.986" $
 
 Senza l'attributo ridondante oltre alla lettura del prestito corretto devo leggere anche nella relazione "è associato" per ottenere tutte le rate associate al mio prestito.
 Tra le rate associate mediamente 12 sono state pagate, da aggiungere quindi una media di ulteriori 12 letture per risalire all'ammontare effettivo già pagato.
 
 $ "Totale con ridondanza: " 1.419.178 $
-$ "Totale senza ridondanza: " 997.260 $ ⚠️
+  
+$ "Totale senza ridondanza: " 997.260 $
 
 Per questa ridondanza abbiamo concluso quindi che l'attributo somma rate possa essere rimosso e non essere utilizzato nello schema ER ristrutturato.
 
