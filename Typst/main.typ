@@ -1067,12 +1067,91 @@ La prima vista ci restringe i possibili clienti a quelli che hanno un gestore as
 La seconda vista, a partire dalla prima, fa un ulteriore filtro prendendo i clienti solo della filiale di Roma.
 La query si occupa di verificare, per ogni cliente, che tra i clienti della seconda vista non ce ne sia qualcuno con saldo maggiore del proprio, in tal caso stampa il cliente.
 
+#pagebreak()
 
 = Analisi dei dati
-== Visualizzazione dei dati
-=== Distribuzione mensilità prestiti
-=== Analisi attivi per anzianità gestori
-=== Analisi conti cointestati
+
+Di seguito sono descritte le analisi eseguite sul database, per estrarre informazioni riguardanti i clienti, i loro conti, i prestiti e le rate pagate.
+
+È importante sottolineare che, in quanto i dati sono stati generati in modo casuale, le tendenze, correlazioni e distribuzioni osservate non riflettono necessariamente situazioni reali. 
+
+== Distribuzione dei prestiti per mensilità
+
+Viene esaminata la distribuzione delle mensilità dei prestiti associati a conti con saldo superiore a 50.000€ gestiti da un gestore. 
+
+#zebraw(
+  header: [Query],  
+```sql
+  CREATE OR REPLACE VIEW clienti_gestiti AS
+  SELECT cliente.id, cliente.gestore
+  FROM cliente, dipendente
+    WHERE cliente.gestore = dipendente.id;    
+
+  SELECT mensilità, COUNT(*)
+    FROM clienti_gestiti, possiede, conto, prestito
+    WHERE clienti_gestiti.id = possiede.cliente
+    AND possiede.conto = conto.iban
+    AND conto.saldo > 50.000
+    AND possiede.conto = prestito.conto
+    GROUP BY mensilità
+```
+)
+
+Per estrarre i dati è stata inizialmente creata una vista che contiene i clienti gestiti da un gestore. Viene poi eseguita una query che conta il numero di prestiti per ogni mensilità, filtrando i clienti con saldo maggiore di 50.000€.
+
+Per la visualizzazione dei dati viene creato un istogramma, che mostra la frequenza delle mensilità. 
+
+== Analisi attivi per anzianità gestori
+
+L'obiettivo è analizzare la relazione tra l'anzianità dei gestori (ricavata dalla data di assunzione) e l'ammontare totale dei conti gestiti.
+
+#zebraw(
+  header: [Query],
+```sql
+CREATE OR REPLACE VIEW dipendenti_gestori AS
+SELECT dipendente.data_assunzione, dipendente.id
+FROM cliente, dipendente
+WHERE cliente.gestore = dipendente.id;
+
+SELECT SUM(conto.saldo) as skey, dipendenti_gestori.data_assunzione 
+  FROM clienti_gestiti, possiede, conto, dipendenti_gestori
+  WHERE clienti_gestiti.id = possiede.cliente
+  AND possiede.conto = conto.iban
+  AND dipendenti_gestori.id = clienti_gestiti.gestore 
+  GROUP BY dipendenti_gestori.data_assunzione
+```
+)
+
+Viene creata una vista che contiene i gestori e la loro data di assunzione. La query finale calcola la somma dei saldi dei conti gestiti da ciascun gestore, raggruppando i risultati per data di assunzione.
+I dati vengono visualizzati in un grafico a dispersione. 
+
+== Analisi conti cointestati
+L'obiettivo è determinare il numero di conti cointestati che hanno un prestito associato, raggruppandoli per filiale. 
+
+#zebraw(
+  header: [Query],
+```sql
+ CREATE VIEW conti_cointestati AS
+  SELECT p1.conto, conto.filiale
+  FROM possiede AS p1, conto
+  WHERE p1.conto = conto.iban AND EXISTS (
+    SELECT *
+    FROM possiede AS p2
+    WHERE p1.conto = p2.conto AND p1.cliente < p2.cliente)
+
+  SELECT filiale, COUNT(*) AS n_conti
+    FROM conti_cointestati, prestito
+    WHERE conti_cointestati.conto = prestito.conto
+    AND ammontare > 50.000
+    GROUP BY filiale
+```
+)
+
+La vista `conti_cointestati` contiene i conti cointestati, raggruppati per filiale. 
+La query finale conta il numero di conti cointestati con prestiti associati, filtrando per ammontare maggiore di 50.000€. 
+I risultati vengono visualizzati in un grafico a barre, che mostra il numero di conti cointestati con prestito per filiale.
+
+
 
 = Conclusioni
 == Risultati ottenuti
