@@ -50,6 +50,7 @@
 
 #align(center, text(25pt)[
   #v(15%)
+  #image("media/logo_uniud.svg", width: 20%)
   #title \
   #subtitle \
   #date
@@ -111,7 +112,7 @@
 === Assunzioni
 Al fine di proseguire con la progettazione concettuale, sono state effettuate le seguenti assunzioni:
 
-- Gli *attivi* sono la somma della liquidità dei conti meno la somma dei prestiti erogati. Sono relativi alla singola filiale.
+- Gli *attivi* sono la somma della liquidità dei conti meno la somma delle rate non pagate dei prestiti erogati . Sono relativi alla singola filiale.
 - Un *cliente* può avere conti in filiali diverse e ogni conto è associato ad una singola filiale. 
 - I *prestiti* sono legati al conto, non al cliente.
 - Un *dipendente* non può gestire se stesso.
@@ -168,7 +169,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2.5em)
 
-- L'entità #erb[Cliente] rappresenta una persona fisica che ha aperto nella banca almeno un conto. Essa è caratterizzata da un _codice univoco_ (ID) assegnato dalla banca ad ogni cliente e dal _codice fiscale_, entrambi questi attributi possono essere due chiavi primarie differenti in quanto sono univoche per ogni cliente. Gli altri attributi servono per tenere traccia dell'anagrafica del cliente: _Nome_, _Cognome_, _Telefono_, _Data di nascita_ e _Residenza_.
+- L'entità #erb[Cliente] rappresenta una persona fisica che ha aperto nella banca almeno un conto. Essa è caratterizzata da un _Codice Univoco_ (ID) assegnato dalla banca ad ogni cliente e dal _Codice Fiscale_, entrambi questi attributi possono essere due chiavi primarie differenti in quanto sono univoche per ogni cliente. Gli altri attributi servono per tenere traccia dell'anagrafica del cliente: _Nome_, _Cognome_, _Telefono_, _Data di nascita_ e _Residenza_.
 
 #figure(
   image("media/cliente.svg", width: 30%),
@@ -176,7 +177,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2.5em)
 
-- L'entità #erb[dipendente] è caratterizzata da un codice univoco _ID_ che funge da chiave primaria. _Nome_, _Cognome_, _Numero di telefono_, _Data di assunzione_ sono gli altri attributi che la descrivono. È stato scelto di tenere traccia dell'anzianità aziendale sulla base della data di assunzione. \ La qualifica di capo viene descritta da una specializzazione parziale di #er[dipendente], chiamata #er[capo]. 
+- L'entità #erb[dipendente] è caratterizzata da un codice univoco _ID_ che funge da chiave primaria. _Nome_, _Cognome_, _Numero di telefono_, _Data di assunzione_ sono gli altri attributi che la descrivono. È stato scelto di tenere traccia dell'anzianità aziendale sulla base della data di assunzione. \ La qualifica di capo viene descritta da una specializzazione parziale di #er[dipendente], chiamata #erb[capo]. 
 #v(-0.7em)
 #figure(
   image("media/dipendente.svg", width: 30%),
@@ -318,7 +319,7 @@ Alcuni vincoli non possono essere catturati tramite il modello ER, vengono ripor
 
 #pagebreak()
 = Progettazione Logica
-Nel processo di ottimizzazione delle prestazioni, nell’analisi delle ridondanze e nella semplificazione dello schema ER concettuale in vista della sua ristrutturazione, sono stati presi in considerazione volumi di dati stimati sulla base di una banca reale di riferimento, Intesa Sanpaolo S.p.A
+Nel processo di ottimizzazione delle prestazioni, nell’analisi delle ridondanze e nella semplificazione dello schema ER concettuale in vista della sua ristrutturazione, sono stati presi in considerazione volumi di dati stimati sulla base di una banca reale di riferimento: Intesa Sanpaolo S.p.A.
 
 == Tabella dei volumi 
 
@@ -353,7 +354,7 @@ Nel processo di ottimizzazione delle prestazioni, nell’analisi delle ridondanz
 )
 
 === Considerazioni
-Il numero di clienti, conti, dipendenti e filiali è stato stimato sulla base di dati reali di Intesa Sanpaolo. Abbiamo ipotizzato un numero di prestiti sulla base di una proporzione realistica rispetto ai conti. Per distinguere tra conti correnti e conti di risparmio, abbiamo utilizzato la percentuale media nazionale, applicandola al numero totale di conti. I volumi per le relazioni sono stati calcolate tenendo conto delle cardinalità e della natura dei legami tra le entità coinvolte, in modo da mantenere coerenza con il modello concettuale.
+Il numero di clienti, conti, dipendenti e filiali è stato stimato sulla base di dati reali di Intesa Sanpaolo. Abbiamo ipotizzato un numero di prestiti sulla base di una proporzione realistica rispetto ai conti. Per distinguere tra conti correnti e conti di risparmio, abbiamo utilizzato la percentuale media nazionale italiana, applicandola al numero totale di conti. I volumi per le relazioni sono stati calcolati tenendo conto delle cardinalità e della natura dei legami tra le entità coinvolte, in modo da mantenere coerenza con il modello concettuale.
 
 
 == Analisi delle ridondanze
@@ -365,7 +366,7 @@ Il primo blocco di operazioni coinvolge l'attributo derivato _Attivi_ che produc
 ==== Operazione 1: 
 Interrogazione per leggere il valore _attivi_ di ogni filiale con frequenza di una volta al giorno
 
-*Con attributo _attivi_: *
+*Con attributo _Attivi_: *
 
 #figure(
   table(
@@ -381,12 +382,12 @@ Interrogazione per leggere il valore _attivi_ di ogni filiale con frequenza di u
   ),
   caption: [Operazione 1]
 )
-$ "op1: (1 lettura)" dot 3.000 $
+$ "op1: (1 lettura {Filiale})" dot 3.000 $
 $ "op1 = 3000" \ $
 
-Per leggere il valore _attivi_ di ogni filiale, è necessario eseguire una lettura della tabella #er[Filiale] e leggere l'attributo derivato _attivi_.
+Per leggere il valore _attivi_ di ogni filiale, è necessario eseguire una lettura della tabella #er[Filiale] e leggere l'attributo derivato _Attivi_.
 
-*Senza attributo _attivi_: *
+*Senza attributo _Attivi_: *
 
 #figure(
   table(
@@ -407,19 +408,19 @@ Per leggere il valore _attivi_ di ogni filiale, è necessario eseguire una lettu
   caption: [Operazione 1]
 )
 
-$ "op1:" ((3 "letture" {"Filiale, contiene, conto"} dot 4000) + (2 "letture" {"è associato", "Prestito"} dot 2333)) dot 3000 $
+$ "op1:" ((3 "letture" {"Filiale, contiene, Conto"} dot 4000) + (2 "letture" {"è associato", "Prestito"} dot 2333)) dot 3000 $
 $ "op1 = 49.998.000" $
 
-Senza l'attributo _attivi_, per calcolare gli _attivi_ di ogni filiale vengono lette le 3.000 righe della tabella #er[Filiale]. Poi, per ogni filiale, si risale ai conti che possiede: in media sono circa 4.000. Vengono poi effettuati altri 4.000 accessi alla tabella Conto per ottenere i saldi. 
+Senza l'attributo _Attivi_, per calcolare gli _attivi_ di ogni filiale vengono lette le 3.000 righe della tabella #er[Filiale]. Poi, per ogni filiale, si risale ai conti che possiede: in media sono circa 4.000. Vengono poi effettuati altri 4.000 accessi alla tabella #er[Conto] per ottenere i saldi. 
 
-Lo stesso vale per i prestiti: per ogni filiale si leggono in media 4.000 righe nella tabella Associato e poi si accede a Prestito per recuperarne l'importo.
+Lo stesso vale per i prestiti: per ogni filiale si leggono in media 4.000 righe nella tabella _è associato_ e poi si accede a #er[Prestito] per recuperarne l'importo.
 
-In totale quindi, come si vede dalla tabella, bisognerà leggere interamente le relazioni _contiene_, _è associato_ e tutte le entità Conto e Prestito.
+In totale quindi, come si vede dalla tabella, bisognerà leggere interamente le relazioni _contiene_, _è associato_ e tutte le entità #er[Conto] e #er[Prestito].
 
 ==== Operazione 2
 Inserimento di un conto nella base di dati con frequenza 150 volte al giorno
 
-*Con attributo _attivi_:*
+*Con attributo _Attivi_:*
 #figure(
   table(
     columns: 4, 
@@ -439,13 +440,13 @@ Inserimento di un conto nella base di dati con frequenza 150 volte al giorno
   caption: [Operazione 2]
 )
 
-$ "op2: (4 scrittura{conto, contiene, possiede, filiale}" + 1 "lettura{filiale})" dot 150 $
+$ "op2: (4 scrittur{Conto, contiene, possiede, Filiale}" + 1 "lettura{Filiale})" dot 150 $
 $ "op2 = 1350" $
 
-Per inserire un conto bisogna scrivere nell'entità Conto e nelle due relazioni Contiene e Possiede, poiché un conto deve avere un cliente che lo possiede e il conto deve essere contenuto da una filiale. 
-Infine bisogna leggere e scrivere nell'entità Filiale per aggiornare l'attributo _Attivi_ con il saldo del conto appena inserito. 
+Per inserire un conto bisogna scrivere nell'entità #er[Conto] e nelle due relazioni _contiene_ e _possiede_, poiché un conto deve avere un cliente che lo possiede e il conto deve essere contenuto da una filiale. 
+Infine bisogna leggere e scrivere nell'entità #er[Filiale] per aggiornare l'attributo _Attivi_ con il saldo del conto appena inserito. 
 
-*Senza attributo _attivi_:*
+*Senza attributo _Attivi_:*
 #figure(
   table(
     columns: 4, 
@@ -463,7 +464,7 @@ Infine bisogna leggere e scrivere nell'entità Filiale per aggiornare l'attribut
   caption: [Operazione 2]
 )
 
-$ "op2: (3 scrittura{conto, contiene, possiede})" dot 150 $
+$ "op2: (3 scrittura{Conto, contiene, possiede})" dot 150 $
 $ "op2 = 900" $
 
 La logica è come quella vista sopra, con l'eccezione che non serve aggiornare l'attributo _Attivi_, che non è presente. 
@@ -493,13 +494,13 @@ Inserimento di una operazione in possiede con frequenza 1.000.000 al giorno
   caption: [Operazione 3]
 )
 
-$ "op3: (3 scrittura{Possiede, conto, filiale} + 4 letture{Possiede, conto, filiale, contiene})" dot 1.000.000 $
+$ "op3: (3 scrittura{possiede, Conto, Filiale} + 4 letture{possiede, Conto, Filiale, contiene})" dot 1.000.000 $
 $ "op3 = 10.000.000" $
 
-Poichè la relazione Possiede contiene l'attributo operazione, ogni volta che un'operazione viene eseguita bisogna aggiornare l'attributo, ciò comporta una lettura e una scrittura. dopodiché, bisogna anche in questo caso aggiornare il saldo del conto che fa riferimento a quella tupla in possiede, dopodiché solamente leggere la relazione Contiene per individuare la filiale in cui quel conto ha sede e aggiornare quindi l'attributo _Attivi_ della filiale.
+Poichè la relazione _possiede_ contiene l'attributo operazione, ogni volta che un'operazione viene eseguita bisogna aggiornare l'attributo, ciò comporta una lettura e una scrittura. Dopodiché, bisogna anche in questo caso aggiornare il saldo del conto che fa riferimento a quella tupla in possiede, dopodiché solamente leggere la relazione _contiene_ per individuare la filiale in cui quel conto ha sede e aggiornare quindi l'attributo _Attivi_ della filiale.
 
 
-*Senza attributo _attivi_:*
+*Senza attributo _Attivi_:*
 #figure(
   table(
     columns: 4, 
@@ -518,10 +519,10 @@ Poichè la relazione Possiede contiene l'attributo operazione, ogni volta che un
   caption: [Operazione 3]
 )
 
-$ "op3: (2 scritture{Possiede, conto} + 2 letture{Possiede, conto})" dot 1.000.000 $
+$ "op3: (2 scritture{possiede, Conto} + 2 letture{possiede, Conto})" dot 1.000.000 $
 $ "op3 = 6.000.000" $
 
-La logica è la stessa di prima, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere nell'entità Filiale.
+La logica è la stessa di prima, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere nell'entità #er[Filiale].
 
 ==== Operazione 4
 Aggiornamento di tutti i prestiti con frequenza di una volta al mese.
@@ -550,10 +551,10 @@ Aggiornamento di tutti i prestiti con frequenza di una volta al mese.
   caption: [Operazione 4]
 )
 
-$ "op4: (3 scritture{Rata, Prestito, Filiale}" + \ 5 "Letture{è composto, Prestito, è associato, Contiene, Filiale})" dot 7.000.000 dot 1/30 $
+$ "op4: (3 scritture{Rata, Prestito, Filiale}" + \ 5 "Letture{è composto, Prestito, è associato, contiene, Filiale})" dot 7.000.000 dot 1/30 $
 $ "op4 = 1.166.667" $
 
-Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta la  scrittura della rata che viene saldata in quel mese e da cui poi bisogna risalire al prestito a cui essa fa riferimento tramite la relazione _è composto_, aggiornare il prestito di riferimento, dopodiché tramite la relazione _è associato_ ricavare l'iban del conto a cui è associato, poter quindi leggere in Contiene la filiale in cui quel prestito fa riferimento e quindi operare un aggiornamento dell'attributo attivi della filiale. 
+Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta: la scrittura della rata che viene saldata in quel mese, poi bisogna risalire al prestito a cui essa fa riferimento tramite la relazione _è composto_, aggiornare il prestito di riferimento, dopodiché tramite la relazione _è associato_ ricavare l'iban del conto a cui è associato, poter quindi leggere in _contiene_ la filiale in cui quel prestito fa riferimento e quindi operare un aggiornamento dell'attributo attivi della filiale. 
 
 *Senza attributo attivi:*
 #figure(
@@ -580,13 +581,13 @@ $ "op4 = 14.000.000" $
 
 Anche in questo caso la logica rimane la stessa, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere nell'entità Filiale e nelle relazioni _è associato_ e _contiene_.
 
-$ "Totale con attributo attivi": 13.274.017 "(a me viene 11.171.017)" $ 
-$ "Totale senza attributo attivi": 45.865.567 "(a me viene 69.998.900)" $ 
+$ "Totale con attributo attivi": 11.171.017 $ 
+$ "Totale senza attributo attivi": 69.998.900 $ 
  
-Questa analisi ci suggerisce che la conservazione dell'attributo derivato attivi sia utile e quindi lo manterremo nel nostro schema ER ristrutturato. 
+Questa analisi ci suggerisce che la conservazione dell'attributo derivato _Attivi_ sia utile e quindi lo manterremo nel nostro schema ER ristrutturato. 
 
 === Studio dell'attributo derivato _Somma rate_ di #er[prestito]
-Il secondo blocco di operazioni riguarda la ridondanza introdotta dall'attributo derivato somma rate dell'entità Prestito che misura il numero di rate che sono state pagate. Anche in questo caso si tratta di un attributo derivato secondo funzioni aggregative e le entità coinvolte sono Rata e Prestito. Possiamo considerare due operazioni (per coerenze con lo studio precedente riportiamo il numero di operazioni giornaliere):
+Il secondo blocco di operazioni riguarda la ridondanza introdotta dall'attributo derivato _Somma rate_ dell'entità #er[Prestito] che misura il numero di rate che sono state pagate. Anche in questo caso si tratta di un attributo derivato secondo funzioni aggregative e le entità coinvolte sono #er[Rata] e #er[Prestito]. Possiamo considerare due operazioni (per coerenze con lo studio precedente riportiamo il numero di operazioni giornaliere):
 
 ==== Operazione 1
 Inserimento di una rata una volta al mese per ogni prestito della banca 
@@ -614,8 +615,8 @@ Inserimento di una rata una volta al mese per ogni prestito della banca
 $ "op1: (2 scritture{Rata, Prestito} + 2 Letture{Prestito, è composto})" dot 7.000.000 dot 12/365 $ 
 $ "op1 = 1.380.822" $
 
-L'inserimento di una nuova rata comporta la scrittura di una istanza dell'entità rata, seguito dalla lettura nella relazione è composto per risalire al prestito corrispondente.
-La lettura del prestito corretto comporta poi la scrittura per aggiornare l'attributo "somma rate".
+L'inserimento di una nuova rata comporta la scrittura di una istanza dell'entità #er[rata], seguito dalla lettura nella relazione _è composto_ per risalire al prestito corrispondente.
+La lettura del prestito corretto comporta poi la scrittura per aggiornare l'attributo _Somma rate_.
 
 *Senza attributo ridondante _Somma rate_:* 
 
@@ -689,12 +690,12 @@ In questo caso è necessaria una semplice lettura dell'attributo dal prestito co
 $ "op2: (2 letture{Prestito, è associato} + 1 lettura{Rata}" dot 12) dot 7.000.000 dot 2/365 $
 $ "op2 = 536.986" $
 
-Senza l'attributo ridondante oltre alla lettura del prestito corretto devo leggere anche nella relazione "è associato" per ottenere tutte le rate associate al mio prestito.
-Tra le rate associate mediamente 12 sono state pagate, da aggiungere quindi una media di ulteriori 12 letture per risalire all'ammontare effettivo già pagato.
+Senza l'attributo ridondante oltre alla lettura del prestito corretto bisogna leggere anche nella relazione _è associato_ per ottenere tutte le rate associate al mio prestito.
+Tra le rate associate mediamente 12 sono state pagate, è da aggiungere quindi una media di ulteriori 12 letture per risalire all'ammontare effettivo già pagato.
 
-$ "Totale con ridondanza: " 1.419.178 $
+$ "Totale con ridondanza di Somma rate: " 1.419.178 $
   
-$ "Totale senza ridondanza: " 997.260 $
+$ "Totale senza ridondanza di Somma rate: " 997.260 $
 
 Per questa ridondanza abbiamo concluso quindi che l'attributo somma rate possa essere rimosso e non essere utilizzato nello schema ER ristrutturato.
 
@@ -812,10 +813,10 @@ Riportiamo di seguito la tabella dei volumi debitamente proporzionata sulla qual
 )
 
 === Dati #er[filiale]
-Questi dati non richiedevano particolari attenzioni poiché non soggetti a nessun tipo di vincolo particolare.
+Questi dati non richiedevano particolari attenzioni poiché non soggetti a nessun tipo di vincolo particolare. Per comodità è stato scelto di nominare le filiale con numeri interi crescenti, e per la logica di popolamento e vincoli di cardinalità per ogni tupla di filiale il codice del manager è pari al suo numero intero pari al suo nome.
 
 === Dati #er[dipendente]
- ... To be continued by you 🥰
+I dipendenti sono composti da dati che per ciò che concerne gli attributi _Nome, Cognome, Data di assunzione, telefono_ sono stati generati e assegnati casualmente, mentre più delicato è il nome (numero) di filiale che per i primi 6 dipendenti è stato assegnato progressivamente per mantenere la logica dei dati di #er[Filiale] mentre per i restanti in maniera casuale, inoltre il campo _Capo_ è stato inizializzato a -1 per poi essere assegnato correttamente durante la popolazione.
 
 
 == Creazione dei trigger
@@ -825,7 +826,7 @@ Sono stati creati dei trigger per gestire le problematicità tra dipendente e fi
 
 Il manager di una filiale deve fare riferimento alla filiale che gestisce, pertanto non deve essere possibile cambiare la filiale di un manager. Il trigger controlla che su ogni inserimento o modifica nella tabella dipendente venga rispettato il vincolo appena descritto, sollevando un'eccezione in caso di problemi bloccando di conseguenza l'inserimento o la modifica.
 
-Un altro trigger simile controlla che una volta assegnato il manager in una filiale esso lavori effettivamente in quella filiale.
+Un altro trigger simile controlla che una volta assegnato il manager in una filiale esso lavori effettivamente in quella filiale. 
 
 
 === Trigger #er[filiale-conto-prestito-rata]
