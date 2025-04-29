@@ -4,6 +4,7 @@
 library(DBI)
 library(RPostgres)
 library(here)
+library(ggplot2)
 
 set.seed(42)
 
@@ -857,7 +858,7 @@ print(cliente_top)
 # ---- GRAFICI ----
 
 
-## 1. Distribuzione mensilità per i prestiti di conti con > 100.000 che sono gestiti da un gestore. ----
+## 1. Distribuzione mensilità per i prestiti di conti con > 50.000€ che sono gestiti da un gestore. ----
 
 
 dbExecute(con, paste0("
@@ -877,9 +878,21 @@ table <- dbGetQuery(con, paste0("
   GROUP BY mensilità
 "))
 
-hist(table$mensilità, breaks = seq(0, 250, by = 10),
-     main = "Distribuzione mensilità per prestiti afferenti conti con saldo > 50.000 €",
-     xlab = "Mensilità", ylab = "Frequenza", col = "skyblue", border = "white")
+
+# 1. compute the counts without plotting
+h <- hist(table$mensilità,
+          breaks = seq(0, 250, by = 10),
+          plot   = FALSE)
+
+# 2. re‐draw with ylim set to max count + margin
+hist(table$mensilità,
+     breaks = seq(0, 250, by = 10),
+     main   = "Distribuzione dei prestiti per mensilità",
+     xlab   = "Durata del prestito (mensilità)",
+     ylab   = "Numero di prestiti",
+     col    = "skyblue",
+     border = "white",
+     ylim   = c(0, max(h$counts) + 2))  # margine superiore di 2 unità
 
 
 ## 2. soldi gestiti dai gestori in funzione dell'anzianità ----
@@ -901,8 +914,29 @@ table <- dbGetQuery(con, paste0("
   ;
 "))
 
-print(table)
-plot(table[,2], table[,1], main="titolo")
+
+table$data_assunzione <- as.Date(table$data_assunzione)
+
+dates    <- table$data_assunzione
+balances <- table$skey
+
+plot(dates, balances,
+     type  = "p",
+     pch   = 16,
+     col   = "skyblue",
+     main  = "Totale Saldi Gestiti per Anzianità dei Gestori",
+     xlab  = "Data di Assunzione del Gestore",
+     ylab  = "Somma dei Saldi (€)",
+     yaxt  = "n",
+     cex   = 0.8)
+y_breaks <- pretty(balances)
+axis(2, at = y_breaks,
+     labels = format(y_breaks,
+                     scientific = TRUE,
+                     big.mark   = ".")) 
+grid(nx = NA, ny = NULL,
+     col = "lightgray", lty = "dotted")
+
 
 # 3. Per filiale, il numero di conti cointestatari con un prestito afferente ----
 
@@ -928,10 +962,32 @@ table <- dbGetQuery(con, paste0("
 ;"))
 
 table$n_conti <- as.numeric(table$n_conti)
+max_conti <- max(table$n_conti)
 
-barplot(table$n_conti, names.arg = table$filiale,
-        main = "Numero conti cointestati con prestito per filiale",
-        xlab = "Filiale", ylab = "Numero conti", col = "skyblue", border = "white", las = 2)
+table$filiale_num <- as.integer(as.character(table$filiale))
+# 1. riordina come fai già
+table_ord <- table[order(table$filiale), ]
+
+# 2. disegna il barplot salvando i centri delle barre
+bar_centers <- barplot(table_ord$n_conti,
+                       names.arg = table_ord$filiale,
+                       main      = "Numero conti cointestati (con prestito) per filiale",
+                       xlab      = "Filiale",
+                       ylab      = "Numero conti",
+                       col       = "skyblue",
+                       border    = "white",
+                       las       = 1,
+                       ylim      = c(0, max(table_ord$n_conti)*1.15)
+)
+
+# 3. aggiungi le etichette esattamente sopra ogni barra
+text(x      = bar_centers,
+     y      = table_ord$n_conti + max(table_ord$n_conti)*-0.02,  # piccolo offset
+     labels = table_ord$n_conti,
+     pos    = 3,      # 3 = sopra il punto (ignora y se usi pos)
+     cex    = 0.8,
+     col    = "black"
+)
 
 
 
