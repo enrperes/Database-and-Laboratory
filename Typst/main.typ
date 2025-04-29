@@ -1155,7 +1155,6 @@ I risultati vengono visualizzati in un grafico a barre, che mostra il numero di 
 
 
 = Conclusioni
-_(Non farei paragrafi ma un unico testo)_
 
 Fare un'analisi dei requisiti reale ha evidenziato la difficoltà reale di avere una documentazione completa, non ambigua e che rimanesse coerente con se stessa.
 Certi requisiti erano facilmente deducibili, altri sono stai "imposti" da noi, altri ancora ci siamo ritrovati a specificarli man mano perché non erano stati tenuti in considerazione sin dall'inizio.
@@ -1174,10 +1173,6 @@ Le query invece, sono servite per capire come ragiona un database dietro a delle
 I grafici finali sfruttano la potenzialità delle query per analizzare dei dati che, con R, sarebbero stati recuperati in maniera meno semplice.
 
 In conclusione, questo progetto ci ha consentito di mettere in campo tutte le conoscenze teoriche (e non) acquisite durante il corso, e di acquisirne di nuove.
-
-== Risultati ottenuti
-== Possibili miglioramenti
-== Considerazioni finali
 
 
 
