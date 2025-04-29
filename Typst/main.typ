@@ -1181,15 +1181,3 @@ I grafici finali sfruttano la potenzialità delle query per analizzare dei dati 
 
 In conclusione, questo progetto ci ha consentito di mettere in campo tutte le conoscenze teoriche (e non) acquisite durante il corso, e di acquisirne di nuove.
 
-
-
-#line(length: 100%)
-#pagebreak()
- (test)
-
-// #zebraw(
-//   header: [],
-// ```sql
-
-// ```
-// )
