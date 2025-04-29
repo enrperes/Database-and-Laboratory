@@ -9,16 +9,19 @@
 #set quote(block: true)
 #show quote: set text(font: "", size: 12pt)
 #set par(justify: true)
+// Headings
 #show heading.where(level: 1): set text(20pt)
 #show heading.where(level: 2): set text(14pt)
 #show heading.where(level: 3): set text(12pt)
 #show heading: set block(below: 1.5em)
+// Figures
 #show figure.caption: it => [
  #text(9pt)[ 
  #it.supplement
  #context it.counter.display(it.numbering)]:
  #emph[#it.body]
 ]
+// Outline
 #show outline.entry.where(level: 1): set text(weight: "bold", size: 13pt)
 #show outline.entry.where(level: 1): set block(above: 1.5em)
 #show heading.where(level: 4): set heading(numbering: none)
@@ -79,18 +82,7 @@
 
 #outline(
   indent: 2.5em, title: "Indice",
-  // target: selector.or(heading, figure.where(kind:table))
-  )
-
-
-/* 
-1. Analisi dei requisiti 
-2. Progettazione concettuale
-3. Progettazione logica
-4. Progettazione fisica
-5. Implementazione
-6. Analisi dei dati 
-*/ 
+)
 
 #pagebreak()
 
@@ -1100,7 +1092,12 @@ Viene esaminata la distribuzione delle mensilità dei prestiti associati a conti
 
 Per estrarre i dati è stata inizialmente creata una vista che contiene i clienti gestiti da un gestore. Viene poi eseguita una query che conta il numero di prestiti per ogni mensilità, filtrando i clienti con saldo maggiore di 50.000€.
 
-Per la visualizzazione dei dati viene creato un istogramma, che mostra la frequenza delle mensilità. 
+Per la visualizzazione dei è stato creato un istogramma, che mostra la frequenza delle mensilità. 
+#v(-7em)
+#figure(
+  image("media/grafico1.png", width: 100%),
+  caption: [Distribuzione dei prestiti per mensilità]
+)
 
 == Analisi attivi per anzianità gestori
 
@@ -1126,6 +1123,12 @@ SELECT SUM(conto.saldo) as skey, dipendenti_gestori.data_assunzione
 Viene creata una vista che contiene i gestori e la loro data di assunzione. La query finale calcola la somma dei saldi dei conti gestiti da ciascun gestore, raggruppando i risultati per data di assunzione.
 I dati vengono visualizzati in un grafico a dispersione. 
 
+#figure(
+  image("media/grafico2.png", width: 100%),
+  caption: [Analisi attivi per anzianità gestori]
+)
+
+#pagebreak()
 == Analisi conti cointestati
 L'obiettivo è determinare il numero di conti cointestati che hanno un prestito associato, raggruppandoli per filiale. 
 
@@ -1151,6 +1154,10 @@ L'obiettivo è determinare il numero di conti cointestati che hanno un prestito 
 La vista `conti_cointestati` contiene i conti cointestati, raggruppati per filiale. 
 La query finale conta il numero di conti cointestati con prestiti associati, filtrando per ammontare maggiore di 50.000€. 
 I risultati vengono visualizzati in un grafico a barre, che mostra il numero di conti cointestati con prestito per filiale.
+#figure(
+  image("media/grafico3.png", width: 100%),
+  caption: [Analisi conti cointestati]
+)
 
 
 
