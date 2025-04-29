@@ -1162,9 +1162,24 @@ I risultati vengono visualizzati in un grafico a barre, che mostra il numero di 
 
 
 = Conclusioni
-== Risultati ottenuti
-== Possibili miglioramenti
-== Considerazioni finali
+
+Fare un'analisi dei requisiti reale ha evidenziato la difficoltà reale di avere una documentazione completa, non ambigua e che rimanesse coerente con se stessa.
+Certi requisiti erano facilmente deducibili, altri sono stai "imposti" da noi, altri ancora ci siamo ritrovati a specificarli man mano perché non erano stati tenuti in considerazione sin dall'inizio.
+
+Le progettazioni logiche e concettuali rimarcavano l'importanza di una scelta accurata di quali informazioni avessero il ruolo di entità e quali di semplici attributi. 
+Altrettanto importante la scelta delle relazioni e delle relative molteplicità, molte volte dettate dai vincoli.
+Ciò non catturato dallo schema ER (vincoli di integrità) andava comunque documentato per implementare dei trigger nella progettazione fisica.
+
+Una buona parte del lavoro si è incentrata sulla generazione dei dati (anche del fatto che fossero coerenti tra loro e che rispettassero i vincoli imposti dal problema) e sul lavoro di popolamento tramite R.
+La creazione del database e delle tabelle è un lavoro su cui porre attenzione, in particolare l'ordine di creazione delle tabelle e l'assegnamento di chiavi primarie e/o esterne è fondamentale.
+
+Per testare la funzionalità del database ci siamo serviti di test che miravano a verificare dei casi particolari dei vincoli e della funzionalità dei trigger sia per garantire la coerenza, sia per l'aggiornamento automatico di attributi derivati.
+
+Le query invece, sono servite per capire come ragiona un database dietro a delle maschere semplificate dei software in circolazione, dove l'utente semplicemente scrive in linguaggio quasi naturale ciò che gli serve e poi viene tradotto in linguaggio SQL.
+
+I grafici finali sfruttano la potenzialità delle query per analizzare dei dati che, con R, sarebbero stati recuperati in maniera meno semplice.
+
+In conclusione, questo progetto ci ha consentito di mettere in campo tutte le conoscenze teoriche (e non) acquisite durante il corso, e di acquisirne di nuove.
 
 
 
