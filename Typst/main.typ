@@ -7,16 +7,21 @@
 #set page(numbering: "1")
 #set par(justify: true)
 
+
+// Debug
+// #set block(stroke: 0.5pt)
+
 // Quotes
 #set quote(block: true)
 #show quote: set text(font: "", size: 12pt)
 
 // Headings
 #set heading(numbering: "1.")
+#show heading: set block(below: 1.5em)
 #show heading.where(level: 1): set text(20pt)
 #show heading.where(level: 2): set text(14pt)
 #show heading.where(level: 3): set text(12pt)
-#show heading: set block(below: 1.5em)
+#show heading.where(level: 4): set heading(numbering: none)
 
 
 // Figures
@@ -29,8 +34,9 @@
 
 // Outline
 #show outline.entry.where(level: 1): set text(weight: "bold", size: 13pt)
-#show outline.entry.where(level: 1): set block(above: 1.5em)
-#show heading.where(level: 4): set heading(numbering: none)
+//#show outline.entry.where(level: 1): set block(below: 2.5em)
+#show outline.entry.where(level: 1): set block(below: 1.2em)
+
 
 // Code Blocks styling
 #show: zebraw-init.with(
@@ -45,7 +51,9 @@
 #let subtitle = text(20pt)[Corso di Basi di Dati]
 #let date = text(15pt)[Università degli studi di Udine, A.A. 2024-2025]
 #let er(text) = upper(emph(text))
+#let err(text) = (emph(text))
 #let erb(text) = upper(emph(strong(text)))
+#let erbr(text) = (emph(strong(text)))
 #let figure-r(..args) = {
   show figure: set align(right)
   figure(..args)
@@ -67,12 +75,12 @@
 #grid(
   columns: (1fr, 1fr),
   align(center)[
-    Daniele De Martin [696969] \
-    Enrico Peressin [163503] \
+    Daniele De Martin [162521\@spes.uniud.it] \
+    Enrico Peressin [163503\@spes.uniud.it] \
   ],
   align(center)[
-    Massimiliano Di Marco [696969] \
-    Michele Vecchiato [696969] \
+    Massimiliano Di Marco [144714\@spes.uniud.it] \
+    Michele Vecchiato [162101\@spes.uniud.it] \
   ]
 )
 
@@ -84,7 +92,6 @@
 #pagebreak()
 
 /* ------------Outline------------- */
-
 #outline(
   indent: 2.5em, title: "Indice",
 )
@@ -109,7 +116,7 @@
 === Assunzioni
 Al fine di proseguire con la progettazione concettuale, sono state effettuate le seguenti assunzioni:
 
-- Gli *attivi* sono la somma della liquidità dei conti meno la somma delle rate non pagate dei prestiti erogati . Sono relativi alla singola filiale.
+- Gli *attivi* sono la somma della liquidità dei conti meno la somma delle rate non pagate dei prestiti erogati. Sono relativi alla singola filiale.
 - Un *cliente* può avere conti in filiali diverse e ogni conto è associato ad una singola filiale. 
 - I *prestiti* sono legati al conto, non al cliente.
 - Un *dipendente* non può gestire se stesso.
@@ -124,7 +131,7 @@ Al fine di proseguire con la progettazione concettuale, sono state effettuate le
 
 
 === Glossario
-Per chiarire il significato e le relazioni dei termini chiave definite nei requisiti viene fornito un glossario esplicativo: 
+Per chiarire il significato dei termini chiave definite nei requisiti viene fornito un glossario esplicativo: 
 
 #show table.cell.where(x: 0).or(table.cell.where(y: 0)): strong
 
@@ -141,7 +148,7 @@ Per chiarire il significato e le relazioni dei termini chiave definite nei requi
   [Filiale], [Unità operativa della banca situata in una determinata città. È gestita da un unico capo.],
   [Cliente], [Persona fisica con almeno un conto aperto nella banca.],
   [Conto], [Servizio di gestione del denaro che permette diverse operazioni. Può essere esclusivamente di tipo corrente o di risparmio.], 
-  [Conto Corrente], [Tipo di conto caratterizzato da uno scoperto.],
+  [Conto corrente], [Tipo di conto caratterizzato da uno scoperto.],
   [Conto di risparmio], [Tipo di conto caratterizzato da un tasso di interesse.],
   [Dipendente], [Persona fisica che lavora in una certa filiale della banca.],
   [Gestore], [Dipendente che prende in carico le pratiche di uno o più clienti.],
@@ -167,7 +174,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2em)
 
-- L'entità #erb[Cliente] rappresenta una persona fisica che ha aperto nella banca almeno un conto. Essa è caratterizzata da un _Codice Univoco_ (ID) assegnato dalla banca ad ogni cliente e dal _Codice Fiscale_, entrambi questi attributi possono essere due chiavi primarie differenti in quanto sono univoche per ogni cliente. Gli altri attributi servono per tenere traccia dell'anagrafica del cliente: _Nome_, _Cognome_, _Telefono_, _Data di nascita_ e _Residenza_.
+- L'entità #erb[Cliente] rappresenta una persona fisica che ha aperto nella banca almeno un conto. Essa è caratterizzata da un codice univoco (_ID_) assegnato dalla banca ad ogni cliente e dal _Codice Fiscale_, entrambi questi attributi possono essere due chiavi primarie differenti in quanto sono uniche per ogni cliente. Gli altri attributi servono per tenere traccia dell'anagrafica del cliente: _Nome_, _Cognome_, _Telefono_, _Data di nascita_ e _Residenza_.
 
 #v(-0.5em)
 #figure(
@@ -184,14 +191,14 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2em)
 
-- L'entità #erb[Capo] rappresenta il capo di una filiale. \Essendo una specializzazione dell'entità #er[dipendente], eredita tutti gli attributi di quest'ultima. Un capo è univoco per ogni filiale. 
+- L'entità #erb[Capo] rappresenta il capo di una filiale. \Essendo una specializzazione dell'entità #er[dipendente], eredita tutti gli attributi di quest'ultima. Un capo è unico per ogni filiale. 
 #figure(
   image("media/capo.svg", width: 18%),
   caption: [Entità CAPO]
 )
 #v(2em)
 
-- L'entità #erb[Conto] serve per identificare un servizio della banca messo a disposizione per il cliente. Ogni entità viene identificata univocamente da un attributo _IBAN_, un attributo _Saldo_ tiene traccia dell'ammontare di denaro presente sul conto. La banca inoltre mette a disposizione due tipi di conto, quindi l'entità Conto è stata specializzata in due sottoentità: #er[Conto Corrente] e #er[Conto di Risparmio]. La specializzazione è totale e disgiunta.
+- L'entità #erb[Conto] serve per identificare un servizio della banca messo a disposizione per il cliente. Ogni entità viene identificata univocamente da un attributo _IBAN_, un attributo _Saldo_ tiene traccia dell'ammontare di denaro presente sul conto. La banca inoltre mette a disposizione due tipi di conto, quindi #er[Conto] è stato specializzato in due sottoentità: #er[Conto Corrente] e #er[Conto di Risparmio]. La specializzazione è totale e disgiunta.
 
   - L'entità #erb[Conto Corrente] è una specializzazione dell'entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell'entità #er[Conto]. L'attributo che lo caratterizza è _Scoperto_ che indica quanto la banca può concedere di debito nei confronti del cliente.
 
@@ -209,7 +216,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2em)
 
-- L'entità #erb[rata] è un'entità debole ed ha il compito di rappresentare ogni singolo pagamento periodico associato a un determinato prestito. L'identificazione univoca di ciascuna rata è garantita da una chiave primaria composta, costituita dal suo numero (indicante la “posizione” della rata nella sequenza dei pagamenti) e dalla chiave esterna che fa riferimento all'entità #er[Prestito]. Tra gli attributi figurano inoltre la _Data scadenza_, ossia il giorno entro cui la rata deve essere corrisposta, e la _Data pagamento_, che riporta il momento in cui il versamento è stato effettuato. Infine, l'attributo _Ammontare_ specifica l'importo dovuto per quella singola rata.
+- L'entità #erb[rata] è un'entità debole che ha il compito di rappresentare ogni singolo pagamento periodico associato a un determinato prestito. L'identificazione univoca di ciascuna rata è garantita da una chiave primaria composta, costituita dal suo numero (indicante la “posizione” della rata nella sequenza dei pagamenti) e dalla chiave esterna che fa riferimento all'entità #er[Prestito]. Tra gli attributi figurano inoltre la _Data scadenza_, ossia il giorno entro cui la rata deve essere corrisposta, e la _Data pagamento_, che riporta il momento in cui il versamento è stato effettuato. Infine, l'attributo _Ammontare_ specifica l'importo dovuto per quella singola rata.
 #figure(
   image("media/rata.svg", width: 25%),
   caption: [Entità RATA]
@@ -217,69 +224,69 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 #v(2em)
 
 === Relazioni
-- La relazione #erb[è capo] collega l'entità #er[capo] con l'entità #er[filiale], definendo il legame tra il capo di una filiale e la filiale stessa. La cardinalità di (1,1) tra la relazione e l'entità #er[Filiale] indica che ogni filiale ha un solo capo, mentre la cardinalità di (0,1) tra la relazione e l'entità #er[Capo] indica che un dipendente può essere al più capo di una sola filiale.
+- La relazione #erbr[#upper[è] capo] collega #er[capo] e #er[filiale], definendo il legame tra il capo di una filiale e la filiale stessa. Le cardinalità di (1,1) indicano che ogni filiale ha uno e un solo capo e non esiste un capo che non faccia riferimento a una sola filiale. 
 #figure(
   image("media/iscapo.svg", width: 80%),
-  caption: [Relazione è capo]
+  caption: [Relazione #upper[è] capo]
 )
 #v(2em)
 
-- La relazione #erb[lavora] collega l'entità #er[dipendente] con l'entità #er[filiale]. La cardinalità di (1,1) tra la relazione e l'entità #er[Dipendente] indica che ogni dipendente lavora in una e in una sola filiale, mentre la cardinalità di (1,N) tra la relazione e l'entità #er[filiale] indica che in una filiale lavorano uno o più dipendenti.
+- La relazione #erbr[Lavora] collega #er[dipendente] e #er[filiale]. La cardinalità di (1,1) tra la relazione e l'entità #er[Dipendente] indica che ogni dipendente lavora in una e in una sola filiale, mentre la cardinalità di (1,N) tra la relazione e l'entità #er[filiale] indica che in una filiale lavorano uno o più dipendenti.
 #figure(
   image("media/lavora.svg", width: 80%),
-  caption: [Relazione lavora]
+  caption: [Relazione Lavora]
 )
 #v(2em)
 
 
-- La relazione #erb[di] collega l'entità #er[dipendente] con l'entità #er[capo]. La cardinalità di (1,N) tra la relazione e l'entità #er[capo] indica che un capo dirige uno o più dipendenti, mentre la cardinalità di (1,1) tra la relazione e l'entità #er[dipendente] indica che un dipendente ha uno e un solo capo. 
+- La relazione #erbr[Di] collega #er[dipendente] e #er[capo]. La cardinalità di (1,N) tra la relazione e l'entità #er[capo] indica che un capo dirige uno o più dipendenti, mentre la cardinalità di (1,1) tra la relazione e l'entità #er[dipendente] indica che un dipendente ha uno e un solo capo. 
 #figure(
   image("media/di.svg", width: 80%),
-  caption: [Relazione di]
+  caption: [Relazione Di]
 )
 #v(2em)
 
 
-- La relazione #erb[è composto] collega l'entità #er[prestito] con l'entità #er[Rata], dando forma al legame logico tra un finanziamento e i singoli pagamenti previsti per il suo rimborso. Dal lato di #er[Rata], la cardinalità è di (1,1), poiché ogni rata è necessariamente associata ad uno e un solo prestito, essendo #er[Rata] un'entità debole. Dal lato di Prestito, invece, la cardinalità è di (1,N), poiché un singolo prestito può essere suddiviso in una o più rate.
+- La relazione #erbr[#upper[è] composto] collega #er[prestito] e #er[Rata], dando forma al legame logico tra un finanziamento e i singoli pagamenti previsti per il suo rimborso. Dal lato di #er[Rata], la cardinalità è di (1,1), poiché ogni rata è necessariamente associata ad uno e un solo prestito, essendo #er[Rata] un'entità debole. Dal lato di #er[Prestito], invece, la cardinalità è di (1,N), poiché un singolo prestito può essere suddiviso in una o più rate.
 #v(-1em)
 #figure(
   image("media/composto.svg", width: 80%),
-  caption: [Relazione è composto]
+  caption: [Relazione #upper[è] composto]
 )
 #v(2em)
 
-- La relazione #erb[è associato] collega l'entità Conto con l'entità #er[Prestito], definendo il legame tra esso e il conto bancario a cui è associato. Dal lato di #er[Prestito], la cardinalità è (1,1), poiché ogni prestito deve fare riferimento a un solo conto bancario. Dal lato di #er[Conto] la cardinalità è (0,N), infatti un conto non necessariamente ha prestiti associati.
+- La relazione #erbr[#upper[è] associato] collega #er[Conto] e #er[Prestito], definendo il legame tra esso e il conto bancario a cui è associato. Dal lato di #er[Prestito], la cardinalità è (1,1), poiché ogni prestito deve fare riferimento a un solo conto bancario. Dal lato di #er[Conto] la cardinalità è (0,N), infatti un conto non necessariamente ha prestiti associati e può averne più di uno.
 #figure(
   image("media/isassociato.svg", width: 80%),
-  caption: [Relazione è associato]
+  caption: [Relazione #upper[è] associato]
 )
 #v(2em)
 
-- La relazione #erb[Possiede] collega le entità #er[Cliente] e #er[Conto]. Un cliente deve possedere almeno un conto e più clienti possono possedere lo stesso conto (caso di conto cointestato), da cui deriva la cardinalità (1,N) della relazione sul lato di #er[Cliente]. D'altro canto un #er[conto] deve essere posseduto da almeno un cliente e più conti possono fare riferimento allo stesso cliente (caso in cui uno stesso cliente ha aperto più conti con la banca), da cui deriva la cardinalità (1,N) della relazione sul lato di #er[conto]. \ Gli attributi _Operazione_ e _Data_ sulla relazione indicano l'ultima operazione svolta e la data in cui è stata effettuata. Nel caso di operazione congiunta di più clienti gli attributi _Operazione/Data_ vengono aggiornati per entrambi.
+- La relazione #erbr[Possiede] collega #er[Cliente] e #er[Conto]. Un cliente deve possedere almeno un conto e più clienti possono possedere lo stesso conto (caso di conto cointestato), da cui deriva la cardinalità (1,N) della relazione sul lato di #er[Cliente]. D'altro canto, un #er[conto] deve essere posseduto da almeno un cliente e più conti possono fare riferimento allo stesso cliente (caso in cui uno stesso cliente ha aperto più conti con la banca), da cui deriva la cardinalità (1,N) della relazione sul lato di #er[conto]. \ Gli attributi _Operazione_ e _Data_ sulla relazione indicano l'ultima operazione svolta e la data in cui è stata effettuata da quel particolare cliente su quel particolare conto. Nel caso di operazione congiunta di più clienti gli attributi _Operazione/Data_ vengono aggiornati per tutti.
 #figure(
   image("media/possiede.svg", width: 80%),
-  caption: [Relazione possiede]
+  caption: [Relazione Possiede]
 )
 #v(2em)
 
-- La relazione #erb[Gestisce] collega #er[Dipendente] e #er[Cliente]. Un sottoinsieme dei dipendenti può seguire le pratiche di un certo numero di clienti della banca, da cui ne deriva la cardinalità (0,N) della relazione sul lato di #er[dipendente]. D'altro canto un #er[Cliente] può avere al più un solo gestore che segue le sue attività nella banca, da cui ne deriva la cardinalità (0,1) della relazione sul lato di #er[cliente].
+- La relazione #erbr[Gestisce] collega #er[Dipendente] e #er[Cliente]. Un sottoinsieme dei dipendenti può seguire le pratiche di un certo numero di clienti della banca, da cui ne deriva la cardinalità (0,N) della relazione sul lato di #er[dipendente]. D'altro canto un #er[Cliente] può avere al più un solo gestore che segue le sue attività nella banca, da cui ne deriva la cardinalità (0,1) della relazione sul lato di #er[cliente].
 #figure(
   image("media/gestisce.svg", width: 80%),
-  caption: [Relazione gestisce]
+  caption: [Relazione Gestisce]
 )
 #v(2em)
 
-- La relazione #erb[Contiene] collega #er[Filiale] a #er[Conto] in quanto ogni #er[Conto] deve fare riferimento ad una e una sola #er[filiale]. Una filiale può contenere uno o più conti (anche zero se la filiale è appena stata aperta), da cui ne deriva la cardinalità (0,N) della relazione sul lato di #er[filiale]. D'altro canto un #er[conto] deve essere associato ad una e una sola #er[filiale], da cui ne deriva la cardinalità (1,1) della relazione sul lato di #er[Conto].
+- La relazione #erbr[Contiene] collega #er[Filiale] e #er[Conto] in quanto ogni conto deve fare riferimento ad una e una sola filiale. Una filiale può contenere uno o più conti (anche zero se la filiale è appena stata aperta), da cui ne deriva la cardinalità (0,N) della relazione sul lato di #er[filiale]. D'altro canto un conto deve essere associato ad una e una sola filiale, da cui ne deriva la cardinalità (1,1) della relazione sul lato di #er[Conto].
 #figure(
   image("media/contiene.svg", width: 80%),
-  caption: [Relazione contiene]
+  caption: [Relazione Contiene]
 )
 #v(2em)
 
 == Scelte particolari
-- La specializzazione non totale #er[capo - dipendente] ci permette di inserire la molteplicità (1,1) nella relazione #er[è capo] e di non dover tenere la molteplicità (0,1) nel caso in cui #er[dipendente] non avesse avuto la specializzazione. Favorisce inoltre una maggiore chiarezza nella relazione #er[di].
+- La specializzazione non totale #er[capo - dipendente] ci permette di inserire la molteplicità (1,1) nella relazione _#upper[è] capo_ e di non dover tenere la molteplicità (0,1) nel caso in cui #er[dipendente] non avesse avuto la specializzazione. Favorisce inoltre una maggiore chiarezza nella relazione _Di_.
 - La specializzazione totale di #er[conto] è dovuta alla presenza dei diversi attributi che caratterizzano le due specializzazioni.
-- La scelta di assegnare il ruolo di entità a #er[rata] è dovuta alla numerosità degli attributi e alla gestione dell'ammontare dei prestiti. Avendo un numero seriale non è univoco, è necessario che una parte della chiave sia il codice del prestito.
+- La scelta di assegnare il ruolo di entità a #er[rata] è dovuta alla numerosità degli attributi e alla gestione dell'ammontare dei prestiti. Avendo un numero seriale non univoco, è necessario che una parte della chiave sia il codice del prestito.
 #v(2.5em)
 
 #pagebreak()
@@ -313,9 +320,10 @@ Questo ciclo non genera problemi di inconsistenza, in quanto a un cliente è per
 // (da riprendere nella sezione di implementazione fisica)
 Alcuni vincoli non possono essere catturati tramite il modello ER, vengono riportati di seguito e saranno tenuti in considerazione nella sezione di implementazione fisica:
 - Il capo di una filiale deve lavorare nella filiale in cui è responsabile.
-- Due clienti con gestore differente non possono avere un conto condiviso.
+
+- Due clienti che hanno gestori differenti non possono avere un conto condiviso.
 - Un dipendente non può gestire se stesso.
-- Le rate vanno pagate in ordine cronologico.
+- Le rate vanno pagate in ordine cronologico, in base al _Numero_.
 - La somma dell'importo delle rate deve corrispondere all'ammontare del prestito.
 
 #pagebreak()
@@ -335,6 +343,7 @@ Nel processo di ottimizzazione delle prestazioni, nell’analisi delle ridondanz
         if x < 1 { center + horizon } else { left }
       },
   table.header([Nome], [Costrutto], [Volume]),
+  [Capo] , [Entità], [3.000],
   [Cliente] , [Entità], [15.000.000],
   [Conto] , [Entità], [12.000.000],
   [Conto Corrente] , [Entità], [10.000.000],
@@ -342,11 +351,12 @@ Nel processo di ottimizzazione delle prestazioni, nell’analisi delle ridondanz
   [Dipendente] , [Entità], [100.000],
   [Filiale] , [Entità], [3.000],
   [Prestito] , [Entità], [7.000.000],
+  [Rata] , [Entità], [84.000.000],
   [Contiene] , [Relazione], [12.000.000],
   [Di] , [Relazione], [100.000],
   [#upper[è] associato] , [Relazione], [7.000.000],
   [#upper[è] capo] , [Relazione], [3.000],
-  [#upper[è] composto] , [Relazione], [7.000.000],
+  [#upper[è] composto] , [Relazione], [84.000.000],
   [Gestisce] , [Relazione], [10.000.000],
   [Lavora] , [Relazione], [100.000],
   [Possiede] , [Relazione], [19.000.000],
@@ -355,7 +365,7 @@ Nel processo di ottimizzazione delle prestazioni, nell’analisi delle ridondanz
 )
 
 === Considerazioni
-Il numero di clienti, conti, dipendenti e filiali è stato stimato sulla base dei dati reali di Intesa Sanpaolo. Abbiamo ipotizzato un numero di prestiti sulla base di una proporzione realistica rispetto ai conti. Per distinguere tra conti correnti e conti di risparmio, abbiamo utilizzato la percentuale media nazionale italiana, applicandola al numero totale di conti. I volumi per le relazioni sono stati calcolati tenendo conto delle cardinalità e della natura dei legami tra le entità coinvolte, in modo da mantenere coerenza con il modello concettuale.
+Il numero di clienti, conti, dipendenti e filiali è stato stimato sulla base dei dati reali di Intesa Sanpaolo. Abbiamo ipotizzato un numero di prestiti sulla base di una proporzione realistica rispetto ai conti e un numero di rate pagate (in media 12 per prestito). Per distinguere tra conti correnti e conti di risparmio, abbiamo utilizzato la percentuale media nazionale italiana, applicandola al numero totale di conti. I volumi per le relazioni sono stati calcolati tenendo conto delle cardinalità e della natura dei legami tra le entità coinvolte, in modo da mantenere coerenza con il modello concettuale.
 
 
 == Analisi delle ridondanze
@@ -365,7 +375,7 @@ Il numero di clienti, conti, dipendenti e filiali è stato stimato sulla base de
 Il primo blocco di operazioni coinvolge l'attributo derivato _Attivi_ che produce una ridondanza ed è derivabile da altre entità, nel nostro caso da #er[Conto, Prestito] e #er[Rata]. Ipotizziamo delle operazioni e le loro relative frequenze che vanno a coinvolgere questo attributo e osserviamo se è conveniente eliminarlo o mantenerlo.
 
 ==== Operazione 1 
-Interrogazione per leggere il valore _attivi_ di ogni filiale con frequenza di una volta al giorno
+Interrogazione per leggere il valore _Attivi_ di ogni filiale con frequenza di una volta al giorno
 
 #h(1em)
 *Con attributo _Attivi_: *
@@ -387,7 +397,7 @@ Interrogazione per leggere il valore _attivi_ di ogni filiale con frequenza di u
 $ "op1: (1 lettura {Filiale})" dot 3.000 $
 $ "op1 = 3000" \ $
 
-Per leggere il valore _attivi_ di ogni filiale, è necessario eseguire una lettura della tabella #er[Filiale] e leggere l'attributo derivato _Attivi_.
+Per leggere il valore _Attivi_ di ogni filiale, è necessario eseguire una lettura della tabella #er[Filiale] e leggere l'attributo derivato _Attivi_.
 
 #h(1em)
 *Senza attributo _Attivi_: *
@@ -411,14 +421,14 @@ Per leggere il valore _attivi_ di ogni filiale, è necessario eseguire una lettu
   caption: [Operazione 1]
 )
 
-$ "op1:" ((3 "letture" {"Filiale, contiene, Conto"} dot 4000) + (2 "letture" {"è associato", "Prestito"} dot 2333)) dot 3000 $
+$ "op1:" ((3 "letture" {"Filiale, Contiene, Conto"} dot 4000) + (2 "letture" {"È associato", "Prestito"} dot 2333)) dot 3000 $
 $ "op1 = 49.998.000" $
 
-Senza l'attributo _Attivi_, per calcolare gli _attivi_ di ogni filiale vengono lette le 3.000 righe della tabella #er[Filiale]. Poi, per ogni filiale, si risale ai conti che possiede: in media sono circa 4.000. Vengono poi effettuati altri 4.000 accessi alla tabella #er[Conto] per ottenere i saldi. 
+Senza l'attributo _Attivi_, per calcolare gli attivi di ogni filiale vengono lette le 3.000 righe della tabella #er[Filiale]. Poi, per ogni filiale, si risale ai conti che possiede: in media sono circa 4.000. Vengono poi effettuati altri 4.000 accessi alla tabella #er[Conto] per ottenere i saldi. 
 
-Lo stesso vale per i prestiti: per ogni filiale si leggono in media 4.000 righe nella tabella _è associato_ e poi si accede a #er[Prestito] per recuperarne l'importo.
+Lo stesso vale per i prestiti: per ogni filiale si leggono in media 2.333 righe nella tabella _È associato_ e poi si accede a #er[Prestito] per recuperarne l'importo delle rate pagate.
 
-In totale quindi, come si vede dalla tabella, bisognerà leggere interamente le relazioni _contiene_, _è associato_ e tutte le entità #er[Conto] e #er[Prestito].
+In totale quindi, come si vede dalla tabella, bisognerà leggere interamente le relazioni _Contiene_, _#upper[è] associato_ e tutte le entità #er[Conto] e #er[Prestito].
 #v(2em)
 ==== Operazione 2
 Inserimento di un conto nella base di dati con frequenza 150 volte al giorno
@@ -440,16 +450,17 @@ Inserimento di un conto nella base di dati con frequenza 150 volte al giorno
   [Conto], [Entità], [150], [Scrittura],
   [Contiene], [Relazione], [150], [Scrittura],
   [Possiede], [Relazione], [150], [Scrittura],
-  [Filiale], [Entità], [150], [Scrittura],
   [Filiale], [Entità], [150], [Lettura],
+  [Filiale], [Entità], [150], [Scrittura],
   ),
   caption: [Operazione 2]
 )
 
-$ "op2: (4 scritture{Conto, contiene, possiede, Filiale}" + 1 "lettura{Filiale})" dot 150 $
+$ "op2: (4 scritture{Conto, Contiene, Possiede, Filiale}" + 1 "lettura{Filiale})" dot 150 $
 $ "op2 = 1350" $
 
-Per inserire un conto bisogna scrivere nell'entità #er[Conto] e nelle due relazioni _contiene_ e _possiede_, poiché un conto deve avere un cliente che lo possiede e il conto deve essere contenuto da una filiale. 
+Per inserire un conto bisogna scrivere in #er[Conto] e nelle due relazioni _Contiene_ e _
+Possiede_, poiché un conto deve avere un cliente che lo possiede e il conto deve essere contenuto da una filiale. 
 Infine bisogna leggere e scrivere nell'entità #er[Filiale] per aggiornare l'attributo _Attivi_ con il saldo del conto appena inserito. 
 
 #h(1em)
@@ -477,7 +488,7 @@ $ "op2 = 900" $
 La logica è come quella vista sopra, con l'eccezione che non serve aggiornare l'attributo _Attivi_, che non è presente. 
 
 ==== Operazione 3
-Inserimento di una operazione in possiede con frequenza 1.000.000 al giorno
+Inserimento di un'operazione in _Possiede_ con frequenza 1.000.000 al giorno.
 
 #h(1em)
 *Con attributo _Attivi_: *
@@ -491,21 +502,21 @@ Inserimento di una operazione in possiede con frequenza 1.000.000 al giorno
         if x == 2 { center + horizon } else { left }
       },
   table.header([Nome], [Costrutto], [Accessi], [Tipo]),
-  [Possiede], [Relazione], [1.000.000], [Scrittura],
   [Possiede], [Relazione], [1.000.000], [Lettura],
-  [Conto], [Entità], [1.000.000], [Scrittura],
+  [Possiede], [Relazione], [1.000.000], [Scrittura],
   [Conto], [Entità], [1.000.000], [Lettura],
-  [Filiale], [Entità], [1.000.000], [Scrittura],
+  [Conto], [Entità], [1.000.000], [Scrittura],
   [Filiale], [Entità], [1.000.000], [Lettura],
+  [Filiale], [Entità], [1.000.000], [Scrittura],
   [Contiene], [Relazione], [1.000.000], [Lettura],
   ),
   caption: [Operazione 3]
 )
 
-$ "op3: (3 scrittura{possiede, Conto, Filiale} + 4 letture{possiede, Conto, Filiale, contiene})" dot 1.000.000 $
+$ "op3: (3 scrittura{Possiede, Conto, Filiale} + 4 letture{Possiede, Conto, Filiale, Contiene})" dot 1.000.000 $
 $ "op3 = 10.000.000" $
 
-Poichè la relazione _possiede_ contiene l'attributo operazione, ogni volta che un'operazione viene eseguita bisogna aggiornare l'attributo, ciò comporta una lettura e una scrittura. Dopodiché, bisogna anche in questo caso aggiornare il saldo del conto che fa riferimento a quella tupla in possiede, dopodiché solamente leggere la relazione _contiene_ per individuare la filiale in cui quel conto ha sede e aggiornare quindi l'attributo _Attivi_ della filiale.
+Poichè la relazione _Possiede_ contiene l'attributo operazione, ogni volta che un'operazione viene eseguita bisogna aggiornare l'attributo, ciò comporta una lettura e una scrittura. Dopodiché, bisogna anche in questo caso aggiornare il saldo del conto che fa riferimento a quella tupla in possiede, dopodiché solamente leggere la relazione _contiene_ per individuare la filiale in cui quel conto ha sede e aggiornare quindi l'attributo _Attivi_ della filiale.
 
 #h(1em)
 *Senza attributo _Attivi_:*
@@ -527,7 +538,7 @@ Poichè la relazione _possiede_ contiene l'attributo operazione, ogni volta che 
   caption: [Operazione 3]
 )
 
-$ "op3: (2 scritture{possiede, Conto} + 2 letture{possiede, Conto})" dot 1.000.000 $
+$ "op3: (2 scritture{Possiede, Conto} + 2 letture{Possiede, Conto})" dot 1.000.000 $
 $ "op3 = 6.000.000" $
 
 La logica è la stessa di prima, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere nell'entità #er[Filiale].
@@ -536,7 +547,7 @@ La logica è la stessa di prima, ma non serve aggiornare l'attributo _Attivi_ de
 Aggiornamento di tutti i prestiti con frequenza di una volta al mese.
 
 #h(1em)
-*Con attributo _attivi_:*
+*Con attributo _Attivi_:*
 #figure(
   table(
     columns: 4, 
@@ -559,10 +570,10 @@ Aggiornamento di tutti i prestiti con frequenza di una volta al mese.
   caption: [Operazione 4]
 )
 
-$ "op4: (3 scritture{Rata, Prestito, Filiale}" + \ 5 "Letture{è composto, Prestito, è associato, contiene, Filiale})" dot 7.000.000 dot 1/30 $
-$ "op4 = 1.166.667" $
+$ "op4: (3 scritture{Rata, Prestito, Filiale}" + \ 5 "Letture{È composto, Prestito, È associato, Contiene, Filiale})" dot 7.000.000 dot 1/30 $
+$ "op4 = 2.566.667" $
 
-Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta: la scrittura della rata che viene saldata in quel mese, poi bisogna risalire al prestito a cui essa fa riferimento tramite la relazione _è composto_, aggiornare il prestito di riferimento, dopodiché tramite la relazione _è associato_ ricavare l'iban del conto a cui è associato, poter quindi leggere in _contiene_ la filiale in cui quel prestito fa riferimento e quindi operare un aggiornamento dell'attributo attivi della filiale. 
+Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta: la scrittura della rata che viene saldata in quel mese, poi bisogna risalire al prestito a cui essa fa riferimento tramite la relazione _È composto_, aggiornare il prestito di riferimento, dopodiché tramite la relazione _È associato_ ricavare l'IBAN del conto a cui è associato, poter quindi leggere in _Contiene_ la filiale in cui quel prestito fa riferimento e quindi operare un aggiornamento dell'attributo attivi della filiale. 
 
 #h(1em)
 *Senza attributo _attivi_:*
@@ -585,13 +596,13 @@ Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta:
   caption: [Operazione 4]
 )
 
-$ "op4: (2 scritture{Rata, Prestito} + 2 Letture{è composto, Prestito})" dot 7.000.000 dot 1/30$ 
-$ "op4 = 14.000.000" $
+$ "op4: (2 scritture{Rata, Prestito} + 2 Letture{È composto, Prestito})" dot 7.000.000 dot 1/30$ 
+$ "op4 = 1.400.000" $
 
-Anche in questo caso la logica rimane la stessa, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere nell'entità Filiale e nelle relazioni _è associato_ e _contiene_.
+Anche in questo caso la logica rimane la stessa, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere in #er[Filiale] e nelle relazioni _È associato_ e _Contiene_.
 #v(1em)
-$ "Totale con attributo attivi": 11.171.017 $ 
-$ "Totale senza attributo attivi": 69.998.900 $ 
+$ "Totale con attributo attivi": 12.571.017 $ 
+$ "Totale senza attributo attivi": 52.398.900 $ 
 #v(1em)
 Questa analisi ci suggerisce che la conservazione dell'attributo derivato _Attivi_ sia utile e quindi lo manterremo nel nostro schema ER ristrutturato. 
 
@@ -616,16 +627,16 @@ Inserimento di una rata una volta al mese per ogni prestito della banca
   [Rata], [Entità], [7.000.000], [Scrittura],
   [Prestito], [Entità], [7.000.000], [Lettura],
   [Prestito], [Entità], [7.000.000], [Scrittura],
-  [è composto], [Relazione], [7.000.000], [Lettura],
+  [#upper[è] composto], [Relazione], [7.000.000], [Lettura],
 
   ),
   caption: [Operazione 1]
 )
 
-$ "op1: (2 scritture{Rata, Prestito} + 2 Letture{Prestito, è composto})" dot 7.000.000 dot 12/365 $ 
-$ "op1 = 1.380.822" $
+$ "op1: (2 scritture{Rata, Prestito} + 2 Letture{Prestito, è composto})" dot 7.000.000 dot 1/30 $ 
+$ "op1 = 1.400.000" $
 
-L'inserimento di una nuova rata comporta la scrittura di una istanza dell'entità #er[rata], seguito dalla lettura nella relazione _è composto_ per risalire al prestito corrispondente.
+L'inserimento di una nuova rata comporta la scrittura di una istanza dell'entità #er[rata], seguito dalla lettura nella relazione _#upper[è] composto_ per risalire al prestito corrispondente.
 La lettura del prestito corretto comporta poi la scrittura per aggiornare l'attributo _Somma rate_.
 
 #h(1em)
@@ -646,16 +657,16 @@ La lettura del prestito corretto comporta poi la scrittura per aggiornare l'attr
   caption: [Operazione 1]
 )
 
-$ "op1: (1 scrittura{Rata})" dot 7.000.000 dot 12/365 $ 
-$ "op1 = 460.274" $
+$ "op1: (1 scrittura{Rata})" dot 7.000.000 dot 1/30 $ 
+$ "op1 = 233.333" $
 
 In questo caso l'operazione di inserimento di una rata comporta semplicemente la scrittura della rata, senza la necessità di leggere il prestito per aggiornare l'attributo somma rate.
 
 
 ==== Operazione 2
-Lettura del valore della somma delle rate pagate per ogni prestito con frequenza di 2 volte all'anno.
+Lettura del valore della somma delle rate pagate per ogni prestito con frequenza semestrale.
 
-Per questa analisi abbiamo dovuto introdurre un'ulteriore ipotesi, ovvero il numero medio di rate presenti nella nostra base di dati per ogni prestito. Abbiamo supposto questo numero essere 12, che equivale ad un anno di rate pagate.
+Per questa analisi abbiamo dovuto introdurre un'ulteriore ipotesi, ovvero il numero medio di rate saldate presenti nella nostra base di dati per ogni prestito. Abbiamo supposto questo numero essere 12, che equivale ad un anno di rate pagate.
 
 #h(1em)
 *Con attributo _Somma rate_: *
@@ -675,8 +686,8 @@ Per questa analisi abbiamo dovuto introdurre un'ulteriore ipotesi, ovvero il num
   caption: [Operazione 2]
 )
 
-$ "op2: (1 lettura{Prestito})" dot 7.000.000 dot 2/365 $ 
-$ "op2 = 38.356" $
+$ "op2: (1 lettura{Prestito})" dot 7.000.000 dot 1/180 $ 
+$ "op2 = 38.889" $
 
 In questo caso è necessaria una semplice lettura dell'attributo dal prestito corretto, senza la necessità di leggere ogni rata ad esso associata.
 
@@ -694,41 +705,48 @@ In questo caso è necessaria una semplice lettura dell'attributo dal prestito co
       },
   table.header([Nome], [Costrutto], [Accessi], [Tipo]),
   [Prestito], [Entità], [7.000.000], [Lettura],
-  [è associato], [Relazione], [7.000.000], [Lettura],
-  [Rata], [Entità], [7.000.000], [Lettura],
+  [È composto], [Relazione], [84.000.000], [Lettura],
+  [Rata], [Entità], [84.000.000], [Lettura],
   ),
   caption: [Operazione 2]
 )
 
-$ "op2: (2 letture{Prestito, è associato} + 1 lettura{Rata}" dot 12) dot 7.000.000 dot 2/365 $
-$ "op2 = 536.986" $
+$ "op2: (1 lettura{Prestito} + 12" dot 2 "letture{Rata, È composto}") dot 7.000.000 dot 1/180 $
+$ "op2 = 972.222" $
 
 Senza l'attributo ridondante oltre alla lettura del prestito corretto bisogna leggere anche nella relazione _è associato_ per ottenere tutte le rate associate al mio prestito.
 Tra le rate associate mediamente 12 sono state pagate, è da aggiungere quindi una media di ulteriori 12 letture per risalire all'ammontare effettivo già pagato.
 #v(1em)
-$ "Totale con ridondanza di Somma rate: " 1.419.178 $
+$ "Totale con ridondanza di Somma rate: " 1.438.889 $
   
-$ "Totale senza ridondanza di Somma rate: " 997.260 $
+$ "Totale senza ridondanza di Somma rate: " 1.205.555 $
 #v(1em)
 
 Per questa ridondanza abbiamo concluso quindi che l'attributo somma rate possa essere rimosso e non essere utilizzato nello schema ER ristrutturato.
 
 
 == Selezione delle chiavi primarie
-Nell'entità #er[Cliente] abbiamo scelto come chiave primaria l'attributo _ID_ rispetto a _Codice Fiscale_ per mantenere una linearità con l'entità #er[DIPENDENTE] la quale è identificata a sua volta da un codice identificativo.
+In #er[Cliente] abbiamo scelto come chiave primaria l'attributo _ID_ rispetto a _Codice Fiscale_ per mantenere una linearità con #er[DIPENDENTE] il quale è identificato a sua volta da un codice univoco.
 In tutti gli altri casi la chiave candidata a essere primaria era unica.
 
 == Rimozione delle specializzazioni
-Per le analisi fatte in precedenza siamo giunti alla conclusione che il blocco #er[Capo-Di-Dipendente] può essere "compresso", riducendo la complessità visiva e pratica del problema, eliminando la specializzazione capo e la relativa relazione #er[DI], sostituendo il tutto con un nuovo attributo derivato posto nell'entità #er[Dipendente]: _Id capo_.
-Di conseguenza viene anche cambiato il riferimento della relazione #er[è capo] che non farà più riferimento all'entità #er[capo] in quanto è stata eliminata ma bensì a #er[Dipendente] mantenendo le cardinalità invariate.
-Non c'è perdita di informazione in quanto il nuovo attributo _ID capo_ viene ricavato dalle relazioni #er[Lavora] ed #er[è capo].
-Per ricavare il capo di un certo dipendente posso andare a vedere la filiale in cui lavora (che è unica per le cardinalità della relazione), tale filiale sarà gestita da uno e un solo capo (deducibile dalle cardinalità della relazione è capo).
-Si può quindi, in maniera univoca, ricavare il capo di un certo dipendente passando attraverso le relazioni e salvare il dato di interesse nell'attributo _ID capo_.
+Per le analisi fatte in precedenza siamo giunti alla conclusione che il blocco #er[Capo-]_Di_#er[-Dipendente] può essere "compresso", riducendo la complessità visiva e pratica del problema, eliminando la specializzazione #er[Capo] e la relativa relazione #err[Di], sostituendo il tutto con un nuovo attributo derivato posto nell'entità #er[Dipendente]: _Capo_.
+Di conseguenza viene anche cambiato il riferimento della relazione #er[è capo] che non farà più riferimento all'entità #er[capo] in quanto è stata eliminata ma bensì a #er[Dipendente] richiedendo un cambio di cardinalità dal lato di #er[dipendente].
 
-Successivamente la specializzazione di #er[CONTO] è stata ristrutturata aggiungendo due nuove relazioni: #er[Tipo-Corrente] e #er[Tipo-Risparmio] che legano rispettivamente le entità #er[CORRENTE] e #er[RISPARMIO].
-Gli attributi delle tre relazioni coinvolte nella specializzazione sono rimasti invariati.
-Le cardinalità delle due nuove relazioni sono (0,1) dal lato di #er[conto] in quanto un conto è sicuramente di uno dei due tipi e sicuramente non di entrambi, e dal lato di #er[CORRENTE] e #er[RISPARMIO] è (1,1) in quanto i due tipi di conto esistono e sono associate a uno e un solo conto.
-Le chiavi primarie di #er[CORRENTE] e di #er[RISPARMIO] sono delle chiavi primarie legate alla relazione con conto, ne ereditano quindi la chiave primaria _IBAN_.
+Non c'è perdita di informazione in quanto il nuovo attributo _Capo_ viene ricavato dalle relazioni #er[Lavora] ed #er[è capo].
+Per ricavare il capo di un certo dipendente posso andare a vedere la filiale in cui lavora (che è unica per le cardinalità della relazione), tale filiale sarà gestita da uno e un solo capo (deducibile dalle cardinalità della relazione è capo).
+Si può quindi, in maniera univoca, ricavare il capo di un certo dipendente passando attraverso le relazioni e salvare il dato di interesse nell'attributo _Capo_.
+
+Successivamente la specializzazione di #er[CONTO] è stata ristrutturata aggiungendo due nuove relazioni: #err[Tipo-Corrente] e #err[Tipo-Risparmio] che legano rispettivamente le entità #er[CORRENTE] e #er[RISPARMIO] a #er[conto].
+
+
+
+Gli attributi delle tre entità coinvolte nella specializzazione sono rimasti invariati.
+Le cardinalità delle due nuove relazioni sono (0,1) dal lato di #er[conto]. Dal lato di #er[CORRENTE] e #er[RISPARMIO] sono (1,1) in quanto i due tipi di conto sono associati a uno e un solo conto. 
+
+Questa scelta non ci permette di catturare tutti i requisiti su conto, il quale deve essere esclusivamente un conto corrente o un conto di risparmio. Ciò va tenuto in considerazione aggiungendolo ai vincoli di integrità. 
+
+Le chiavi primarie di #er[CORRENTE] e di #er[RISPARMIO] sono delle chiavi primarie legate alla relazione con #er[conto], ne ereditano quindi la chiave primaria _IBAN_.
 Da notare il fatto che l'insieme degli _IBAN_ di #er[CORRENTE] deve essere disgiunto dall'insieme degli _IBAN_ di #er[RISPARMIO] (non esiste un conto che è sia corrente che di risparmio in quanto la specializzazione originariamente era disgiunta).
 
 
@@ -743,8 +761,8 @@ Da notare il fatto che l'insieme degli _IBAN_ di #er[CORRENTE] deve essere disgi
 #erb[CLIENTE] (#u[ID], CF, Residenza, DataDiNascita, Telefono, Cognome, Nome, _Gestore_)
 - _CF_: UNIQUE
 
-#erb[CONTO] (#u[_IBAN_], Saldo, _FilialeAppartenenza_)
-- FilialeAppartenenza: NOT NULL
+#erb[CONTO] (#u[_IBAN_], Saldo, _Filiale_)
+- _FilialeAppartenenza_: NOT NULL
 
 #erb[CONTO_CORRENTE] (#u[_IBAN_], Scoperto)
 - _IBAN_: UNIQUE
@@ -754,31 +772,35 @@ Da notare il fatto che l'insieme degli _IBAN_ di #er[CORRENTE] deve essere disgi
 
 #erb[POSSIEDE] (#u[_Cliente_, _Conto_], Operazione, Data)
 
-#erb[PRESTITO] (#u[Codice], Ammontare, Inizio, Tipo, _ContoAssociato_)
+#erb[PRESTITO] (#u[Codice], Ammontare, Inizio, Mensilità, _ContoAssociato_)
 - _ContoAssociato_: NOT NULL
 
-#erb[RATA] (#u[Numero], _CodicePrestito_, Ammontare, DataPagamento, DataScadenza)
+#erb[RATA] (#u[Numero, _CodicePrestito_], Ammontare, DataPagamento, DataScadenza)
+- _CodicePrestito_: NOT NULL
 
-#erb[FILIALE] (#u[Nome], Città, Attivi(derivato), Indirizzo, _Capo_)
-- _Capo_ NOT NULL
+#erb[FILIALE] (#u[Nome], Città, Attivi (derivato), Indirizzo, _Capo_)
+- _Capo_: NOT NULL
 
-#erb[DIPENDENTE] (#u[ID], Nome, Cognome, Telefono, DataAssunzione, _IDCapo_ (derivato), _Filiale_)
-- _Filiale_ NOT NULL
+#erb[DIPENDENTE] (#u[ID], Nome, Cognome, Telefono, DataAssunzione, _Capo_ (derivato), _Filiale_)
+- _Filiale_: NOT NULL
+- _Capo_: NOT NULL
 
-Legenda: Le chiavi primarie sono sottolineate e le chiavi esterne sono in corsivo. 
+Legenda: Le chiavi primarie sono sottolineate e le chiavi esterne sono in corsivo.
+
+La traduzione delle relazioni è stata fatta secondo i canoni standard seguendo le cardinalità di esse. 
 
 === Chiavi esterne
 - _Gestore_ è chiave esterna di #er[cliente] rispetto a #er[DIPENDENTE]
 
-- _FilialeAppartenenza_ è chiave esterna di #er[conto] rispetto a #er[filiale]
+- _Filiale_ è chiave esterna di #er[conto] rispetto a #er[filiale]
 - _IBAN_ è chiave esterna di #er[conto corrente, conto risparmio] rispetto a #er[conto]
-- _Conto_ chiave esterna di #er[possiede] rispetto a #er[CONTO].
+- _Conto_ chiave esterna di #er[possiede] rispetto a #er[CONTO]
 - _Cliente_ è chiave esterna di #er[possiede] rispetto a #er[cliente]
 - _ContoAssociato_ è chiave esterna di #er[prestito] rispetto a CONTO
 - _Capo_ è chiave esterna di #er[filiale] rispetto a #er[DIPENDENTE]
 - _CodicePrestito_ è chiave esterna di #er[rata] rispetto a #er[PRESTITO]
-- _IDCapo_ è chiave esterna di #er[dipendente] rispetto a DIPENDENTE
-- _Filiale_ è chiave esterna di #er[cliente] rispetto a #er[FILIALE]
+- _Capo_ è chiave esterna di #er[dipendente] rispetto a DIPENDENTE
+
 
 #pagebreak()
 
@@ -799,38 +821,51 @@ Riportiamo di seguito la tabella dei volumi debitamente proporzionata sulla qual
 
 #figure(
   table(
-    columns: 3, 
+    columns: 2, 
     stroke: 0.5pt,
     fill: (x, y) => if y == 0 { rgb("#ddd") },
     align: (x, y) =>
       if y == 0 { center } else {
         if x < 1 { center + horizon } else { left }
       },
-  table.header([Nome], [Costrutto], [Volume]),
-  [Cliente] , [Entità], [30.000],
-  [Conto] , [Entità], [24.000],
-  [Conto Corrente] , [Entità], [20.000],
-  [Conto Risparmio] , [Entità], [4.000],
-  [Dipendente] , [Entità], [200],
-  [Filiale] , [Entità], [6],
-  [Prestito] , [Entità], [14.000],
-  [Contiene] , [Relazione], [24.000],
-  [Di] , [Relazione], [200],
-  [#upper[è] associato] , [Relazione], [14.000],
-  [#upper[è] capo] , [Relazione], [6],
-  [#upper[è] composto] , [Relazione], [14.000],
-  [Gestisce] , [Relazione], [20.000],
-  [Lavora] , [Relazione], [200],
-  [Possiede] , [Relazione], [38.000],
+  table.header([Nome], [Volume]),
+  [Cliente], [30.000],
+  [Conto] , [24.000],
+  [Conto Corrente], [20.000],
+  [Conto Risparmio] , [4.000],
+  [Dipendente] , [200],
+  [Filiale] , [6],
+  [Prestito] , [14.000],
+  [Rata\*], [1.764.000],
+  [Possiede], [38.000],
   ),
   caption: [Tabella dei volumi proporzionata]
 )
 
+\* Abbiamo incluso tutte le rate, pagate e non, con una media di 126 rate per prestito.
+
 === Dati #er[filiale]
-Questi dati non richiedevano particolari attenzioni poiché non soggetti a nessun tipo di vincolo particolare. Per comodità è stato scelto di nominare le filiale con numeri interi crescenti, e per la logica di popolamento e vincoli di cardinalità per ogni tupla di filiale il codice del manager è pari al suo numero intero pari al suo nome.
+Questi dati non richiedevano particolari attenzioni poiché non soggetti a nessun tipo di vincolo particolare. Per comodità è stato scelto di nominare le filiali con numeri interi crescenti, e per la logica di popolamento e vincoli di cardinalità, per ogni record di filiale, il codice del suo manager è pari al suo nome. 
 
 === Dati #er[dipendente]
-I dipendenti sono composti da dati che per ciò che concerne gli attributi _Nome, Cognome, Data di assunzione, telefono_ sono stati generati e assegnati casualmente, mentre più delicato è il nome (numero) di filiale che per i primi 6 dipendenti è stato assegnato progressivamente per mantenere la logica dei dati di #er[Filiale] mentre per i restanti in maniera casuale, inoltre il campo _Capo_ è stato inizializzato a -1 per poi essere assegnato correttamente durante la popolazione.
+I dipendenti sono composti da dati che per ciò che concerne gli attributi _Nome, Cognome, Data di assunzione, Telefono_ sono stati generati e assegnati casualmente, mentre più delicato è il nome (numero) di filiale che per i primi 6 dipendenti è stato assegnato progressivamente per mantenere la logica dei dati di #er[Filiale] mentre per i restanti in maniera casuale, inoltre il campo _Capo_ è stato inizializzato a -1 per poi essere assegnato correttamente durante il popolamento.
+
+Abbiamo stabilito per comodità che solo i primi 100 dipendenti sono gestori. 
+
+=== Dati #er[cliente]
+Il campo _Gestore_ è il più delicato. I clienti con _ID_ da 1 a 4.000 e da 24.001 a 28.000 hanno nell'ordine lo stesso gestore (il cliente con _ID_ = 1 ha lo stesso gestore del cliente con _ID_ = 24.001, quello con _ID_ = 2 ha lo stesso gestore del cliente con _ID_ = 24.002 e così via). I clienti con _ID_ da 4001 a 16.000 hanno un gestore (eventualmente ripetuto) e i rimanenti ne sono privi. 
+
+=== Dati #er[conto]
+
+Per assegnare gli _IBAN_ in maniera coerente, i primi 20.000 sono stati assegnati ai conti correnti, i restanti 4.000 ai conti di risparmio. 
+
+=== Dati #er[possiede]
+
+Per garantire la coerenza e i vincoli di integrità, i primi 4.000 _IBAN_ sono stati assegnati ai primi 4.000 clienti cointestati con i clienti con _ID_ compreso tra 24.001 e 28.000, in maniera tale da rispettare il vincolo sui gestori (entrambi hanno lo stesso gestore). \
+I successivi 2.000 _IBAN_ sono cointestati ma solo uno dei clienti ha il gestore. \
+I restanti _IBAN_ hanno un unico proprietario, alcuni con gestore e altri senza.
+
+
 
 
 == Creazione dei trigger
