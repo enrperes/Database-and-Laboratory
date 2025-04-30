@@ -873,7 +873,7 @@ I restanti _IBAN_ hanno un unico proprietario, alcuni con gestore e altri senza.
 === Trigger #er[filiale-dipendente]
 Sono stati creati dei trigger per gestire le problematicità tra dipendente e filiale che non è stato possibile catturare con i vincoli tramite lo schema relazionale.
 
-Il manager di una filiale deve fare riferimento alla filiale che gestisce, pertanto non deve essere possibile cambiare la filiale di un manager. Il trigger controlla che su ogni inserimento o modifica nella tabella dipendente venga rispettato il vincolo appena descritto, sollevando un'eccezione in caso di problemi bloccando di conseguenza l'inserimento o la modifica.
+Il manager di una filiale deve fare riferimento alla filiale che gestisce, pertanto non deve essere possibile cambiare la filiale di un manager. Il trigger controlla che su ogni inserimento o modifica nella tabella dipendente venga rispettato il vincolo appena descritto, sollevando un'eccezione in caso di problemi e bloccando di conseguenza l'inserimento o la modifica.
 
 Un altro trigger simile controlla che una volta assegnato il manager in una filiale esso lavori effettivamente in quella filiale. 
 
@@ -881,15 +881,15 @@ Un altro trigger simile controlla che una volta assegnato il manager in una fili
 === Trigger #er[filiale-conto-prestito-rata]
 La creazione delle rate di un prestito è stata gestita in modo automatico da un trigger il quale dopo l'inserimento di un prestito, calcola l'importo mensile di ogni rata in base all'ammontare e il numero di mensilità, creando le rate (tutte con lo stesso importo mensile) e mettendo la data di scadenza in modo coerente e sequenziale.
 
-Un altro trigger controlla la possibilità di poter pagare una rata bloccando l'aggiornamento in caso la rata fosse già stata pagata, in caso di pagamento concesso, il trigger si occupa anche di aggiornare gli attivi della filiale corrispondente.
+Un altro trigger controlla la possibilità di poter pagare una rata bloccando l'aggiornamento in caso la rata fosse già stata pagata. In caso di pagamento concesso, il trigger si occupa anche di aggiornare gli attivi della filiale corrispondente.
 
-In modo analogo un trigger aggiorna gli attivi della filiale ogni volta che un nuovo prestito viene creato.
+In modo analogo un altro trigger aggiorna gli attivi della filiale ogni volta che un nuovo prestito viene creato.
 
 
 === Trigger #er[possiede-conto-filiale]
 Il calcolo degli attivi, analogamente a quanto avviene per prestiti e rate, viene fatto in automatico da un trigger ogni volta che è aggiornato il saldo di un conto.
 
-Per le scelte fatte nessun IBAN in conto corrente deve comparire in conto di risparmio e viceversa ma tutti gli IBAN di #er[conto corrente] e di #er[conto risparmio] devono comparire in #er[conto], tale vincolo viene rispettato da due opportuni trigger.
+Per le scelte fatte nessun IBAN in conto corrente deve comparire in conto di risparmio e viceversa ma tutti gli IBAN di #er[conto corrente] e di #er[conto risparmio] devono comparire in #er[conto], tale vincolo viene fatto rispettare da due opportuni trigger.
 
 La coerenza delle operazioni eseguibili su un determinato conto anch'essa è verificata da due appositi trigger. Viene controllato che l'operazione sia sensata sul conto (non posso aprire un conto due volte e non posso fare operazioni sul conto di risparmio) e in caso di prelievo un trigger si occupa di verificare il saldo rimanente e di aggiornarlo.
 
@@ -898,18 +898,17 @@ La coerenza delle operazioni eseguibili su un determinato conto anch'essa è ver
 == Inserimento tabelle e dati nel database
 Per creare il database richiesto, popolarlo e testare le query assegnate è stata seguita una particolare logica affinché tutto venisse inserito correttamente.
 
-Per prima cosa è stato creato il database, assegnando i volumi dei dati con valori proporzionati alla tabella dei volumi precedentemente proposta.
+Per prima cosa è stato creato il database, assegnando i volumi dei dati in base alla _Tabella 15_. /* link */
 
 Vengono poi caricati nel sistema tutti i trigger utilizzati e temporaneamente disabilitati per possibili inconsistenze momentanee nell'inserimento dei dati. La modalità di generazione casuale dei dati è stata pensata in modo tale che, al termine degli inserimenti iniziali, tutto sia coerente e non ci siano errori.
 
 Le prime tabelle popolate sono #er[filiale] e #er[dipendente]. Al termine del popolamento vengono eseguiti forzatamente due trigger in maniera tale da assegnare automaticamente i manager (che non erano stati inseriti) e verificare la presenza di eventuali errori (di base i dati sono stati generati consistentemente).
 
-Estratti dei possibili gestori vengono inseriti i clienti, successivamente la tabella #er[conto] con le relative #er[conto corrente] e #er[Conto di risparmio]. Una volta inseriti questi dati è possibile procedere al popolamento della tabella #er[possiede] che gestisce tutte le connessioni tra i clienti e i loro conti.
+Successivamente vengono create le tabelle #er[cliente] e #er[conto] con le relative #er[conto corrente] e #er[Conto di risparmio]. Una volta inseriti questi dati è possibile procedere al popolamento della tabella #er[possiede] che gestisce tutte le connessioni tra i clienti e i loro conti.
 
-Per la macrocategoria dei prestiti, una volta generati quest'ultimi e le relative rate andiamo, tramite apposito script, a pagare le rate che hanno una data di scadenza antecedente a quella odierna. Inseriti tutti i prestiti aggiorniamo l'attributo _attivi_ della tabella #er[Filiale] in maniera automatica sui dati inseriti e al termine riattiviamo tutti i trigger.
+Una volta generata #er[prestiti] (e le relative rate tramite trigger) viene innescato il trigger per pagare le rate con data di scadenza antecedente a quella odierna. Riattivando tutti i trigger, il sistema provvede a calcolare gli attivi delle filiali. 
 
-Gli script utilizzati non potevano essere sempre sostituiti dai trigger, infatti non era possibile tenerli tutti attivi e inserire tutti i valori in maniera ordinata e raggruppati per tabelle, ma avremmo dovuto fare attenzione volta per volta. Degli esempi di inserimenti di record sono presentati più avanti.
-
+I vincoli di integrità (vedi sezione 2.5), che non sono stati catturati dallo schema Entità-Relazione, vengono fatti rispettare dai trigger appena descritti. 
 
 == Test 
 Finito di popolare tutto il database ci assicuriamo tramite dei test che tutto sia perfettamente funzionante, che rispetti i requisiti che ci siamo imposti e che ci dia i risultati attesi. Questa verifica viene effettuata confrontando il risultato ottenuto dalle operazioni con i risultati attesi.
@@ -920,9 +919,9 @@ Finito di popolare tutto il database ci assicuriamo tramite dei test che tutto s
 
 +	Simile al precedente, proviamo ad assegnare il ruolo di manager di una filiale a un dipendente che lavora presso una filiale diversa. Il trigger blocca l'azione e ci restituisce l'errore (la modifica non viene effettuata).
 
-+	Inseriamo un nuovo dipendente: non è necessario specificare il campo manager in quanto il trigger apposito si occupa di ricercare l'id del manager nella filiale dove lavora il nuovo dipendente e assegnare il campo corrispondente.
++	Inseriamo un nuovo dipendente: non è necessario specificare il campo manager in quanto il trigger apposito si occupa di ricercare l'ID del manager nella filiale dove lavora e assegnare il campo corrispondente.
 
-+ Come il caso (3) ma con l'aggiunta che questo dipendente diventi manager della filiale in cui lavora. Il trigger che viene innescato sulla modifica del campo manager (che passa da -1 [non manager] a un id di filiale valido) provvede ad aggiornare il campo manager di tutti i dipendenti che lavorano nella filiale dove è appena stato modificato il manager.
++ Come il caso (3) ma con l'aggiunta che questo dipendente diventi manager della filiale in cui lavora. Il trigger che viene innescato sulla modifica del campo manager (che passa da -1 [non manager] a un ID di filiale valido) provvede ad aggiornare il campo manager di tutti i dipendenti che lavorano nella filiale dove è appena stato modificato il manager.
 
 +	Controlliamo una semplice operazione di rimozione di un dipendente che non è manager.
 
@@ -936,15 +935,15 @@ Finito di popolare tutto il database ci assicuriamo tramite dei test che tutto s
 
 == Test Conto-Filiale
 
-+	Simuliamo un versamento e un prelievo, quindi andiamo a modificare il valore del saldo dei conti. A questo punto dei trigger controllano (solo nel secondo caso) che il prelievo possa essere effettuato, quindi che il saldo sia un numero valido (non minore dello scoperto), dopodiché in entrambi i casi vengono automaticamente aggiornati gli attivi delle filiali. Lo scopo del test è comunque di verificare che il saldo venga correttamente modificato.
++	Simuliamo un versamento e un prelievo, quindi andiamo a modificare il valore del saldo dei conti. A questo punto dei trigger controllano (solo nel secondo caso) che il prelievo possa essere effettuato (quindi che il saldo sia maggiore dello scoperto). In entrambi i casi vengono automaticamente aggiornati gli attivi delle filiali. Lo scopo del test è comunque di verificare che il saldo venga correttamente modificato.
 
-+	Controlliamo che il trigger che controlla la validità dei saldi funzioni, forzando la modifica di un saldo a un valore non valido. Ci attendiamo un errore.
++	Controlliamo che il trigger che controlla la validità dei saldi funzioni, forzando la modifica di un saldo a un valore non valido. 
 
 +	Simile al primo test con il focus sull'aggiornamento degli attivi della filiale di riferimento.
 
 +	Proviamo a inserire un IBAN valido nella tabella #er[conto] (necessario per i vincoli di chiave esterna) e poi nella tabella #er[Conto Corrente]. Questo non dovrebbe generare problemi. Proviamo a inserire l'IBAN anche in #er[Conto Risparmio], il trigger vieta tale operazione e, dato che siamo all'interno di una transazione, tutti e tre gli inserimenti vengono rimossi (rollback).
 
-+ Test di consistenza dei gestori diversi su conti cointestati
++ Test di consistenza di gestori diversi su conti cointestati.
 
 #pagebreak()
 
@@ -1121,7 +1120,7 @@ La query seleziona i dipendenti non capo (con la verifica _ID_ <> _Capo_) e poi 
 
 La prima vista ci restringe i possibili clienti a quelli che hanno un gestore assunto da almeno 3 anni.
 La seconda vista, a partire dalla prima, fa un ulteriore filtro prendendo i clienti solo della filiale di Roma.
-La query si occupa di verificare, per ogni cliente, che tra i clienti della seconda vista non ce ne sia qualcuno con saldo maggiore del proprio, in tal caso stampa il cliente.
+La query si occupa di verificare, per ogni cliente, che tra i clienti della seconda vista non ce ne sia qualcuno con saldo maggiore del proprio, in tal caso seleziona il cliente.
 
 #pagebreak()
 
@@ -1155,8 +1154,8 @@ Viene esaminata la distribuzione delle mensilità dei prestiti associati a conti
 
 Per estrarre i dati è stata inizialmente creata una vista che contiene i clienti gestiti da un gestore. Viene poi eseguita una query che conta il numero di prestiti per ogni mensilità, filtrando i clienti con saldo maggiore di 50.000€.
 
-Per la visualizzazione dei è stato creato un istogramma, che mostra la frequenza delle mensilità. 
-#v(-7em)
+Per la visualizzazione dei è stato creato un istogramma, che mostra la frequenza delle mensilità 
+#v(-1em)
 #figure(
   image("media/grafico1.png", width: 100%),
   caption: [Distribuzione dei prestiti per mensilità]
@@ -1226,22 +1225,21 @@ I risultati vengono visualizzati in un grafico a barre, che mostra il numero di 
 
 = Conclusioni
 
-Fare un'analisi dei requisiti reale ha evidenziato la difficoltà reale di avere una documentazione completa, non ambigua e che rimanesse coerente con se stessa.
+Fare un'analisi dei requisiti ha evidenziato la difficoltà reale di avere una documentazione completa, non ambigua e che rimanesse coerente con se stessa.
 Certi requisiti erano facilmente deducibili, altri sono stai "imposti" da noi, altri ancora ci siamo ritrovati a specificarli man mano perché non erano stati tenuti in considerazione sin dall'inizio.
 
-Le progettazioni logiche e concettuali rimarcavano l'importanza di una scelta accurata di quali informazioni avessero il ruolo di entità e quali di semplici attributi. \
+Le progettazioni logiche e concettuali rimarcavano l'importanza di una scelta accurata riguardo quali informazioni avessero il ruolo di entità e quali di semplici attributi. \
 Altrettanto importante la scelta delle relazioni e delle relative molteplicità, molte volte dettate dai vincoli.
-Ciò non catturato dallo schema ER (vincoli di integrità) andava comunque documentato per implementare dei trigger nella progettazione fisica.
+Ciò che non è stato catturato dallo schema ER (vincoli di integrità) è stato documentato per implementare dei trigger nella progettazione fisica.
 
-Una buona parte del lavoro si è incentrata sulla generazione dei dati (anche del fatto che fossero coerenti tra loro e che rispettassero i vincoli imposti dal problema) e sul lavoro di popolamento tramite R.
-La creazione del database e delle tabelle è un lavoro su cui porre attenzione, in particolare l'ordine di creazione delle tabelle e l'assegnamento di chiavi primarie e/o esterne è fondamentale.
+Una buona parte del lavoro si è incentrata sulla generazione dei dati  (mantenendo la coerenza tra loro stessi e i vincoli imposti) e sul lavoro di popolamento tramite R.
+#upper[è] fondamentale la creazione del database e delle tabelle, in particolare l'ordine di generazione e l'assegnamento di chiavi primarie e/o esterne.
 
-Per testare la funzionalità del database ci siamo serviti di test che miravano a verificare dei casi particolari dei vincoli e della funzionalità dei trigger sia per garantire la coerenza, sia per l'aggiornamento automatico di attributi derivati.
+Per testare la funzionalità del database sono stati eseguiti dei test che miravano a verificare alcuni casi particolari: vincoli e funzionalità dei trigger, sia per garantire la coerenza, sia per l'aggiornamento automatico di attributi derivati.
 
-Le query invece, sono servite per capire come ragiona un database dietro a delle maschere semplificate dei software in circolazione, dove l'utente semplicemente scrive in linguaggio quasi naturale ciò che gli serve e poi viene tradotto in linguaggio SQL.
+Le query, invece, sono servite per capire come elabora le richieste un database dietro a delle maschere semplificate dei software in circolazione, dove l'utente semplicemente scrive in linguaggio quasi naturale ciò che gli serve e poi viene tradotto in linguaggio SQL. 🐷
 
-I grafici finali sfruttano la potenzialità delle query per analizzare dei dati che, con R, sarebbero stati recuperati in maniera meno semplice.
+I grafici finali sfruttano la potenzialità delle query per analizzare dei dati che, con R, sarebbero stati recuperati in maniera più complessa.
 
-In conclusione, questo progetto ci ha consentito di mettere in campo tutte le conoscenze teoriche (e non) acquisite durante il corso, e di acquisirne di nuove.
-
+In conclusione, questo progetto ci ha consentito di mettere in campo tutte le conoscenze teoriche e pratiche acquisite durante il corso e di acquisirne di nuove.
 
