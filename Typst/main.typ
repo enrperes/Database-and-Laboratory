@@ -191,7 +191,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2em)
 
-- L'entità #erb[Capo] rappresenta il capo di una filiale. \Essendo una specializzazione dell'entità #er[dipendente], eredita tutti gli attributi di quest'ultima. Un capo è unico per ogni filiale. 
+- L'entità #erb[Capo] rappresenta il capo di una filiale. \Essendo una specializzazione di #er[dipendente], eredita tutti gli attributi di quest'ultima. Un capo è unico per ogni filiale. 
 #figure(
   image("media/capo.svg", width: 18%),
   caption: [Entità CAPO]
@@ -200,23 +200,23 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 
 - L'entità #erb[Conto] serve per identificare un servizio della banca messo a disposizione per il cliente. Ogni entità viene identificata univocamente da un attributo _IBAN_, un attributo _Saldo_ tiene traccia dell'ammontare di denaro presente sul conto. La banca inoltre mette a disposizione due tipi di conto, quindi #er[Conto] è stato specializzato in due sottoentità: #er[Conto Corrente] e #er[Conto di Risparmio]. La specializzazione è totale e disgiunta.
 
-  - L'entità #erb[Conto Corrente] è una specializzazione dell'entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell'entità #er[Conto]. L'attributo che lo caratterizza è _Scoperto_ che indica quanto la banca può concedere di debito nei confronti del cliente.
+  - L'entità #erb[Conto Corrente] è una specializzazione di #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella di #er[Conto]. L'attributo che lo caratterizza è _Scoperto_ che indica quanto la banca può concedere di debito nei confronti del cliente.
 
-  - L'entità #erb[Conto di Risparmio] è una specializzazione dell'entità #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella dell'entità di #er[Conto]. L'attributo che lo caratterizza è _Tasso d'interesse_ che indica il valore di rendita mensile del conto.
+  - L'entità #erb[Conto di Risparmio] è una specializzazione di #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella di di #er[Conto]. L'attributo che lo caratterizza è _Tasso d'interesse_ che indica il valore di rendita mensile del conto.
 #figure(
   image("media/conto.svg", width: 28%),
   caption: [Entità CONTO]
 )
 #v(2em)
 
-- L'entità #erb[Prestito] costituisce il servizio creditizio della banca. Essa è caratterizzata da un codice univoco che funge da chiave primaria. L'attributo _Ammontare_ fornisce l'informazione relativa alla somma di denaro prestata, mentre l'attributo _Inizio_ registra la data in cui il prestito ha avuto origine. L'attributo _Somma rate_ è un attributo derivato, che tiene traccia dell'importo saldato dal cliente. L'attributo _Mensilità_ indica il numero di rate complessive del prestito.
+- L'entità #erb[Prestito] costituisce il servizio creditizio della banca. Essa è caratterizzata da un codice univoco che funge da chiave primaria. L'attributo _Ammontare_ fornisce l'informazione relativa alla somma di denaro prestata, mentre l'attributo _Inizio_ registra la data in cui il prestito ha avuto origine. _Somma rate_ è un attributo derivato, che tiene traccia dell'importo saldato dal cliente. L'attributo _Mensilità_ indica il numero di rate complessive del prestito.
 #figure(
   image("media/prestito.svg", width: 30%),
   caption: [Entità PRESTITO]
 )
 #v(2em)
 
-- L'entità #erb[rata] è un'entità debole che ha il compito di rappresentare ogni singolo pagamento periodico associato a un determinato prestito. L'identificazione univoca di ciascuna rata è garantita da una chiave primaria composta, costituita dal suo numero (indicante la “posizione” della rata nella sequenza dei pagamenti) e dalla chiave esterna che fa riferimento all'entità #er[Prestito]. Tra gli attributi figurano inoltre la _Data scadenza_, ossia il giorno entro cui la rata deve essere corrisposta, e la _Data pagamento_, che riporta il momento in cui il versamento è stato effettuato. Infine, l'attributo _Ammontare_ specifica l'importo dovuto per quella singola rata.
+- L'entità #erb[rata] è un'entità debole che ha il compito di rappresentare ogni singolo pagamento periodico associato a un determinato prestito. L'identificazione univoca di ciascuna rata è garantita da una chiave primaria composta, costituita dal suo numero (indicante la “posizione” della rata nella sequenza dei pagamenti) e dalla chiave esterna che fa riferimento a #er[Prestito]. Tra gli attributi figurano inoltre la _Data scadenza_, ossia il giorno entro cui la rata deve essere corrisposta, e la _Data pagamento_, che riporta il momento in cui il versamento è stato effettuato. Infine, l'attributo _Ammontare_ specifica l'importo dovuto per quella singola rata.
 #figure(
   image("media/rata.svg", width: 25%),
   caption: [Entità RATA]
@@ -231,7 +231,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2em)
 
-- La relazione #erbr[Lavora] collega #er[dipendente] e #er[filiale]. La cardinalità di (1,1) tra la relazione e l'entità #er[Dipendente] indica che ogni dipendente lavora in una e in una sola filiale, mentre la cardinalità di (1,N) tra la relazione e l'entità #er[filiale] indica che in una filiale lavorano uno o più dipendenti.
+- La relazione #erbr[Lavora] collega #er[dipendente] e #er[filiale]. La cardinalità di (1,1) tra la relazione e #er[Dipendente] indica che ogni dipendente lavora in una e in una sola filiale, mentre la cardinalità di (1,N) tra la relazione e #er[filiale] indica che in una filiale lavorano uno o più dipendenti.
 #figure(
   image("media/lavora.svg", width: 80%),
   caption: [Relazione Lavora]
@@ -239,7 +239,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 #v(2em)
 
 
-- La relazione #erbr[Di] collega #er[dipendente] e #er[capo]. La cardinalità di (1,N) tra la relazione e l'entità #er[capo] indica che un capo dirige uno o più dipendenti, mentre la cardinalità di (1,1) tra la relazione e l'entità #er[dipendente] indica che un dipendente ha uno e un solo capo. 
+- La relazione #erbr[Di] collega #er[dipendente] e #er[capo]. La cardinalità di (1,N) tra la relazione e #er[capo] indica che un capo dirige uno o più dipendenti, mentre la cardinalità di (1,1) tra la relazione e #er[dipendente] indica che un dipendente ha uno e un solo capo. 
 #figure(
   image("media/di.svg", width: 80%),
   caption: [Relazione Di]
@@ -269,7 +269,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 )
 #v(2em)
 
-- La relazione #erbr[Gestisce] collega #er[Dipendente] e #er[Cliente]. Un sottoinsieme dei dipendenti può seguire le pratiche di un certo numero di clienti della banca, da cui ne deriva la cardinalità (0,N) della relazione sul lato di #er[dipendente]. D'altro canto un #er[Cliente] può avere al più un solo gestore che segue le sue attività nella banca, da cui ne deriva la cardinalità (0,1) della relazione sul lato di #er[cliente].
+- La relazione #erbr[Gestisce] collega #er[Dipendente] e #er[Cliente]. Un sottoinsieme dei dipendenti può seguire le pratiche di un certo numero di clienti della banca, da cui ne deriva la cardinalità (0,N) della relazione sul lato di #er[dipendente]. D'altro canto un cliente può avere al più un solo gestore che segue le sue attività nella banca, da cui ne deriva la cardinalità (0,1) della relazione sul lato di #er[cliente].
 #figure(
   image("media/gestisce.svg", width: 80%),
   caption: [Relazione Gestisce]
@@ -323,7 +323,7 @@ Alcuni vincoli non possono essere catturati tramite il modello ER, vengono ripor
 
 - Due clienti che hanno gestori differenti non possono avere un conto condiviso.
 - Un dipendente non può gestire se stesso.
-- Le rate vanno pagate in ordine cronologico, in base al _Numero_.
+- Le rate vanno pagate in ordine cronologico, in base a _Numero_.
 - La somma dell'importo delle rate deve corrispondere all'ammontare del prestito.
 
 #pagebreak()
@@ -365,17 +365,17 @@ Nel processo di ottimizzazione delle prestazioni, nell’analisi delle ridondanz
 )
 
 === Considerazioni
-Il numero di clienti, conti, dipendenti e filiali è stato stimato sulla base dei dati reali di Intesa Sanpaolo. Abbiamo ipotizzato un numero di prestiti sulla base di una proporzione realistica rispetto ai conti e un numero di rate pagate (in media 12 per prestito). Per distinguere tra conti correnti e conti di risparmio, abbiamo utilizzato la percentuale media nazionale italiana, applicandola al numero totale di conti. I volumi per le relazioni sono stati calcolati tenendo conto delle cardinalità e della natura dei legami tra le entità coinvolte, in modo da mantenere coerenza con il modello concettuale.
+Il numero di clienti, conti, dipendenti e filiali è stato stimato sulla base dei dati reali di Intesa Sanpaolo. Il numero di prestiti è ipotizziato sulla base di una proporzione realistica rispetto ai conti e un numero di rate pagate (in media 12 per prestito). Per distinguere tra conti correnti e conti di risparmio, è stata presa come riferimento la percentuale media nazionale italiana, applicandola al numero totale di conti. I volumi per le relazioni sono stati calcolati tenendo conto delle cardinalità e della natura dei legami tra le entità coinvolte, in modo da mantenere coerenza con il modello concettuale.
 
 
 == Analisi delle ridondanze
 
 
 === Studio dell'attributo derivato _Attivi_ di #er[filiale]
-Il primo blocco di operazioni coinvolge l'attributo derivato _Attivi_ che produce una ridondanza ed è derivabile da altre entità, nel nostro caso da #er[Conto, Prestito] e #er[Rata]. Ipotizziamo delle operazioni e le loro relative frequenze che vanno a coinvolgere questo attributo e osserviamo se è conveniente eliminarlo o mantenerlo.
+Il primo blocco di operazioni coinvolge l'attributo derivato _Attivi_ che produce una ridondanza ed è derivabile da altre entità, nel nostro caso da #er[Conto, Prestito] e #er[Rata]. Sono state ipotizzate delle operazioni e le loro relative frequenze che vanno a coinvolgere questo attributo e osservato se è conveniente eliminarlo o mantenerlo.
 
 ==== Operazione 1 
-Interrogazione per leggere il valore _Attivi_ di ogni filiale con frequenza di una volta al giorno
+Interrogazione per leggere il valore _Attivi_ di ogni filiale con frequenza di una volta al giorno.
 
 #h(1em)
 *Con attributo _Attivi_: *
@@ -431,7 +431,7 @@ Lo stesso vale per i prestiti: per ogni filiale si leggono in media 2.333 righe 
 In totale quindi, come si vede dalla tabella, bisognerà leggere interamente le relazioni _Contiene_, _#upper[è] associato_ e tutte le entità #er[Conto] e #er[Prestito].
 #v(2em)
 ==== Operazione 2
-Inserimento di un conto nella base di dati con frequenza 150 volte al giorno
+Inserimento di un conto nella base di dati con frequenza 150 volte al giorno.
 
 #h(1em)
 *Con attributo _Attivi_:*
@@ -461,7 +461,7 @@ $ "op2 = 1350" $
 
 Per inserire un conto bisogna scrivere in #er[Conto] e nelle due relazioni _Contiene_ e _
 Possiede_, poiché un conto deve avere un cliente che lo possiede e il conto deve essere contenuto da una filiale. 
-Infine bisogna leggere e scrivere nell'entità #er[Filiale] per aggiornare l'attributo _Attivi_ con il saldo del conto appena inserito. 
+Infine bisogna leggere e scrivere in #er[Filiale] per aggiornare l'attributo _Attivi_ con il saldo del conto appena inserito. 
 
 #h(1em)
 *Senza attributo _Attivi_:*
@@ -541,7 +541,7 @@ Poichè la relazione _Possiede_ contiene l'attributo operazione, ogni volta che 
 $ "op3: (2 scritture{Possiede, Conto} + 2 letture{Possiede, Conto})" dot 1.000.000 $
 $ "op3 = 6.000.000" $
 
-La logica è la stessa di prima, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere nell'entità #er[Filiale].
+La logica è la stessa di prima, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere in #er[Filiale].
 
 ==== Operazione 4
 Aggiornamento di tutti i prestiti con frequenza di una volta al mese.
@@ -573,7 +573,7 @@ Aggiornamento di tutti i prestiti con frequenza di una volta al mese.
 $ "op4: (3 scritture{Rata, Prestito, Filiale}" + \ 5 "Letture{È composto, Prestito, È associato, Contiene, Filiale})" dot 7.000.000 dot 1/30 $
 $ "op4 = 2.566.667" $
 
-Abbiamo considerato l'aggiornamento mensile delle rate e quindi questo comporta: la scrittura della rata che viene saldata in quel mese, poi bisogna risalire al prestito a cui essa fa riferimento tramite la relazione _È composto_, aggiornare il prestito di riferimento, dopodiché tramite la relazione _È associato_ ricavare l'IBAN del conto a cui è associato, poter quindi leggere in _Contiene_ la filiale in cui quel prestito fa riferimento e quindi operare un aggiornamento dell'attributo attivi della filiale. 
+L'aggiornamento mensile delle rate comporta: la scrittura della rata che viene saldata in quel mese, bisogna poi risalire al prestito a cui essa fa riferimento tramite la relazione _È composto_, aggiornare il prestito di riferimento, dopodiché tramite la relazione _È associato_ ricavare l'IBAN del conto a cui è associato, poter quindi leggere in _Contiene_ la filiale in cui quel prestito fa riferimento e quindi operare un aggiornamento dell'attributo attivi della filiale. 
 
 #h(1em)
 *Senza attributo _attivi_:*
@@ -604,13 +604,13 @@ Anche in questo caso la logica rimane la stessa, ma non serve aggiornare l'attri
 $ "Totale con attributo attivi": 12.571.017 $ 
 $ "Totale senza attributo attivi": 52.398.900 $ 
 #v(1em)
-Questa analisi ci suggerisce che la conservazione dell'attributo derivato _Attivi_ sia utile e quindi lo manterremo nel nostro schema ER ristrutturato. 
+Questa analisi ci suggerisce che la conservazione dell'attributo derivato _Attivi_ sia utile e quindi verrà mantenuto nel nostro schema ER ristrutturato. 
 
 === Studio dell'attributo derivato _Somma rate_ di #er[prestito]
-Il secondo blocco di operazioni riguarda la ridondanza introdotta dall'attributo derivato _Somma rate_ dell'entità #er[Prestito] che misura il numero di rate che sono state pagate. Anche in questo caso si tratta di un attributo derivato secondo funzioni aggregative e le entità coinvolte sono #er[Rata] e #er[Prestito]. Possiamo considerare due operazioni (per coerenze con lo studio precedente riportiamo il numero di operazioni giornaliere):
+Il secondo blocco di operazioni riguarda la ridondanza introdotta dall'attributo derivato _Somma rate_ di #er[Prestito] che misura il numero di rate che sono state pagate. Anche in questo caso si tratta di un attributo derivato secondo funzioni aggregative e le entità coinvolte sono #er[Rata] e #er[Prestito]. Possiamo considerare due operazioni (per coerenze con lo studio precedente riportiamo il numero di operazioni giornaliere):
 
 ==== Operazione 1
-Inserimento di una rata una volta al mese per ogni prestito della banca 
+Inserimento di una rata una volta al mese per ogni prestito della banca.
 
 #h(1em)
 *Con attributo _Somma rate_: *
@@ -666,7 +666,7 @@ In questo caso l'operazione di inserimento di una rata comporta semplicemente la
 ==== Operazione 2
 Lettura del valore della somma delle rate pagate per ogni prestito con frequenza semestrale.
 
-Per questa analisi abbiamo dovuto introdurre un'ulteriore ipotesi, ovvero il numero medio di rate saldate presenti nella nostra base di dati per ogni prestito. Abbiamo supposto questo numero essere 12, che equivale ad un anno di rate pagate.
+Per questa analisi è stata introdotta un'ulteriore ipotesi, ovvero il numero medio di rate saldate presenti nella nostra base di dati per ogni prestito. Questo numero è stato supposto essere 12, che equivale ad un anno di rate pagate.
 
 #h(1em)
 *Con attributo _Somma rate_: *
@@ -722,19 +722,19 @@ $ "Totale con ridondanza di Somma rate: " 1.438.889 $
 $ "Totale senza ridondanza di Somma rate: " 1.205.555 $
 #v(1em)
 
-Per questa ridondanza abbiamo concluso quindi che l'attributo somma rate possa essere rimosso e non essere utilizzato nello schema ER ristrutturato.
+Per questa ridondanza la conclusione è quindi che l'attributo somma rate possa essere rimosso e non essere utilizzato nello schema ER ristrutturato.
 
 
 == Selezione delle chiavi primarie
-In #er[Cliente] abbiamo scelto come chiave primaria l'attributo _ID_ rispetto a _Codice Fiscale_ per mantenere una linearità con #er[DIPENDENTE] il quale è identificato a sua volta da un codice univoco.
+In #er[Cliente] è stato scelto come chiave primaria l'attributo _ID_ rispetto a _Codice Fiscale_ per mantenere una linearità con #er[DIPENDENTE] il quale è identificato a sua volta da un codice univoco.
 In tutti gli altri casi la chiave candidata a essere primaria era unica.
 
 == Rimozione delle specializzazioni
-Per le analisi fatte in precedenza siamo giunti alla conclusione che il blocco #er[Capo-]_Di_#er[-Dipendente] può essere "compresso", riducendo la complessità visiva e pratica del problema, eliminando la specializzazione #er[Capo] e la relativa relazione #err[Di], sostituendo il tutto con un nuovo attributo derivato posto nell'entità #er[Dipendente]: _Capo_.
+Per le analisi fatte in precedenza, il blocco #er[Capo-]_Di_#er[-Dipendente] può essere "compresso", riducendo la complessità visiva e pratica del problema, eliminando la specializzazione #er[Capo] e la relativa relazione #err[Di], sostituendo il tutto con un nuovo attributo derivato posto nell'entità #er[Dipendente]: _Capo_.
 Di conseguenza viene anche cambiato il riferimento della relazione #er[è capo] che non farà più riferimento all'entità #er[capo] in quanto è stata eliminata ma bensì a #er[Dipendente] richiedendo un cambio di cardinalità dal lato di #er[dipendente].
 
 Non c'è perdita di informazione in quanto il nuovo attributo _Capo_ viene ricavato dalle relazioni #er[Lavora] ed #er[è capo].
-Per ricavare il capo di un certo dipendente posso andare a vedere la filiale in cui lavora (che è unica per le cardinalità della relazione), tale filiale sarà gestita da uno e un solo capo (deducibile dalle cardinalità della relazione è capo).
+Per ricavare il capo di un certo dipendente si va andare a vedere la filiale in cui lavora (che è unica per le cardinalità della relazione), tale filiale sarà gestita da uno e un solo capo (deducibile dalle cardinalità della relazione _è capo_).
 Si può quindi, in maniera univoca, ricavare il capo di un certo dipendente passando attraverso le relazioni e salvare il dato di interesse nell'attributo _Capo_.
 
 Successivamente la specializzazione di #er[CONTO] è stata ristrutturata aggiungendo due nuove relazioni: #err[Tipo-Corrente] e #err[Tipo-Risparmio] che legano rispettivamente le entità #er[CORRENTE] e #er[RISPARMIO] a #er[conto].
@@ -744,7 +744,7 @@ Successivamente la specializzazione di #er[CONTO] è stata ristrutturata aggiung
 Gli attributi delle tre entità coinvolte nella specializzazione sono rimasti invariati.
 Le cardinalità delle due nuove relazioni sono (0,1) dal lato di #er[conto]. Dal lato di #er[CORRENTE] e #er[RISPARMIO] sono (1,1) in quanto i due tipi di conto sono associati a uno e un solo conto. 
 
-Questa scelta non ci permette di catturare tutti i requisiti su conto, il quale deve essere esclusivamente un conto corrente o un conto di risparmio. Ciò va tenuto in considerazione aggiungendolo ai vincoli di integrità. 
+Questa scelta non permette di catturare tutti i requisiti su conto, il quale deve essere esclusivamente un conto corrente o un conto di risparmio. Ciò va tenuto in considerazione aggiungendolo ai vincoli di integrità. 
 
 Le chiavi primarie di #er[CORRENTE] e di #er[RISPARMIO] sono delle chiavi primarie legate alla relazione con #er[conto], ne ereditano quindi la chiave primaria _IBAN_.
 Da notare il fatto che l'insieme degli _IBAN_ di #er[CORRENTE] deve essere disgiunto dall'insieme degli _IBAN_ di #er[RISPARMIO] (non esiste un conto che è sia corrente che di risparmio in quanto la specializzazione originariamente era disgiunta).
@@ -817,7 +817,7 @@ La tabella possiede è stata creata in quanto corrisponde alla relazione molti a
 
 
 == Modalità di generazione dei dati
-Riportiamo di seguito la tabella dei volumi debitamente proporzionata sulla quale abbiamo creato i dati per il nostro database.
+Riportiamo di seguito la tabella dei volumi debitamente proporzionata sulla quale il nostro database è stato creato.
 
 #figure(
   table(
@@ -842,7 +842,7 @@ Riportiamo di seguito la tabella dei volumi debitamente proporzionata sulla qual
   caption: [Tabella dei volumi proporzionata]
 )
 
-\* Abbiamo incluso tutte le rate, pagate e non, con una media di 126 rate per prestito.
+\* 1.764.000 include tutte le rate, pagate e non, con una media di 126 rate per prestito (prestiti tra 12 e 240 rate).
 
 === Dati #er[filiale]
 Questi dati non richiedevano particolari attenzioni poiché non soggetti a nessun tipo di vincolo particolare. Per comodità è stato scelto di nominare le filiali con numeri interi crescenti, e per la logica di popolamento e vincoli di cardinalità, per ogni record di filiale, il codice del suo manager è pari al suo nome. 
@@ -850,7 +850,7 @@ Questi dati non richiedevano particolari attenzioni poiché non soggetti a nessu
 === Dati #er[dipendente]
 I dipendenti sono composti da dati che per ciò che concerne gli attributi _Nome, Cognome, Data di assunzione, Telefono_ sono stati generati e assegnati casualmente, mentre più delicato è il nome (numero) di filiale che per i primi 6 dipendenti è stato assegnato progressivamente per mantenere la logica dei dati di #er[Filiale] mentre per i restanti in maniera casuale, inoltre il campo _Capo_ è stato inizializzato a -1 per poi essere assegnato correttamente durante il popolamento.
 
-Abbiamo stabilito per comodità che solo i primi 100 dipendenti sono gestori. 
+Solo i primi 100 dipendenti sono gestori. 
 
 === Dati #er[cliente]
 Il campo _Gestore_ è il più delicato. I clienti con _ID_ da 1 a 4.000 e da 24.001 a 28.000 hanno nell'ordine lo stesso gestore (il cliente con _ID_ = 1 ha lo stesso gestore del cliente con _ID_ = 24.001, quello con _ID_ = 2 ha lo stesso gestore del cliente con _ID_ = 24.002 e così via). I clienti con _ID_ da 4001 a 16.000 hanno un gestore (eventualmente ripetuto) e i rimanenti ne sono privi. 
@@ -870,8 +870,9 @@ I restanti _IBAN_ hanno un unico proprietario, alcuni con gestore e altri senza.
 
 == Creazione dei trigger
 
-=== Trigger #er[filiale-dipendente]
 Sono stati creati dei trigger per gestire le problematicità tra dipendente e filiale che non è stato possibile catturare con i vincoli tramite lo schema relazionale.
+
+=== Trigger #er[filiale-dipendente]
 
 Il manager di una filiale deve fare riferimento alla filiale che gestisce, pertanto non deve essere possibile cambiare la filiale di un manager. Il trigger controlla che su ogni inserimento o modifica nella tabella dipendente venga rispettato il vincolo appena descritto, sollevando un'eccezione in caso di problemi e bloccando di conseguenza l'inserimento o la modifica.
 
@@ -911,44 +912,44 @@ Una volta generata #er[prestiti] (e le relative rate tramite trigger) viene inne
 I vincoli di integrità (vedi sezione 2.5), che non sono stati catturati dallo schema Entità-Relazione, vengono fatti rispettare dai trigger appena descritti. 
 
 == Test 
-Finito di popolare tutto il database ci assicuriamo tramite dei test che tutto sia perfettamente funzionante, che rispetti i requisiti che ci siamo imposti e che ci dia i risultati attesi. Questa verifica viene effettuata confrontando il risultato ottenuto dalle operazioni con i risultati attesi.
+Una volta finito di popolare tutto il database, tramite dei test, viene verificata la correttezza dei trigger su alcuni casi sensibili, in modo tale che vengano rispettati i requisiti che sono stati imposti e che vengano restituiti i risultati attesi.
 
 == Test Dipendente-Filiale
 
-+	Tentiamo di modificare la filiale di riferimento di un manager senza aggiornare il ruolo di manager. Il trigger ci protegge e ci vieta l'inserimento (un dipendente non può lavorare nella filiale #er[A] ed essere manager della filiale #er[B]).
++	Tentativo di modifica della filiale di riferimento di un manager senza aggiornare il ruolo di manager. Il trigger vieta l'inserimento (un dipendente non può lavorare nella filiale #er[A] ed essere manager della filiale #er[B]).
 
-+	Simile al precedente, proviamo ad assegnare il ruolo di manager di una filiale a un dipendente che lavora presso una filiale diversa. Il trigger blocca l'azione e ci restituisce l'errore (la modifica non viene effettuata).
++	Simile al precedente, assegnamento del ruolo di manager di una filiale a un dipendente che lavora presso una filiale diversa. Il trigger blocca l'azione e restituisce l'errore (la modifica non viene effettuata).
 
-+	Inseriamo un nuovo dipendente: non è necessario specificare il campo manager in quanto il trigger apposito si occupa di ricercare l'ID del manager nella filiale dove lavora e assegnare il campo corrispondente.
++	Inserimento di un nuovo dipendente: non è necessario specificare il campo manager in quanto il trigger apposito si occupa di ricercare l'ID del manager nella filiale dove lavora e assegnare il campo corrispondente.
 
 + Come il caso (3) ma con l'aggiunta che questo dipendente diventi manager della filiale in cui lavora. Il trigger che viene innescato sulla modifica del campo manager (che passa da -1 [non manager] a un ID di filiale valido) provvede ad aggiornare il campo manager di tutti i dipendenti che lavorano nella filiale dove è appena stato modificato il manager.
 
-+	Controlliamo una semplice operazione di rimozione di un dipendente che non è manager.
++	Semplice operazione di rimozione di un dipendente che non è manager.
 
 
 == Test Prestito-Rata
 
-+	Inseriamo un nuovo prestito. Le rate relative verranno generate in maniera automatica dal trigger che si occupa di andare a recuperare il valore di _Mensilità_ e generare altrettanti record nella tabella #er[rata] riempiendo in maniera adeguata tutti i campi.
++	Inseriamento di un nuovo prestito. Le rate relative verranno generate in maniera automatica dal trigger che si occupa di andare a recuperare il valore di _Mensilità_ e generare altrettanti record nella tabella #er[rata] riempiendo in maniera adeguata tutti i campi.
 
-+	Modifichiamo la data di pagamento di una rata, portandola da NULL a una data valida. Il controllo del trigger sarà di verificare che non ci siano rate precedenti ancora da pagare.
++	Modifica della data di pagamento di una rata, portandola da NULL a una data valida. Il controllo del trigger sarà di verificare che non ci siano rate precedenti ancora da pagare.
 
 
 == Test Conto-Filiale
 
-+	Simuliamo un versamento e un prelievo, quindi andiamo a modificare il valore del saldo dei conti. A questo punto dei trigger controllano (solo nel secondo caso) che il prelievo possa essere effettuato (quindi che il saldo sia maggiore dello scoperto). In entrambi i casi vengono automaticamente aggiornati gli attivi delle filiali. Lo scopo del test è comunque di verificare che il saldo venga correttamente modificato.
++	Viene simuliato un versamento e un prelievo, quindi la modifica del valore del saldo dei conti. I trigger controllano (solo nel secondo caso) che il prelievo possa essere effettuato (quindi che il saldo sia maggiore dello scoperto). In entrambi i casi vengono automaticamente aggiornati gli attivi delle filiali. Lo scopo del test è quello di verificare che il saldo venga correttamente modificato.
 
-+	Controlliamo che il trigger che controlla la validità dei saldi funzioni, forzando la modifica di un saldo a un valore non valido. 
++	Viene testato il trigger che controlla la validità dei saldi funzioni, forzando la modifica di un saldo a un valore non valido. 
 
 +	Simile al primo test con il focus sull'aggiornamento degli attivi della filiale di riferimento.
 
-+	Proviamo a inserire un IBAN valido nella tabella #er[conto] (necessario per i vincoli di chiave esterna) e poi nella tabella #er[Conto Corrente]. Questo non dovrebbe generare problemi. Proviamo a inserire l'IBAN anche in #er[Conto Risparmio], il trigger vieta tale operazione e, dato che siamo all'interno di una transazione, tutti e tre gli inserimenti vengono rimossi (rollback).
++	Inserimento di un IBAN valido nella tabella #er[conto] (necessario per i vincoli di chiave esterna) e poi nella tabella #er[Conto Corrente]. Ciò non genera problemi. Inserendo l'IBAN anche in #er[Conto Risparmio], il trigger vieta tale operazione e, dato che siamo all'interno di una transazione, tutti e tre gli inserimenti vengono rimossi (rollback).
 
 + Test di consistenza di gestori diversi su conti cointestati.
 
 #pagebreak()
 
 = Query 
-Dopo aver verificato il corretto funzionamento del database e dei trigger con i test sopra esposti, andiamo a sviluppare le query richieste. 
+Dopo aver verificato il corretto funzionamento del database e dei trigger con i test sopra esposti, sono state sviluppate e testate le query richieste. 
 
 == Query 1
 #emph[#quote[Restituire il numero medio di rate dei prestiti associati a conti nelle filiali di Udine.]]
@@ -1118,7 +1119,7 @@ La query seleziona i dipendenti non capo (con la verifica _ID_ <> _Capo_) e poi 
 ```
 )
 
-La prima vista ci restringe i possibili clienti a quelli che hanno un gestore assunto da almeno 3 anni.
+La prima vista restringe i possibili clienti a quelli che hanno un gestore assunto da almeno 3 anni.
 La seconda vista, a partire dalla prima, fa un ulteriore filtro prendendo i clienti solo della filiale di Roma.
 La query si occupa di verificare, per ogni cliente, che tra i clienti della seconda vista non ce ne sia qualcuno con saldo maggiore del proprio, in tal caso seleziona il cliente.
 
@@ -1128,7 +1129,8 @@ La query si occupa di verificare, per ogni cliente, che tra i clienti della seco
 
 Di seguito sono descritte le analisi eseguite sul database, per estrarre informazioni riguardanti i clienti, i loro conti, i prestiti e le rate pagate.
 
-È importante sottolineare che, in quanto i dati sono stati generati in modo casuale, le tendenze, correlazioni e distribuzioni osservate non riflettono necessariamente situazioni reali. 
+È importante sottolineare che, in quanto i dati sono stati generati in modo casuale, le tendenze, correlazioni e distribuzioni osservate non riflettono necessariamente situazioni reali.
+La tendenza è quella di una distribuzione uniforme in tutti i campi come si potrà notare dai grafici.
 
 == Distribuzione dei prestiti per mensilità
 
@@ -1154,7 +1156,7 @@ Viene esaminata la distribuzione delle mensilità dei prestiti associati a conti
 
 Per estrarre i dati è stata inizialmente creata una vista che contiene i clienti gestiti da un gestore. Viene poi eseguita una query che conta il numero di prestiti per ogni mensilità, filtrando i clienti con saldo maggiore di 50.000€.
 
-Per la visualizzazione dei è stato creato un istogramma, che mostra la frequenza delle mensilità 
+Per la visualizzazione dei dati è stato creato un istogramma in quanto garantisce la migliore leggibilità dei dati estratti, che mostra la frequenza delle mensilità.
 #v(-1em)
 #figure(
   image("media/grafico1.png", width: 100%),
@@ -1183,7 +1185,7 @@ SELECT SUM(conto.saldo) as skey, dipendenti_gestori.data_assunzione
 )
 
 Viene creata una vista che contiene i gestori e la loro data di assunzione. La query finale calcola la somma dei saldi dei conti gestiti da ciascun gestore, raggruppando i risultati per data di assunzione.
-I dati vengono visualizzati in un grafico a dispersione. 
+I dati vengono visualizzati in un grafico a dispersione che rende chiaro il legame tra anzianità dei gestori e conti a loro assegnati. 
 
 #figure(
   image("media/grafico2.png", width: 100%),
@@ -1226,20 +1228,20 @@ I risultati vengono visualizzati in un grafico a barre, che mostra il numero di 
 = Conclusioni
 
 Fare un'analisi dei requisiti ha evidenziato la difficoltà reale di avere una documentazione completa, non ambigua e che rimanesse coerente con se stessa.
-Certi requisiti erano facilmente deducibili, altri sono stai "imposti" da noi, altri ancora ci siamo ritrovati a specificarli man mano perché non erano stati tenuti in considerazione sin dall'inizio.
+Certi requisiti erano facilmente deducibili, altri sono stai "imposti" manualmente, altri ancora sono stati specificati man mano perché non erano stati tenuti in considerazione sin dall'inizio.
 
-Le progettazioni logiche e concettuali rimarcavano l'importanza di una scelta accurata riguardo quali informazioni avessero il ruolo di entità e quali di semplici attributi. \
+Le progettazioni logiche e concettuali rimarcano l'importanza di una scelta accurata riguardo quali informazioni avessero il ruolo di entità e quali di semplici attributi. \
 Altrettanto importante la scelta delle relazioni e delle relative molteplicità, molte volte dettate dai vincoli.
 Ciò che non è stato catturato dallo schema ER (vincoli di integrità) è stato documentato per implementare dei trigger nella progettazione fisica.
 
-Una buona parte del lavoro si è incentrata sulla generazione dei dati  (mantenendo la coerenza tra loro stessi e i vincoli imposti) e sul lavoro di popolamento tramite R.
+Buona parte del lavoro si è incentrata sulla generazione dei dati  (mantenendo la coerenza tra loro stessi e i vincoli imposti) e sul lavoro di popolamento tramite R.
 #upper[è] fondamentale la creazione del database e delle tabelle, in particolare l'ordine di generazione e l'assegnamento di chiavi primarie e/o esterne.
 
 Per testare la funzionalità del database sono stati eseguiti dei test che miravano a verificare alcuni casi particolari: vincoli e funzionalità dei trigger, sia per garantire la coerenza, sia per l'aggiornamento automatico di attributi derivati.
 
-Le query, invece, sono servite per capire come elabora le richieste un database dietro a delle maschere semplificate dei software in circolazione, dove l'utente semplicemente scrive in linguaggio quasi naturale ciò che gli serve e poi viene tradotto in linguaggio SQL. 🐷
+Le query hanno dimostrato la potenza di calcolo di SQL, mettendo in luce ciò che avviene a basso livello durante un'interrogazione al database.
 
-I grafici finali sfruttano la potenzialità delle query per analizzare dei dati che, con R, sarebbero stati recuperati in maniera più complessa.
+I grafici finali sfruttano la potenzialità del linguaggio SQL per analizzare dei dati che, tramite funzioni di R, sarebbero stati recuperati in maniera più complessa.
 
-In conclusione, questo progetto ci ha consentito di mettere in campo tutte le conoscenze teoriche e pratiche acquisite durante il corso e di acquisirne di nuove.
+In conclusione, questo progetto ha consentito di mettere in campo tutte le conoscenze teoriche e pratiche acquisite durante il corso e di acquisirne di nuove.
 
