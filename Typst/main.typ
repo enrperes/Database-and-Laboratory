@@ -20,7 +20,7 @@
 #show heading.where(level: 1): set text(20pt)
 #show heading.where(level: 2): set text(14pt)
 #show heading.where(level: 3): set text(12pt)
-#show heading.where(level: 4): set heading(numbering: none)
+//#show heading.where(level: 4): set heading(numbering: none)
 
 
 // Figures
@@ -85,7 +85,7 @@
 
 #align(center)[
   #v(5em)
-  #text(17pt)[#strong()[#upper[Progettazione e implementazione \ di una base di dati per la gestione di una banca - test]]]
+  #text(17pt)[#strong()[#upper[Progettazione e implementazione \ di una base di dati per la gestione di una banca]]]
   #v(2em)
 ]
 #pagebreak()
@@ -109,7 +109,6 @@
   La banca offre due tipi di conto: conto corrente (con la possibilità di emettere assegni, ma senza interessi) e conto di risparmio (senza la possibilità di emettere assegni, ma con interessi). Un conto può essere posseduto congiuntamente da più clienti e un cliente può possedere più conti. Ogni conto è caratterizzato da un numero che lo identifica univocamente. Per ogni conto, la banca tiene traccia del saldo corrente e della data dell'ultima operazione eseguita da ciascuno dei possessori (un'operazione può essere eseguita congiuntamente da più possessori). Ogni conto di risparmio è caratterizzato da un tasso di interesse, mentre ogni conto corrente è caratterizzato da uno scoperto accordato al cliente. \
   Un prestito (ad esempio, un mutuo) viene emesso da una specifica filiale e può essere attribuito a uno o più clienti congiuntamente. Ogni prestito è identificato univocamente da un codice numerico. Ogni prestito è caratterizzato da un ammontare e da un insieme di rate per la restituzione del prestito. Ogni rata di un dato prestito è contraddistinta da un numero d'ordine (prima rata, seconda rata...). Di ogni rata vengono memorizzati anche la data e l'ammontare. \
 
-  TEST 2
 ]
 
 
@@ -366,7 +365,7 @@ Nel processo di ottimizzazione delle prestazioni, nell’analisi delle ridondanz
 )
 
 === Considerazioni
-Il numero di clienti, conti, dipendenti e filiali è stato stimato sulla base dei dati reali di Intesa Sanpaolo. Il numero di prestiti è ipotizziato sulla base di una proporzione realistica rispetto ai conti e un numero di rate pagate (in media 12 per prestito). Per distinguere tra conti correnti e conti di risparmio, è stata presa come riferimento la percentuale media nazionale italiana, applicandola al numero totale di conti. I volumi per le relazioni sono stati calcolati tenendo conto delle cardinalità e della natura dei legami tra le entità coinvolte, in modo da mantenere coerenza con il modello concettuale.
+Il numero di clienti, conti, dipendenti e filiali è stato stimato sulla base dei dati reali di Intesa Sanpaolo. Il numero di prestiti è ipotizzato sulla base di una proporzione realistica rispetto ai conti e un numero di rate pagate (in media 12 per prestito). Per distinguere tra conti correnti e conti di risparmio, è stata presa come riferimento la percentuale media nazionale italiana, applicandola al numero totale di conti. I volumi per le relazioni sono stati calcolati tenendo conto delle cardinalità e della natura dei legami tra le entità coinvolte, in modo da mantenere coerenza con il modello concettuale.
 
 
 == Analisi delle ridondanze
@@ -436,7 +435,6 @@ Inserimento di un conto nella base di dati con frequenza 150 volte al giorno.
 
 #h(1em)
 *Con attributo _Attivi_:*
-
 
 #figure(
   table(
