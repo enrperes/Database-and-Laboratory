@@ -1,5 +1,4 @@
 /* ------------ Libraries ------------- */
-// #import "@preview/wrap-it:0.1.0": wrap-content
 #import "@preview/zebraw:0.5.2": *
 
 /* ------------ Document Setup ------------- */
