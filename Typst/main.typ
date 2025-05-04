@@ -12,7 +12,7 @@
 
 // Quotes
 #set quote(block: true)
-#show quote: set text(font: "", size: 12pt)
+#show quote: set text(font: "", size: 12pt, style: "italic")
 
 // Headings
 #set heading(numbering: "1.")
@@ -375,7 +375,7 @@ Il numero di clienti, conti, dipendenti e filiali è stato stimato sulla base de
 Il primo blocco di operazioni coinvolge l'attributo derivato _Attivi_ che produce una ridondanza ed è derivabile da altre entità, nel nostro caso da #er[Conto, Prestito] e #er[Rata]. Sono state ipotizzate delle operazioni e le loro relative frequenze che vanno a coinvolgere questo attributo e osservato se è conveniente eliminarlo o mantenerlo.
 
 ==== Operazione 1 
-Interrogazione per leggere il valore _Attivi_ di ogni filiale con frequenza di una volta al giorno.
+#quote[Interrogazione per leggere il valore _Attivi_ di ogni filiale con frequenza di una volta al giorno.]
 
 #h(1em)
 *Con attributo _Attivi_: *
@@ -431,7 +431,7 @@ Lo stesso vale per i prestiti: per ogni filiale si leggono in media 2.333 righe 
 In totale quindi, come si vede dalla tabella, bisognerà leggere interamente le relazioni _Contiene_, _#upper[è] associato_ e tutte le entità #er[Conto] e #er[Prestito].
 #v(2em)
 ==== Operazione 2
-Inserimento di un conto nella base di dati con frequenza 150 volte al giorno.
+#quote[Inserimento di un conto nella base di dati con frequenza 150 volte al giorno.]
 
 #h(1em)
 *Con attributo _Attivi_:*
@@ -487,7 +487,7 @@ $ "op2 = 900" $
 La logica è come quella vista sopra, con l'eccezione che non serve aggiornare l'attributo _Attivi_, che non è presente. 
 
 ==== Operazione 3
-Inserimento di un'operazione in _Possiede_ con frequenza 1.000.000 al giorno.
+#quote[Inserimento di un'operazione in _Possiede_ con frequenza 1.000.000 al giorno.]
 
 #h(1em)
 *Con attributo _Attivi_: *
@@ -543,7 +543,7 @@ $ "op3 = 6.000.000" $
 La logica è la stessa di prima, ma non serve aggiornare l'attributo _Attivi_ della filiale, quindi non serve leggere e scrivere in #er[Filiale].
 
 ==== Operazione 4
-Aggiornamento di tutti i prestiti con frequenza di una volta al mese.
+#quote[Aggiornamento di tutti i prestiti con frequenza di una volta al mese.]
 
 #h(1em)
 *Con attributo _Attivi_:*
@@ -609,7 +609,7 @@ Questa analisi ci suggerisce che la conservazione dell'attributo derivato _Attiv
 Il secondo blocco di operazioni riguarda la ridondanza introdotta dall'attributo derivato _Somma rate_ di #er[Prestito] che misura il numero di rate che sono state pagate. Anche in questo caso si tratta di un attributo derivato secondo funzioni aggregative e le entità coinvolte sono #er[Rata] e #er[Prestito]. Possiamo considerare due operazioni (per coerenze con lo studio precedente riportiamo il numero di operazioni giornaliere):
 
 ==== Operazione 1
-Inserimento di una rata una volta al mese per ogni prestito della banca.
+#quote[Inserimento di una rata una volta al mese per ogni prestito della banca.]
 
 #h(1em)
 *Con attributo _Somma rate_: *
@@ -663,7 +663,7 @@ In questo caso l'operazione di inserimento di una rata comporta semplicemente la
 
 
 ==== Operazione 2
-Lettura del valore della somma delle rate pagate per ogni prestito con frequenza semestrale.
+#quote[Lettura del valore della somma delle rate pagate per ogni prestito con frequenza semestrale.]
 
 Per questa analisi è stata introdotta un'ulteriore ipotesi, ovvero il numero medio di rate saldate presenti nella nostra base di dati per ogni prestito. Questo numero è stato supposto essere 12, che equivale ad un anno di rate pagate.
 
