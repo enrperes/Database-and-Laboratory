@@ -1157,10 +1157,10 @@ Per estrarre i dati è stata inizialmente creata una vista che contiene i client
 
 #v(-1em)
 #figure(
-  image("media/grafico1.png", width: 100%),
+  image("media/grafico1.png", width: 90%),
   caption: [Distribuzione dei prestiti per mensilità]
 )
-Per la visualizzazione dei dati è stato creato un istogramma in quanto garantisce la migliore leggibilità dei dati estratti, che mostra la frequenza delle mensilità.
+Per la visualizzazione dei dati è stato creato un istogramma che mostra la frequenza delle mensilità, garantendo la migliore leggibilità dei dati estratti. 
 
 == Analisi attivi per anzianità gestori
 
@@ -1187,7 +1187,7 @@ Viene creata una vista che contiene i gestori e la loro data di assunzione. La q
 I dati vengono visualizzati in un grafico a dispersione che rende chiaro il legame tra anzianità dei gestori e conti a loro assegnati. 
 
 #figure(
-  image("media/grafico2.png", width: 100%),
+  image("media/grafico2.png", width: 90%),
   caption: [Analisi attivi per anzianità gestori]
 )
 
@@ -1218,7 +1218,7 @@ La vista `conti_cointestati` contiene i conti cointestati, raggruppati per filia
 La query finale conta il numero di conti cointestati con prestiti associati, filtrando per ammontare maggiore di 50.000€. 
 I risultati vengono visualizzati in un grafico a barre, che mostra il numero di conti cointestati con prestito per filiale.
 #figure(
-  image("media/grafico3.png", width: 100%),
+  image("media/grafico3.png", width: 90%),
   caption: [Analisi conti cointestati]
 )
 
@@ -1226,21 +1226,19 @@ I risultati vengono visualizzati in un grafico a barre, che mostra il numero di 
 
 = Conclusioni
 
-Fare un'analisi dei requisiti ha evidenziato la difficoltà reale di avere una documentazione completa, non ambigua e che rimanesse coerente con se stessa.
-Certi requisiti erano facilmente deducibili, altri sono stai "imposti" manualmente, altri ancora sono stati specificati man mano perché non erano stati tenuti in considerazione sin dall'inizio.
+L'analisi dei requisiti ha evidenziato quanto sia complesso ottenere una documentazione completa, priva di ambiguità e internamente coerente. Alcuni requisiti sono risultati immediatamente deducibili, altri sono stati definiti manualmente, mentre altri ancora sono emersi gradualmente, poiché inizialmente non considerati.
 
-Le progettazioni logiche e concettuali rimarcano l'importanza di una scelta accurata riguardo quali informazioni avessero il ruolo di entità e quali di semplici attributi. \
-Altrettanto importante la scelta delle relazioni e delle relative molteplicità, molte volte dettate dai vincoli.
+Le fasi di progettazione concettuale e logica hanno sottolineato l'importanza di distinguere tra entità e attributi e di definire relazioni e molteplicità in modo accurato, basandosi sui vincoli presenti. 
 Ciò che non è stato catturato dallo schema ER (vincoli di integrità) è stato documentato per implementare dei trigger nella progettazione fisica.
 
-Buona parte del lavoro si è incentrata sulla generazione dei dati  (mantenendo la coerenza tra loro stessi e i vincoli imposti) e sul lavoro di popolamento tramite R.
-#upper[è] fondamentale la creazione del database e delle tabelle, in particolare l'ordine di generazione e l'assegnamento di chiavi primarie e/o esterne.
+Gran parte del lavoro ha riguardato la generazione dei dati, con l'obiettivo di mantenere la coerenza interna e il rispetto dei vincoli imposti, oltre al popolamento del database tramite R.
+Per la creazione del database e delle tabelle è stato fondamentale l'ordine di generazione e l'assegnazione di chiavi primarie e/o esterne.
 
-Per testare la funzionalità del database sono stati eseguiti dei test che miravano a verificare alcuni casi particolari: vincoli e funzionalità dei trigger, sia per garantire la coerenza, sia per l'aggiornamento automatico di attributi derivati.
+Per verificare il corretto funzionamento del database, sono stati condotti dei test mirati a casi specifici: per controllare la corretta attivazione dei trigger, il rispetto dei vincoli di integrità e l'aggiornamento automatico di attributi derivati.
 
-Le query hanno dimostrato la potenza di calcolo di SQL, mettendo in luce ciò che avviene a basso livello durante un'interrogazione al database.
+Le query hanno evidenziato la potenza di SQL, rendendo evidente ciò che avviene a basso livello durante un'interrogazione al database. 
+I grafici finali sfruttano la potenzialità del linguaggio SQL per analizzare dati che, tramite funzioni di R, sarebbero stati recuperati in maniera più complessa. \
 
-I grafici finali sfruttano la potenzialità del linguaggio SQL per analizzare dei dati che, tramite funzioni di R, sarebbero stati recuperati in maniera più complessa.
+In conclusione, questo progetto ha rappresentato un'opportunità per applicare concretamente le competenza teoriche e pratiche acquisite durante il corso, permettendo allo stesso tempo di approfondirne di nuove. 
 
-In conclusione, questo progetto ha consentito di mettere in campo tutte le conoscenze teoriche e pratiche acquisite durante il corso e di acquisirne di nuove.
 
