@@ -1129,7 +1129,7 @@ La query si occupa di verificare, per ogni cliente, che tra i clienti della seco
 Di seguito sono descritte le analisi eseguite sul database, per estrarre informazioni riguardanti i clienti, i loro conti, i prestiti e le rate pagate.
 
 È importante sottolineare che, in quanto i dati sono stati generati in modo casuale, le tendenze, correlazioni e distribuzioni osservate non riflettono necessariamente situazioni reali.
-La tendenza è quella di una distribuzione uniforme in tutti i campi come si potrà notare dai grafici.
+La tendenza è quella di una distribuzione uniforme in tutti i campi, come si potrà notare dai grafici.
 
 == Distribuzione dei prestiti per mensilità
 
@@ -1155,12 +1155,12 @@ Viene esaminata la distribuzione delle mensilità dei prestiti associati a conti
 
 Per estrarre i dati è stata inizialmente creata una vista che contiene i clienti gestiti da un gestore. Viene poi eseguita una query che conta il numero di prestiti per ogni mensilità, filtrando i clienti con saldo maggiore di 50.000€.
 
-Per la visualizzazione dei dati è stato creato un istogramma in quanto garantisce la migliore leggibilità dei dati estratti, che mostra la frequenza delle mensilità.
 #v(-1em)
 #figure(
   image("media/grafico1.png", width: 100%),
   caption: [Distribuzione dei prestiti per mensilità]
 )
+Per la visualizzazione dei dati è stato creato un istogramma in quanto garantisce la migliore leggibilità dei dati estratti, che mostra la frequenza delle mensilità.
 
 == Analisi attivi per anzianità gestori
 
@@ -1191,7 +1191,7 @@ I dati vengono visualizzati in un grafico a dispersione che rende chiaro il lega
   caption: [Analisi attivi per anzianità gestori]
 )
 
-#pagebreak()
+
 == Analisi conti cointestati
 L'obiettivo è determinare il numero di conti cointestati che hanno un prestito associato, raggruppandoli per filiale. 
 
