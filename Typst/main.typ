@@ -33,8 +33,7 @@
 
 // Outline
 #show outline.entry.where(level: 1): set text(weight: "bold", size: 13pt)
-//#show outline.entry.where(level: 1): set block(below: 2.5em)
-#show outline.entry.where(level: 1): set block(below: 1.2em)
+#show outline.entry.where(level: 1): set block(above: 1.5em)
 
 
 // Code Blocks styling
