@@ -28,7 +28,7 @@
  #text(9pt)[ 
  #it.supplement
  #context it.counter.display(it.numbering)]:
- #emph[#it.body]
+ #it.body
 ]
 
 // Outline
@@ -170,7 +170,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 - L'entità #erb[filiale] rappresenta un'unità operativa della banca situata in una determinata città. La chiave primaria è il _Nome_, mentre gli altri attributi sono _Città_ e _Indirizzo_.  Inoltre, per ogni filiale è presente l'attributo derivato _Attivi_, che rappresenta l'ammontare totale della liquidità della filiale e viene calcolato sulla base dei conti, prestiti e rate ad esso associati.
 #figure(
   image("media/filiale.svg", width: 20%),
-  caption: [Entità FILIALE]
+  caption: [Entità #er[FILIALE]]
 )
 #v(2em)
 
@@ -179,7 +179,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 #v(-0.5em)
 #figure(
   image("media/cliente.svg", width: 30%),
-  caption: [Entità CLIENTE]
+  caption: [Entità #er[CLIENTE]]
 )
 #v(2em)
 
@@ -187,14 +187,14 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 #v(-1.4em)
 #figure(
   image("media/dipendente.svg", width: 30%),
-  caption: [Entità DIPENDENTE]
+  caption: [Entità #er[DIPENDENTE]]
 )
 #v(2em)
 
 - L'entità #erb[Capo] rappresenta il capo di una filiale. \Essendo una specializzazione di #er[dipendente], eredita tutti gli attributi di quest'ultima. Un capo è unico per ogni filiale. 
 #figure(
   image("media/capo.svg", width: 18%),
-  caption: [Entità CAPO]
+  caption: [Entità #er[CAPO]]
 )
 #v(2em)
 
@@ -205,21 +205,21 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
   - L'entità #erb[Conto di Risparmio] è una specializzazione di #er[conto] pertanto ne eredita tutti gli attributi e tutte le relazioni, la chiave primaria è quindi quella di di #er[Conto]. L'attributo che lo caratterizza è _Tasso d'interesse_ che indica il valore di rendita mensile del conto.
 #figure(
   image("media/conto.svg", width: 28%),
-  caption: [Entità CONTO]
+  caption: [Entità #er[CONTO]]
 )
 #v(2em)
 
 - L'entità #erb[Prestito] costituisce il servizio creditizio della banca. Essa è caratterizzata da un codice univoco che funge da chiave primaria. L'attributo _Ammontare_ fornisce l'informazione relativa alla somma di denaro prestata, mentre l'attributo _Inizio_ registra la data in cui il prestito ha avuto origine. _Somma rate_ è un attributo derivato, che tiene traccia dell'importo saldato dal cliente. L'attributo _Mensilità_ indica il numero di rate complessive del prestito.
 #figure(
   image("media/prestito.svg", width: 30%),
-  caption: [Entità PRESTITO]
+  caption: [Entità #er[PRESTITO]]
 )
 #v(2em)
 
 - L'entità #erb[rata] è un'entità debole che ha il compito di rappresentare ogni singolo pagamento periodico associato a un determinato prestito. L'identificazione univoca di ciascuna rata è garantita da una chiave primaria composta, costituita dal suo numero (indicante la “posizione” della rata nella sequenza dei pagamenti) e dalla chiave esterna che fa riferimento a #er[Prestito]. Tra gli attributi figurano inoltre la _Data scadenza_, ossia il giorno entro cui la rata deve essere corrisposta, e la _Data pagamento_, che riporta il momento in cui il versamento è stato effettuato. Infine, l'attributo _Ammontare_ specifica l'importo dovuto per quella singola rata.
 #figure(
   image("media/rata.svg", width: 25%),
-  caption: [Entità RATA]
+  caption: [Entità #er[RATA]]
 )
 #v(2em)
 
@@ -227,14 +227,14 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 - La relazione #erbr[#upper[è] capo] collega #er[capo] e #er[filiale], definendo il legame tra il capo di una filiale e la filiale stessa. Le cardinalità di (1,1) indicano che ogni filiale ha uno e un solo capo e non esiste un capo che non faccia riferimento a una sola filiale. 
 #figure(
   image("media/iscapo.svg", width: 80%),
-  caption: [Relazione #upper[è] capo]
+  caption: [Relazione #emph[#upper[è] capo]]
 )
 #v(2em)
 
 - La relazione #erbr[Lavora] collega #er[dipendente] e #er[filiale]. La cardinalità di (1,1) tra la relazione e #er[Dipendente] indica che ogni dipendente lavora in una e in una sola filiale, mentre la cardinalità di (1,N) tra la relazione e #er[filiale] indica che in una filiale lavorano uno o più dipendenti.
 #figure(
   image("media/lavora.svg", width: 80%),
-  caption: [Relazione Lavora]
+  caption: [Relazione #emph[Lavora]]
 )
 #v(2em)
 
@@ -242,7 +242,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 - La relazione #erbr[Di] collega #er[dipendente] e #er[capo]. La cardinalità di (1,N) tra la relazione e #er[capo] indica che un capo dirige uno o più dipendenti, mentre la cardinalità di (1,1) tra la relazione e #er[dipendente] indica che un dipendente ha uno e un solo capo. 
 #figure(
   image("media/di.svg", width: 80%),
-  caption: [Relazione Di]
+  caption: [Relazione #emph[Di]]
 )
 #v(2em)
 
@@ -251,35 +251,35 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 #v(-1em)
 #figure(
   image("media/composto.svg", width: 80%),
-  caption: [Relazione #upper[è] composto]
+  caption: [Relazione #emph[#upper[è] composto]]
 )
 #v(2em)
 
 - La relazione #erbr[#upper[è] associato] collega #er[Conto] e #er[Prestito], definendo il legame tra esso e il conto bancario a cui è associato. Dal lato di #er[Prestito], la cardinalità è (1,1), poiché ogni prestito deve fare riferimento a un solo conto bancario. Dal lato di #er[Conto] la cardinalità è (0,N), infatti un conto non necessariamente ha prestiti associati e può averne più di uno.
 #figure(
   image("media/isassociato.svg", width: 80%),
-  caption: [Relazione #upper[è] associato]
+  caption: [Relazione #emph[#upper[è] associato]]
 )
 #v(2em)
 
 - La relazione #erbr[Possiede] collega #er[Cliente] e #er[Conto]. Un cliente deve possedere almeno un conto e più clienti possono possedere lo stesso conto (caso di conto cointestato), da cui deriva la cardinalità (1,N) della relazione sul lato di #er[Cliente]. D'altro canto, un #er[conto] deve essere posseduto da almeno un cliente e più conti possono fare riferimento allo stesso cliente (caso in cui uno stesso cliente ha aperto più conti con la banca), da cui deriva la cardinalità (1,N) della relazione sul lato di #er[conto]. \ Gli attributi _Operazione_ e _Data_ sulla relazione indicano l'ultima operazione svolta e la data in cui è stata effettuata da quel particolare cliente su quel particolare conto. Nel caso di operazione congiunta di più clienti gli attributi _Operazione/Data_ vengono aggiornati per tutti.
 #figure(
   image("media/possiede.svg", width: 80%),
-  caption: [Relazione Possiede]
+  caption: [Relazione #emph[Possiede]]
 )
 #v(2em)
 
 - La relazione #erbr[Gestisce] collega #er[Dipendente] e #er[Cliente]. Un sottoinsieme dei dipendenti può seguire le pratiche di un certo numero di clienti della banca, da cui ne deriva la cardinalità (0,N) della relazione sul lato di #er[dipendente]. D'altro canto un cliente può avere al più un solo gestore che segue le sue attività nella banca, da cui ne deriva la cardinalità (0,1) della relazione sul lato di #er[cliente].
 #figure(
   image("media/gestisce.svg", width: 80%),
-  caption: [Relazione Gestisce]
+  caption: [Relazione #emph[Gestisce]]
 )
 #v(2em)
 
 - La relazione #erbr[Contiene] collega #er[Filiale] e #er[Conto] in quanto ogni conto deve fare riferimento ad una e una sola filiale. Una filiale può contenere uno o più conti (anche zero se la filiale è appena stata aperta), da cui ne deriva la cardinalità (0,N) della relazione sul lato di #er[filiale]. D'altro canto un conto deve essere associato ad una e una sola filiale, da cui ne deriva la cardinalità (1,1) della relazione sul lato di #er[Conto].
 #figure(
   image("media/contiene.svg", width: 80%),
-  caption: [Relazione Contiene]
+  caption: [Relazione #emph[Contiene]]
 )
 #v(2em)
 
@@ -303,7 +303,7 @@ A seguito delle analisi effettuate, lo schema concettuale nel modello Entità-Re
 
 #figure(
   image("media/ciclo_cap_dip_fil.svg", width: 50%),
-  caption: [Ciclo DIPENDENTE - FILIALE - CAPO]
+  caption: [Ciclo #er[DIPENDENTE - FILIALE - CAPO]]
 )
 Questo ciclo è problematico in quanto potrebbe accadere che il capo di una filiale non lavori presso la filiale di cui è responsabile. È necessario imporre dei vincoli di integrità per evitare che ciò accada.
 #v(2.5em)
@@ -311,7 +311,7 @@ Questo ciclo è problematico in quanto potrebbe accadere che il capo di una fili
 === Ciclo #er[dipendente - cliente - conto - filiale]:
 #figure(
   image("media/ciclo_dip_cli_conto_fil.svg", width: 70%),
-  caption: [Ciclo DIPENDENTE - CLIENTE - CONTO - FILIALE]
+  caption: [Ciclo #er[DIPENDENTE - CLIENTE - CONTO - FILIALE]]
 )
 Questo ciclo non genera problemi di inconsistenza, in quanto a un cliente è permesso avere un gestore che lavora presso una certa filiale e avere più conti aperti in filiali diverse.
 #v(2.5em)
@@ -1128,8 +1128,6 @@ La query si occupa di verificare, per ogni cliente, che tra i clienti della seco
 
 Di seguito sono descritte le analisi eseguite sul database, per estrarre informazioni riguardanti i clienti, i loro conti, i prestiti e le rate pagate.
 
-È importante sottolineare che, in quanto i dati sono stati generati in modo casuale, le tendenze, correlazioni e distribuzioni osservate non riflettono necessariamente situazioni reali.
-La tendenza è quella di una distribuzione uniforme in tutti i campi, come si potrà notare dai grafici.
 
 == Distribuzione dei prestiti per mensilità
 
@@ -1223,6 +1221,10 @@ I risultati vengono visualizzati in un grafico a barre, che mostra il numero di 
 )
 
 
+È importante sottolineare che, in quanto i dati sono stati generati in modo casuale, le tendenze, correlazioni e distribuzioni osservate non riflettono necessariamente situazioni reali.
+La tendenza è quella di una distribuzione uniforme in tutti i campi.
+
+#pagebreak()
 
 = Conclusioni
 
