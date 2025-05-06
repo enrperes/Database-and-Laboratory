@@ -8,7 +8,7 @@ SELECT mensilità, COUNT(*)
     FROM clienti_gestiti, possiede, conto, prestito
     WHERE clienti_gestiti.id = possiede.cliente
     AND possiede.conto = conto.iban
-    AND conto.saldo > 50.000
+    AND conto.saldo > 50000
     AND possiede.conto = prestito.conto
     GROUP BY mensilità
 
@@ -27,7 +27,6 @@ SELECT SUM(conto.saldo) as skey, dipendenti_gestori.data_assunzione
 
 
 -- # 3. Per filiale, il numero di conti cointestatari con un prestito afferente ----
-
 CREATE VIEW conti_cointetsati AS
 SELECT possiede.conto, conto.filiale
 FROM possiede as p1, conto
@@ -35,7 +34,6 @@ WHERE p1.conto = conto.iban AND EXISTS (
 SELECT *
 FROM possiede as p2
 WHERE p1.conto = p2.conto AND p1.cliente < p2.cliente)
---Giusto mettere solo < e non <> perchè se no conto doppi?
 
 
 SELECT filiale, COUNT(*)
