@@ -39,6 +39,7 @@ WHERE p1.conto = p2.conto AND p1.cliente < p2.cliente)
 SELECT filiale, COUNT(*)
 FROM conti_cointestati, prestito
 WHERE conti_cointestati.conto = prestito.conto
+AND ammontare > 50000
 GROUP BY filiale
 
 
