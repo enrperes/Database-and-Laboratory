@@ -997,7 +997,7 @@ La query sfrutta questa vista per cercare i clienti che hanno almeno un conto di
 #emph[#quote[Restituire i capi che gestiscono almeno 3 clienti che possiedono almeno 100.000€.]]
 
 #zebraw(
-header: [Query 2], 
+header: [Query 3], 
 ```sql
 CREATE OR REPLACE VIEW clienti_ricchi AS
   SELECT cliente.id, SUM(conto.saldo) AS soldi, cliente.gestore
