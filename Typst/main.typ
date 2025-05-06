@@ -20,7 +20,7 @@
 #show heading.where(level: 1): set text(20pt)
 #show heading.where(level: 2): set text(14pt)
 #show heading.where(level: 3): set text(12pt)
-//#show heading.where(level: 4): set heading(numbering: none)
+#show heading.where(level: 4): set heading(numbering: none)
 
 
 // Figures
@@ -118,7 +118,6 @@ Al fine di proseguire con la progettazione concettuale, sono state effettuate le
 - Gli *attivi* sono la somma della liquidità dei conti meno la somma delle rate non pagate dei prestiti erogati. Sono relativi alla singola filiale.
 - Un *cliente* può avere conti in filiali diverse e ogni conto è associato ad una singola filiale. 
 - I *prestiti* sono legati al conto, non al cliente.
-- Un *dipendente* non può gestire se stesso.
 - Un *dipendente* lavora in una sola filiale con la possibilità di gestire clienti al di fuori della propria filiale.
 - Il *capo* di un dipendente è l'unico responsabile della filiale in cui il dipendente lavora.
 - Nei *conti cointestati* i clienti non possono essere seguiti da dipendenti (gestori) diversi.
@@ -166,7 +165,7 @@ L'analisi dei requisiti ha portato alla definizione di un insieme di entità e r
 === Entità
 
 
-- L'entità #erb[filiale] rappresenta un'unità operativa della banca situata in una determinata città. La chiave primaria è il _Nome_, mentre gli altri attributi sono _Città_ e _Indirizzo_.  Inoltre, per ogni filiale è presente l'attributo derivato _Attivi_, che rappresenta l'ammontare totale della liquidità della filiale e viene calcolato sulla base dei conti, prestiti e rate ad esso associati.
+- L'entità #erb[filiale] rappresenta un'unità operativa della banca situata in una determinata città. La chiave primaria è il _Nome_, mentre gli altri attributi sono _Città_ e _Indirizzo_.  Inoltre, per ogni filiale è presente l'attributo derivato _Attivi_, che rappresenta l'ammontare totale della liquidità della filiale e viene calcolato sulla base dei conti, prestiti e rate ad essa associati.
 #figure(
   image("media/filiale.svg", width: 20%),
   caption: [Entità #er[FILIALE]]
@@ -321,7 +320,6 @@ Alcuni vincoli non possono essere catturati tramite il modello ER, vengono ripor
 - Il capo di una filiale deve lavorare nella filiale in cui è responsabile.
 
 - Due clienti che hanno gestori differenti non possono avere un conto condiviso.
-- Un dipendente non può gestire se stesso.
 - Le rate vanno pagate in ordine cronologico, in base a _Numero_.
 - La somma dell'importo delle rate deve corrispondere all'ammontare del prestito.
 
@@ -732,7 +730,7 @@ Per le analisi fatte in precedenza, il blocco #er[Capo-]_Di_#er[-Dipendente] pu�
 Di conseguenza viene anche cambiato il riferimento della relazione #er[è capo] che non farà più riferimento all'entità #er[capo] in quanto è stata eliminata ma bensì a #er[Dipendente] richiedendo un cambio di cardinalità dal lato di #er[dipendente].
 
 Non c'è perdita di informazione in quanto il nuovo attributo _Capo_ viene ricavato dalle relazioni #er[Lavora] ed #er[è capo].
-Per ricavare il capo di un certo dipendente si va andare a vedere la filiale in cui lavora (che è unica per le cardinalità della relazione), tale filiale sarà gestita da uno e un solo capo (deducibile dalle cardinalità della relazione _è capo_).
+Per ricavare il capo di un certo dipendente si va a vedere la filiale in cui lavora (che è unica per le cardinalità della relazione), tale filiale sarà gestita da uno e un solo capo (deducibile dalle cardinalità della relazione _è capo_).
 Si può quindi, in maniera univoca, ricavare il capo di un certo dipendente passando attraverso le relazioni e salvare il dato di interesse nell'attributo _Capo_.
 
 Successivamente la specializzazione di #er[CONTO] è stata ristrutturata aggiungendo due nuove relazioni: #err[Tipo-Corrente] e #err[Tipo-Risparmio] che legano rispettivamente le entità #er[CORRENTE] e #er[RISPARMIO] a #er[conto].
@@ -1144,7 +1142,7 @@ Viene esaminata la distribuzione delle mensilità dei prestiti associati a conti
     FROM clienti_gestiti, possiede, conto, prestito
     WHERE clienti_gestiti.id = possiede.cliente
     AND possiede.conto = conto.iban
-    AND conto.saldo > 50.000
+    AND conto.saldo > 50000
     AND possiede.conto = prestito.conto
     GROUP BY mensilità
 ```
@@ -1206,7 +1204,7 @@ L'obiettivo è determinare il numero di conti cointestati che hanno un prestito 
   SELECT filiale, COUNT(*) AS n_conti
     FROM conti_cointestati, prestito
     WHERE conti_cointestati.conto = prestito.conto
-    AND ammontare > 50.000
+    AND ammontare > 50000
     GROUP BY filiale
 ```
 )
@@ -1227,15 +1225,19 @@ La tendenza è quella di una distribuzione uniforme in tutti i campi.
 
 = Conclusioni
 
-L'analisi dei requisiti ha evidenziato quanto sia complesso ottenere una documentazione completa, priva di ambiguità e internamente coerente. Alcuni requisiti sono risultati immediatamente deducibili, altri sono stati definiti manualmente, mentre altri ancora sono emersi gradualmente, poiché inizialmente non considerati.
+L'analisi dei requisiti ha evidenziato quanto sia complesso ottenere una documentazione completa, priva di ambiguità e interamente coerente. Alcuni requisiti sono risultati immediatamente deducibili, altri sono stati definiti manualmente, mentre altri ancora sono emersi gradualmente, poiché inizialmente non considerati.
 
 Le fasi di progettazione concettuale e logica hanno sottolineato l'importanza di distinguere tra entità e attributi e di definire relazioni e molteplicità in modo accurato, basandosi sui vincoli presenti. 
-Ciò che non è stato catturato dallo schema ER (vincoli di integrità) è stato documentato per implementare dei trigger nella progettazione fisica.
+I vincoli di integrità 
+
+
+Ciò che non è stato catturato dallo schema ER (vincoli di integrità) è stato definit e garantito con l'implementazione a livello fisico attraverso i trigger. 
+
 
 Gran parte del lavoro ha riguardato la generazione dei dati, con l'obiettivo di mantenere la coerenza interna e il rispetto dei vincoli imposti, oltre al popolamento del database tramite R.
 Per la creazione del database e delle tabelle è stato fondamentale l'ordine di generazione e l'assegnazione di chiavi primarie e/o esterne.
 
-Per verificare il corretto funzionamento del database, sono stati condotti dei test mirati a casi specifici: per controllare la corretta attivazione dei trigger, il rispetto dei vincoli di integrità e l'aggiornamento automatico di attributi derivati.
+Per verificare il corretto funzionamento del database, sono stati condotti dei test mirati a casi specifici per controllare: la corretta attivazione dei trigger, il rispetto dei vincoli di integrità e l'aggiornamento automatico di attributi derivati.
 
 Le query hanno evidenziato la potenza di SQL, rendendo evidente ciò che avviene a basso livello durante un'interrogazione al database. 
 I grafici finali sfruttano la potenzialità del linguaggio SQL per analizzare dati che, tramite funzioni di R, sarebbero stati recuperati in maniera più complessa. \

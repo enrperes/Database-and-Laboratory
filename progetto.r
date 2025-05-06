@@ -123,8 +123,8 @@ pcf_files <- c(
 
 ## ==== CLIENTE_DIPENDENTE ====
 cd_files <- c(
-  "cliente_dipendente/cliente_dipendente.sql",
-  "cliente_dipendente/cliente_dipendente_trigger.sql"
+  "dipendente_cliente/cliente_dipendente.sql",
+  "dipendente_cliente/cliente_dipendente_trigger.sql"
 )
 
 
@@ -873,7 +873,7 @@ table <- dbGetQuery(con, paste0("
   FROM clienti_gestiti, possiede, conto, prestito
   WHERE clienti_gestiti.id = possiede.cliente
   AND possiede.conto = conto.iban
-  AND conto.saldo > 50.000
+  AND conto.saldo > 50000
   AND possiede.conto = prestito.conto
   GROUP BY mensilità
 "))
@@ -957,7 +957,7 @@ table <- dbGetQuery(con, paste0("
   SELECT filiale, COUNT(*) AS n_conti
   FROM conti_cointestati, prestito
   WHERE conti_cointestati.conto = prestito.conto
-  AND ammontare > 50.000
+  AND ammontare > 50000
   GROUP BY filiale
 ;"))
 
