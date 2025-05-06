@@ -15,7 +15,7 @@ con <- dbConnect(
   dbname   = "postgres",
   host     = "localhost",
   port     =  5432,
-  user     = "enrperes",
+  user     = "postgres",
   password = "9999"
 )
 dbExecute(con, "CREATE DATABASE db_banca;")
@@ -29,7 +29,7 @@ con <- dbConnect(
   dbname   = "db_banca",
   host     = "localhost",
   port     =  5432,
-  user     = "enrperes",
+  user     = "postgres",
   password = "9999"
 )
 
